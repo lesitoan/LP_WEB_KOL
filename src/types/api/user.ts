@@ -1,0 +1,21 @@
+export interface UserProfile {
+  id: string
+  email: string
+  name: string
+  role?: string
+  status?: string
+  avatarUrl?: string
+  createdAt?: string
+  updatedAt?: string
+  lastLoginAt?: string
+  tier?: string
+  referralCode?: string
+  referralLink?: string
+  kolId?: string
+  kolCode?: string
+  kolDisplayName?: string
+  lpexRefCode?: string
+  telegramContact?: string
+  zaloContact?: string
+  defaultLanguage?: string
+}

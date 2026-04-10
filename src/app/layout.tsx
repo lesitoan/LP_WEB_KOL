@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import React from "react";
 import "./globals.css";
 import { Providers } from "./providers";
-import AppLayout from "@/layouts/AppLayout";
+import { StoreProvider } from "@/providers/storeProvider";
 
 export const metadata: Metadata = {
   title: "Manager Dashboard",
@@ -15,11 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Providers>
-          <AppLayout>{children}</AppLayout>
-        </Providers>
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans antialiased">
+        <StoreProvider>
+          <Providers>{children}</Providers>
+        </StoreProvider>
       </body>
     </html>
   );
