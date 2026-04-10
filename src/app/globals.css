@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Surfaces — Warm chocolate dark */
+    --background: 20 30% 6%;
+    --foreground: 38 60% 94%;
+
+    --surface-0: 20 30% 6%;
+    --surface-1: 20 22% 8.5%;
+    --surface-2: 22 24% 11%;
+    --surface-3: 22 24% 14%;
+    --surface-4: 22 22% 17.5%;
+
+    --card: 20 22% 8.5%;
+    --card-foreground: 38 60% 94%;
+
+    --popover: 20 22% 8.5%;
+    --popover-foreground: 38 60% 94%;
+
+    --primary: 40 78% 55%;
+    --primary-foreground: 20 30% 6%;
+
+    --secondary: 22 24% 11%;
+    --secondary-foreground: 38 60% 94%;
+
+    --muted: 22 24% 14%;
+    --muted-foreground: 30 20% 45%;
+
+    --accent: 22 24% 14%;
+    --accent-foreground: 38 60% 94%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 38 60% 94%;
+
+    --border: 25 22% 17%;
+    --border-strong: 25 22% 24%;
+    --input: 25 22% 17%;
+    --ring: 40 78% 55%;
+
+    --radius: 0.625rem;
+
+    /* Brand gold */
+    --brand: 40 78% 55%;
+    --brand-dim: 35 60% 56%;
+    --brand-bright: 46 88% 72%;
+    --brand-glow: 40 78% 55% / 0.2;
+
+    /* Semantic */
+    --success: 134 50% 62%;
+    --warning: 28 88% 60%;
+    --danger: 0 75% 64%;
+    --info: 213 72% 66%;
+
+    /* Tier */
+    --tier-starter: 30 15% 64%;
+    --tier-partner: 24 44% 54%;
+    --tier-elite: 40 78% 55%;
+    --tier-legend: 46 88% 72%;
+
+    /* Groups */
+    --group-gold: 46 88% 72%;
+    --group-silver: 38 15% 71%;
+    --group-bronze: 24 44% 54%;
+
+    --sidebar-background: 20 22% 8.5%;
+    --sidebar-foreground: 38 60% 94%;
+    --sidebar-primary: 40 78% 55%;
+    --sidebar-primary-foreground: 20 30% 6%;
+    --sidebar-accent: 22 24% 14%;
+    --sidebar-accent-foreground: 38 60% 94%;
+    --sidebar-border: 25 22% 17%;
+    --sidebar-ring: 40 78% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Geist', 'Be Vietnam Pro', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.55;
+  }
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--surface-3));
+  border-radius: 9999px;
+  border: 2px solid hsl(var(--surface-0));
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--surface-4));
+}
+
+/* Slider styling */
+input[type="range"].cashback-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: hsl(var(--surface-3));
+  border-radius: 9999px;
+  outline: none;
+}
+input[type="range"].cashback-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: hsl(var(--brand));
+  cursor: pointer;
+  border: 3px solid hsl(var(--surface-0));
+  box-shadow: 0 0 0 1px hsl(var(--brand)), 0 0 16px hsl(var(--brand-glow));
+  transition: transform 0.15s;
+}
+input[type="range"].cashback-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease infinite;
+}
+
+/* Font mono */
+.font-geist-mono {
+  font-family: 'Geist Mono', monospace;
+  font-feature-settings: "tnum";
+}
