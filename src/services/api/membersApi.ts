@@ -5,7 +5,7 @@ import { api } from './baseApi'
 export const membersApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMembers: builder.query<MembersData, ListMembersQuery>({
-      query: ({ page, limit, search, countryCode }) => {
+      query: ({ page, limit, search, countryCode, groupId, eligibilityStatus, membershipState, includeGroups }) => {
         const params = new URLSearchParams({
           page: String(page),
           limit: String(limit),
@@ -17,6 +17,22 @@ export const membersApi = api.injectEndpoints({
 
         if (countryCode) {
           params.set('countryCode', countryCode)
+        }
+
+        if (groupId) {
+          params.set('groupId', groupId)
+        }
+
+        if (eligibilityStatus) {
+          params.set('eligibilityStatus', eligibilityStatus)
+        }
+
+        if (membershipState) {
+          params.set('membershipState', membershipState)
+        }
+
+        if (includeGroups !== undefined) {
+          params.set('includeGroups', includeGroups ? 'true' : 'false')
         }
 
         return {
@@ -35,4 +51,4 @@ export const membersApi = api.injectEndpoints({
   }),
 })
 
-export const { useGetMembersQuery } = membersApi
+export const { useGetMembersQuery, useLazyGetMembersQuery } = membersApi

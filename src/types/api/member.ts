@@ -28,6 +28,10 @@ export interface ListMembersQuery {
   limit: number
   search?: string
   countryCode?: string
+  groupId?: string
+  eligibilityStatus?: string
+  membershipState?: string
+  includeGroups?: boolean
 }
 
 export interface MembersData {
