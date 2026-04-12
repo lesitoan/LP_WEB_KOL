@@ -1,25 +1,128 @@
+"use client";
+
+import { useState } from "react";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Spinner } from "@/components/ui/spinner";
+import { useGetCashbackCommissionChartQuery } from "@/services/api/cashbackApi";
+
+function formatUsd(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+const PERIODS: Array<{ value: 7 | 30 | 90; label: string }> = [
+  { value: 7, label: "7 ngày" },
+  { value: 30, label: "30 ngày" },
+  { value: 90, label: "90 ngày" },
+];
+
 export default function VolumeMembersChart() {
-  const days = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
-  const heights = [65, 72, 58, 80, 75, 88, 92];
+  const [period, setPeriod] = useState<7 | 30 | 90>(30);
+  const { data = [], isLoading, isFetching } = useGetCashbackCommissionChartQuery(period);
 
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-[13px] font-semibold text-muted-foreground tracking-wide uppercase">
-          Volume & Members
+    <div className="bg-surface-1 border border-border rounded-[14px] p-4 sm:p-5">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <h3 className="text-base font-semibold">Biểu đồ Hoa hồng & Cashback</h3>
+        <div className="inline-flex items-center gap-1 rounded-xl border border-border bg-surface-2 p-1">
+          {PERIODS.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setPeriod(item.value)}
+              className={`h-7 px-3 rounded-lg text-xs font-medium transition-colors ${
+                period === item.value
+                  ? "bg-surface-1 text-foreground shadow-[0_0_0_1px_hsl(var(--border))]"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              disabled={isFetching}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-        <span className="text-[12px] text-muted-foreground">7 ngày gần nhất</span>
       </div>
-      <div className="h-60 flex items-end justify-between gap-2 px-2">
-        {heights.map((h, i) => (
-          <div key={days[i]} className="flex-1 flex flex-col items-center gap-1">
-            <div
-              className="w-full bg-gradient-to-t from-brand-dim to-brand rounded-t"
-              style={{ height: `${h}%` }}
-            />
-            <span className="text-[10px] text-muted-foreground font-geist-mono">{days[i]}</span>
+
+      <div className="h-[300px]">
+        {isLoading ? (
+          <div className="h-full grid place-items-center text-primary">
+            <Spinner className="h-8 w-8" />
           </div>
-        ))}
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
+              <defs>
+                <linearGradient id="commissionFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="cashbackFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                className="text-[11px]"
+                stroke="hsl(var(--muted-foreground))"
+              />
+
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                width={56}
+                className="text-[11px]"
+                stroke="hsl(var(--muted-foreground))"
+                tickFormatter={(value) => formatUsd(Number(value))}
+              />
+
+              <Tooltip
+                contentStyle={{
+                  background: "hsl(var(--surface-2))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: 10,
+                }}
+                labelStyle={{ color: "hsl(var(--muted-foreground))" }}
+                formatter={(value: number, name: string) => [formatUsd(value), name === "cashback" ? "Cashback" : "Hoa hồng"]}
+              />
+
+              <Area
+                type="monotone"
+                dataKey="cashback"
+                name="cashback"
+                stroke="hsl(var(--success))"
+                fill="url(#cashbackFill)"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Area
+                type="monotone"
+                dataKey="commission"
+                name="commission"
+                stroke="hsl(var(--warning))"
+                fill="url(#commissionFill)"
+                strokeWidth={2}
+                dot={false}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      <div className="mt-2 flex items-center justify-center gap-5 text-sm font-medium">
+        <span className="inline-flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-[3px] bg-success" />Cashback</span>
+        <span className="inline-flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-[3px] bg-warning" />Hoa hồng</span>
       </div>
     </div>
   );

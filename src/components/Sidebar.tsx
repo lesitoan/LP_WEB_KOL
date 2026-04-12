@@ -105,7 +105,7 @@ export default function Sidebar() {
     router.push(path);
   };
   return (
-    <aside className="bg-surface-1 border-r border-border flex flex-col py-5 w-[232px] shrink-0">
+    <aside className="bg-surface-1 border-r border-border flex h-dvh min-h-dvh flex-col py-5 w-[232px] shrink-0 overflow-y-auto">
       <div className="px-5 pb-6 flex items-center gap-3">
         <div className="w-8 h-8 rounded-md bg-gradient-to-br from-brand to-brand-dim grid place-items-center text-primary-foreground font-bold text-sm shadow-[0_0_16px_hsl(var(--brand-glow))]">
           LP

@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Info } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AddGroupDialog } from './components/addGroupDialog'
 import { GroupsListContainer } from './components/groupsListContainer'
 import type { CreateGroupBody, ListGroupsQuery, UpdateGroupBody } from '@/types/api'
@@ -112,15 +110,6 @@ export function GroupsScreen() {
 
   return (
     <div className="space-y-6">
-      {/* Info Alert */}
-      <Alert className="border-primary/20 bg-primary/5">
-        <Info className="h-4 w-4 text-primary" />
-        <AlertTitle className="text-primary">Hướng dẫn</AlertTitle>
-        <AlertDescription className="text-muted-foreground">
-          Click vào thêm nhóm mới để thêm nhóm. Click vào tên nhóm để xem chi tiết và chỉnh sửa thông tin nhóm. Các hành động khác như xem thành viên, xóa nhóm có thể thực hiện qua các icon ở cột hành động.
-        </AlertDescription>
-      </Alert>
-
       {/* Default Group Info */}
       {/* <Card>
         <CardHeader>
