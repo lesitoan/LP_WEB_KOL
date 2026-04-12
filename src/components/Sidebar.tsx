@@ -9,6 +9,7 @@ const navSections = [
     items: [
       { id: "home", label: "Tổng quan", icon: "home" },
       { id: "members", label: "Cộng đồng", icon: "users", badge: "742" },
+      { id: "groups", label: "Groups", icon: "layers" },
     ],
   },
   {
@@ -42,6 +43,13 @@ const icons: Record<string, JSX.Element> = {
       <circle cx="9" cy="8" r="4" /><path d="M3 21v-1a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v1" /><circle cx="17" cy="9" r="3" /><path d="M21 19v-1a4 4 0 0 0-3-3.87" />
     </svg>
   ),
+  layers: (
+    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}>
+      <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z" />
+      <path d="m3 12 9 4.5 9-4.5" />
+      <path d="m3 16.5 9 4.5 9-4.5" />
+    </svg>
+  ),
   dollar: (
     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}>
       <circle cx="12" cy="12" r="9" /><path d="M12 7v10M9 9.5h4.5a1.5 1.5 0 0 1 0 3H9.5a1.5 1.5 0 0 0 0 3H14" />
@@ -73,6 +81,7 @@ const icons: Record<string, JSX.Element> = {
 const screenPaths: Record<string, string> = {
   home: "/dashboard",
   members: "/members",
+  groups: "/groups",
   cashback: "/cashback",
   campaign: "/campaign",
   tier: "/tier",
