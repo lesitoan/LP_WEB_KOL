@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/useToast";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { useChangePasswordMutation } from "@/services/api/authApi";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
