@@ -1,41 +1,33 @@
-"use client";
-import { useState } from "react";
-import CashbackHeader from "./components/CashbackHeader";
-import { CashbackItem } from "./components/CashbackItem";
-import { CashbackSummary } from "./components/CashbackSummary";
-import { groups } from "./components/cashback-data";
+'use client'
+
+import { useSearchParams } from 'next/navigation'
+import { ConfigsTab } from './components/configs/configsTab'
+import { CyclesTab } from './components/cycles/cyclesTab'
+import { PayoutsTab } from './components/payouts/payoutsTab'
+import { SettingTab } from './components/setting/settingTab'
+import { SummaryTab } from './components/summary/summaryTab'
+
+type CashbackTab = 'setting' | 'summary' | 'configs' | 'cycles' | 'payouts'
+
+function parseTab(value: string | null): CashbackTab {
+  if (value === 'summary' || value === 'configs' || value === 'cycles' || value === 'payouts') {
+    return value
+  }
+
+  return 'setting'
+}
 
 export default function CashbackScreen() {
-  const [rates, setRates] = useState<Record<string, number>>({
-    "Group Vàng": 25,
-    "Group Bạc": 15,
-    "Group Đồng": 10,
-  });
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
-  };
+  const searchParams = useSearchParams()
+  const activeTab = parseTab(searchParams.get('tab'))
 
   return (
-    <div className="animate-fade-in">
-      <CashbackHeader saved={saved} onSave={handleSave} />
-
-      <div className="flex flex-col gap-4">
-        {groups.map((g) => (
-          <CashbackItem
-            key={g.name}
-            group={g}
-            rate={rates[g.name]}
-            onRateChange={(value) =>
-              setRates((prev) => ({ ...prev, [g.name]: value }))
-            }
-          />
-        ))}
-      </div>
-
-      <CashbackSummary rates={rates} />
+    <div className="space-y-6">
+      {activeTab === 'setting' && <SettingTab />}
+      {activeTab === 'summary' && <SummaryTab />}
+      {activeTab === 'configs' && <ConfigsTab />}
+      {activeTab === 'cycles' && <CyclesTab />}
+      {activeTab === 'payouts' && <PayoutsTab />}
     </div>
-  );
+  )
 }

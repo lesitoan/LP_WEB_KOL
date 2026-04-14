@@ -167,7 +167,7 @@ export default function TableFilterBar({
               {activeFilter ? (
                 <div className="flex-1 min-w-[240px]">
                   <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">{activeFilter.label}</div>
-                  <div className="space-y-1 max-h-[220px] overflow-y-auto pr-1">
+                  <div className="space-y-1 max-h-[220px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(232,184,77,0.7)_rgba(255,255,255,0.06)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[rgba(255,255,255,0.06)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[rgba(232,184,77,0.7)] [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(232,184,77,0.9)]">
                     {activeFilter.options.map((option) => (
                       <button
                         key={option.value}
