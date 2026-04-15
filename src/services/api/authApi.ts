@@ -79,7 +79,7 @@ export const authApi = api.injectEndpoints({
         return {
           id: payload.data.user.id,
           email: payload.data.user.email,
-          name: payload.data.user.fullName,
+          name: payload.data.kol?.displayName || payload.data.user.fullName,
           role: payload.data.user.role,
           status: payload.data.user.status,
           lastLoginAt: payload.data.user.lastLoginAt,

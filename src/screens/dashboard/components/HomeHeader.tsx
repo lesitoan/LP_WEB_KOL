@@ -1,8 +1,15 @@
+"use client";
+
+import { useAuthSession } from "@/hooks/useAuthSession";
+
 export default function HomeHeader() {
+  const { profile } = useAuthSession();
+  const displayName = profile?.kolDisplayName || profile?.name || "---";
+
   return (
     <div className="flex items-start justify-between mb-6 gap-4">
       <div>
-        <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Chào Trang Anh 👋</h1>
+        <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Chào {displayName} 👋</h1>
         <div className="text-[13px] text-muted-foreground flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-success shadow-[0_0_8px_hsl(var(--success)/0.5)] animate-pulse-dot" />
           Đồng bộ lúc 14:32 · Lần kế tiếp trong 18 phút
