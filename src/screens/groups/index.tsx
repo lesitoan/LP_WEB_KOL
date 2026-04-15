@@ -16,7 +16,7 @@ import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { useGroupsFiltersState } from './hooks/useGroupsFiltersState'
 
 export function GroupsScreen() {
-  const { state, setSearchInput, setQuery } = useGroupsFiltersState()
+  const { state, setSearchInput, setQuery, setViewMode } = useGroupsFiltersState()
 
   const { data, isFetching, error } = useGetGroupsQuery(state.query)
   const [updateGroup] = useUpdateGroupMutation()
@@ -159,11 +159,13 @@ export function GroupsScreen() {
           groups={groups}
           query={state.query}
           searchInput={state.searchInput}
+          viewMode={state.viewMode}
           totalItems={pagination?.totalItems ?? 0}
           totalPages={pagination?.totalPages ?? 1}
           isFetching={isFetching}
           onSearchInputChange={setSearchInput}
           onQueryChange={setQuery}
+          onViewModeChange={setViewMode}
           onUpdateGroup={handleUpdateGroup}
           onDeleteGroup={handleDeleteGroup}
         />
