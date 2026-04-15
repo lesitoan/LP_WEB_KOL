@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { PageLoading } from '@/components/ui/pageLoading'
 import { toast } from '@/hooks/useToast'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import {
@@ -32,7 +31,7 @@ export function ConfigsTab() {
     [state.query.limit, state.query.page, state.query.status],
   )
 
-  const { data, isLoading, isFetching, error } = useListCashbackConfigsQuery(listQueryArg)
+  const { data, isFetching, error } = useListCashbackConfigsQuery(listQueryArg)
   const groupsQuery = useGetGroupsQuery({ page: 1, limit: 100 })
 
   const [createConfig, createConfigState] = useCreateCashbackConfigMutation()
@@ -114,10 +113,6 @@ export function ConfigsTab() {
         description: extractApiErrorMessage(updateError, 'Đã có lỗi xảy ra'),
       })
     }
-  }
-
-  if (isLoading) {
-    return <PageLoading className="min-h-[40vh]" />
   }
 
   return (

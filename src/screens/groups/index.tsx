@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { AddGroupDialog } from './components/addGroupDialog'
 import { GroupsListContainer } from './components/groupsListContainer'
 import type { CreateGroupBody, ListGroupsQuery, UpdateGroupBody } from '@/types/api'
-import { PageLoading } from '@/components/ui/pageLoading'
 import {
   useCreateGroupMutation,
   useDeleteGroupMutation,
@@ -19,7 +18,7 @@ import { useGroupsFiltersState } from './hooks/useGroupsFiltersState'
 export function GroupsScreen() {
   const { state, setSearchInput, setQuery } = useGroupsFiltersState()
 
-  const { data, isLoading, isFetching, error } = useGetGroupsQuery(state.query)
+  const { data, isFetching, error } = useGetGroupsQuery(state.query)
   const [updateGroup] = useUpdateGroupMutation()
   const [createGroup] = useCreateGroupMutation()
   const [deleteGroup] = useDeleteGroupMutation()
@@ -111,10 +110,6 @@ export function GroupsScreen() {
         description: extractApiErrorMessage(deleteError, 'Đã có lỗi xảy ra'),
       })
     }
-  }
-
-  if (isLoading) {
-    return <PageLoading className="min-h-screen" />
   }
 
   return (

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Spinner } from "@/components/ui/spinner";
 import { useGetCashbackCommissionChartQuery } from "@/services/api/cashbackApi";
+import { VolumeMembersChartSkeleton } from "@/components/skeletons/VolumeMembersChartSkeleton";
 
 function formatUsd(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -49,9 +49,7 @@ export default function VolumeMembersChart() {
 
       <div className="h-[300px]">
         {isLoading ? (
-          <div className="h-full grid place-items-center text-primary">
-            <Spinner className="h-8 w-8" />
-          </div>
+          <VolumeMembersChartSkeleton />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>

@@ -1,6 +1,7 @@
-'use client'
+"use client"
 
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
+import { DataTableSkeleton } from "@/components/skeletons/DataTableSkeleton";
 
 export type DataTableColumn<T> = {
   id: string
@@ -60,7 +61,7 @@ export function DataTable<T>({
   pagination,
 }: DataTableProps<T>) {
   return (
-    <div className={className ?? 'bg-surface-1 border border-border rounded-[14px] overflow-hidden'}>
+    <div className={className ?? "bg-surface-1 border border-border rounded-[14px] overflow-hidden"}>
       <div
         className="overflow-x-auto overflow-y-hidden pb-1 [scrollbar-width:thin] [scrollbar-color:rgba(245,158,11,0.55)_rgba(255,255,255,0.06)] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[rgba(255,255,255,0.06)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[rgba(245,158,11,0.55)] [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(245,158,11,0.75)]"
       >
@@ -71,7 +72,7 @@ export function DataTable<T>({
                 <th
                   key={column.id}
                   className={`text-left p-3 px-5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-surface-2 border-b border-border whitespace-nowrap ${
-                    column.headerClassName ?? ''
+                    column.headerClassName ?? ""
                   }`}
                 >
                   {column.header}
@@ -82,14 +83,14 @@ export function DataTable<T>({
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-sm text-muted-foreground border-b border-border">
-                  {loadingContent ?? 'Đang tải dữ liệu...'}
+                <td colSpan={columns.length} className="p-6 border-b border-border">
+                  <DataTableSkeleton columnsCount={columns.length} loadingContent={loadingContent} />
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="p-8 text-center text-sm text-muted-foreground border-b border-border">
-                  {emptyContent ?? 'Không có dữ liệu'}
+                  {emptyContent ?? "Không có dữ liệu"}
                 </td>
               </tr>
             ) : (
@@ -98,7 +99,7 @@ export function DataTable<T>({
                   {columns.map((column) => (
                     <td
                       key={column.id}
-                      className={`p-4 px-5 border-b border-border text-[13px] whitespace-nowrap ${column.cellClassName ?? ''}`}
+                      className={`p-4 px-5 border-b border-border text-[13px] whitespace-nowrap ${column.cellClassName ?? ""}`}
                     >
                       {column.cell(row)}
                     </td>

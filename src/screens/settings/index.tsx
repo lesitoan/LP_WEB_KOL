@@ -17,7 +17,7 @@ function formatDateTime(value?: string) {
 }
 
 export function SettingsScreen() {
-  const { profile } = useAuthSession();
+  const { profile, isCheckingSession } = useAuthSession();
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
 
   const accountRows = useMemo(
@@ -62,10 +62,12 @@ export function SettingsScreen() {
     }
   };
 
+  const isProfileLoading = isCheckingSession && !profile;
+
   return (
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
-        <AccountInfoCard rows={accountRows} />
+        <AccountInfoCard rows={accountRows} isLoading={isProfileLoading} />
         <ChangePasswordCard onSubmit={onSubmit} isSubmitting={isChangingPassword} />
       </div>
     </div>

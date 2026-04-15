@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { PageLoading } from '@/components/ui/pageLoading'
+import { CashbackSummarySkeleton } from '@/components/skeletons/CashbackSummarySkeleton'
 import { toast } from '@/hooks/useToast'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { useGetCashbackSummaryQuery } from '@/services/api/cashbackApi'
@@ -33,7 +33,7 @@ export function SummaryTab() {
   }, [summary])
 
   if (isLoading) {
-    return <PageLoading className="min-h-[40vh]" />
+    return <CashbackSummarySkeleton />
   }
 
   if (!summary) {

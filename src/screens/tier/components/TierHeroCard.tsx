@@ -1,5 +1,5 @@
 import { useGetKolCurrentTierQuery } from '@/services/api/tierApi'
-import { PageLoading } from '@/components/ui/pageLoading'
+import { TierHeroCardSkeleton } from '@/components/skeletons/TierHeroCardSkeleton'
 
 function formatTierCode(code: string | undefined) {
   if (!code) return '---'
@@ -10,7 +10,7 @@ export default function TierHeroCard() {
   const { data, isLoading } = useGetKolCurrentTierQuery()
 
   if (isLoading) {
-    return <PageLoading className="min-h-[30vh] mb-6" />
+    return <TierHeroCardSkeleton />
   }
 
   const activeMemberCount = data?.activeMemberCount ?? 0

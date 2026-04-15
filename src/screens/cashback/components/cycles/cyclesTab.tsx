@@ -4,7 +4,6 @@ import { useEffect, useMemo } from 'react'
 import TableFilterBar, { type ActiveFilterChip, type SelectFilterConfig } from '@/components/filters/TableFilterBar'
 import { Badge } from '@/components/ui/badge'
 import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
-import { PageLoading } from '@/components/ui/pageLoading'
 import { toast } from '@/hooks/useToast'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { useListCashbackCyclesQuery } from '@/services/api/cashbackApi'
@@ -35,7 +34,7 @@ export function CyclesTab() {
     [state.query.cycleType, state.query.limit, state.query.page, state.query.status],
   )
 
-  const { data, isLoading, isFetching, error } = useListCashbackCyclesQuery(queryArg)
+  const { data, isFetching, error } = useListCashbackCyclesQuery(queryArg)
   const cycles = data?.items ?? []
   const pagination = data?.pagination
   const page = state.query.page
@@ -130,10 +129,6 @@ export function CyclesTab() {
       })
     }
   }, [error])
-
-  if (isLoading) {
-    return <PageLoading className="min-h-[40vh]" />
-  }
 
   return (
     <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">

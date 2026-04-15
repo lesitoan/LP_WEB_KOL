@@ -4,7 +4,6 @@ import { useEffect, useMemo } from 'react'
 import TableFilterBar, { type ActiveFilterChip, type SelectFilterConfig } from '@/components/filters/TableFilterBar'
 import { Badge } from '@/components/ui/badge'
 import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
-import { PageLoading } from '@/components/ui/pageLoading'
 import { toast } from '@/hooks/useToast'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { useListCashbackPayoutsQuery } from '@/services/api/cashbackApi'
@@ -32,7 +31,7 @@ export function PayoutsTab() {
     [state.query.limit, state.query.page, state.query.payoutStatus],
   )
 
-  const { data, isLoading, isFetching, error } = useListCashbackPayoutsQuery(queryArg)
+  const { data, isFetching, error } = useListCashbackPayoutsQuery(queryArg)
   const payouts = data?.items ?? []
   const pagination = data?.pagination
   const page = state.query.page
@@ -110,10 +109,6 @@ export function PayoutsTab() {
       })
     }
   }, [error])
-
-  if (isLoading) {
-    return <PageLoading className="min-h-[40vh]" />
-  }
 
   return (
     <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">

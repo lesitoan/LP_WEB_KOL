@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useGetKolCurrentTierQuery } from "@/services/api/tierApi";
-import { PageLoading } from "@/components/ui/pageLoading";
+import { TierProgressCardSkeleton } from "@/components/skeletons/TierProgressCardSkeleton";
 
 function formatTierCode(code?: string | null) {
   if (!code) return "---";
@@ -14,7 +14,7 @@ export default function TierProgressCard() {
   const { data, isLoading } = useGetKolCurrentTierQuery();
 
   if (isLoading) {
-    return <PageLoading className="min-h-[24vh] mb-5" />;
+    return <TierProgressCardSkeleton />;
   }
 
   const activeMemberCount = data?.activeMemberCount ?? 0;

@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { useGetKolCurrentTierQuery, useGetKolTiersQuery } from '@/services/api/tierApi'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { toast } from '@/hooks/useToast'
-import { PageLoading } from '@/components/ui/pageLoading'
+import { TierComparisonTableSkeleton } from '@/components/skeletons/TierComparisonTableSkeleton'
 
 type TierFeatureRow = {
   feature: string
@@ -69,7 +69,7 @@ export default function TierComparisonTable() {
   }, [tiers])
 
   if (isLoading) {
-    return <PageLoading className="min-h-[28vh] mb-6" />
+    return <TierComparisonTableSkeleton />
   }
 
   if (!tiers.length) {
