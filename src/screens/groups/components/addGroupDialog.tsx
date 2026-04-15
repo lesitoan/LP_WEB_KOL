@@ -7,13 +7,15 @@ import { GroupFormDialog } from './groupFormDialog'
 
 interface AddGroupDialogProps {
   onAdd: (payload: CreateGroupBody) => Promise<void>
+  defaultOpen?: boolean
 }
 
-export function AddGroupDialog({ onAdd }: AddGroupDialogProps) {
+export function AddGroupDialog({ onAdd, defaultOpen = false }: AddGroupDialogProps) {
   return (
     <GroupFormDialog
       dialogTitle="Thêm nhóm mới"
       submitText="Tạo nhóm"
+      defaultOpen={defaultOpen}
       trigger={(
         <Button>
           <Plus className="mr-2 h-4 w-4" />

@@ -28,6 +28,7 @@ type GroupFormDialogProps = {
   trigger: ReactNode
   initialValues: GroupFormValues
   onSubmitPayload: (payload: CreateGroupBody) => Promise<void>
+  defaultOpen?: boolean
 }
 
 export function GroupFormDialog({
@@ -36,8 +37,9 @@ export function GroupFormDialog({
   trigger,
   initialValues,
   onSubmitPayload,
+  defaultOpen = false,
 }: GroupFormDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(defaultOpen)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {

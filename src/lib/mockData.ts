@@ -261,11 +261,11 @@ export const userProfile = {
   avatar: null,
 }
 
-// Format currency in VND
+// Format currency in USD
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('vi-VN', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'VND',
+    currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { AddGroupDialog } from './components/addGroupDialog'
 import { GroupsListContainer } from './components/groupsListContainer'
 import type { CreateGroupBody, ListGroupsQuery, UpdateGroupBody } from '@/types/api'
@@ -27,6 +27,15 @@ export function GroupsScreen() {
 
   const groups = data?.items ?? []
   const pagination = data?.pagination
+  const [shouldOpenCreateDialog, setShouldOpenCreateDialog] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('dialog') === 'create') {
+      setShouldOpenCreateDialog(true)
+    }
+  }, [])
 
   useEffect(() => {
     if (error) {
@@ -149,7 +158,7 @@ export function GroupsScreen() {
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-lg font-semibold">Danh sách nhóm</h2>
-          <AddGroupDialog onAdd={handleAddGroup} />
+          <AddGroupDialog onAdd={handleAddGroup} defaultOpen={shouldOpenCreateDialog} />
         </div>
         <GroupsListContainer
           groups={groups}

@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useAuthSession } from "@/hooks/useAuthSession";
 
 export default function HomeHeader() {
+  const router = useRouter();
   const { profile } = useAuthSession();
   const displayName = profile?.kolDisplayName || profile?.name || "---";
 
@@ -18,7 +20,10 @@ export default function HomeHeader() {
           </button>
         </div>
       </div>
-      <button className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-[13px] font-semibold bg-brand text-primary-foreground hover:bg-brand-dim hover:-translate-y-px hover:shadow-[0_4px_12px_hsl(var(--brand-glow))] transition-all">
+      <button
+        onClick={() => router.push("/groups?dialog=create")}
+        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-[13px] font-semibold bg-brand text-primary-foreground hover:bg-brand-dim hover:-translate-y-px hover:shadow-[0_4px_12px_hsl(var(--brand-glow))] transition-all"
+      >
         <svg
           className="w-3.5 h-3.5"
           viewBox="0 0 24 24"

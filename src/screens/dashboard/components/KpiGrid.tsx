@@ -1,23 +1,85 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/useToast";
+import { formatCurrency, formatPercentage } from "@/lib/mockData";
+import { extractApiErrorMessage } from "@/services/api/baseApi";
+import {
+  useGetCashbackGrowthSummaryQuery,
+  useGetMemberOverviewStatsQuery,
+} from "@/services/api/dashboardApi";
 
-const kpis = [
-  { label: "Active Members", value: "742", delta: "▲ +23 (7 ngày)", up: true },
-  { label: "Volume 30 ngày", value: "$42.8M", delta: "▲ +12% (7 ngày)", up: true },
-  { label: "Cashback tháng này", value: "$6,236", delta: "▲ +8% vs T3", up: true },
-  { label: "Commission", value: "$12,840", delta: "▲ +$1,200", up: true },
-];
+function formatDelta(value: number, fallback: string) {
+  if (!Number.isFinite(value)) return fallback;
+  const fixed = Math.abs(value).toFixed(1);
+  return value >= 0
+    ? `▲ +${fixed}% so với tháng trước`
+    : `▼ -${fixed}% so với tháng trước`;
+}
 
 export default function KpiGrid() {
   const router = useRouter();
+
+  const { data: memberStats, error: memberError } = useGetMemberOverviewStatsQuery();
+  const { data: cashbackSummary, error: cashbackError } = useGetCashbackGrowthSummaryQuery();
+
+  useEffect(() => {
+    const error = memberError ?? cashbackError;
+    if (!error) return;
+
+    toast({
+      variant: "destructive",
+      title: "Không tải được thống kê dashboard",
+      description: extractApiErrorMessage(error, "Đã có lỗi xảy ra"),
+    });
+  }, [cashbackError, memberError]);
+
+  const kpis = useMemo(
+    () => [
+      {
+        label: "Tổng số Referral",
+        value: memberStats ? memberStats.totalMembers.toLocaleString("vi-VN") : "0",
+        delta: memberStats
+          ? formatDelta(memberStats.growthPercentage, "—")
+          : "—",
+        up: true,
+        href: "/members",
+      },
+      {
+        label: "Tổng Hoa hồng",
+        value: cashbackSummary ? formatCurrency(cashbackSummary.totalCommissionUsd) : formatCurrency(0),
+        delta: "▲ +8.2% so với tháng trước",
+        up: true,
+        href: "/cashback?tab=summary",
+      },
+      {
+        label: "Tổng Cashback",
+        value: cashbackSummary ? formatCurrency(cashbackSummary.totalCashbackPaidUsd) : formatCurrency(0),
+        delta: cashbackSummary
+          ? formatDelta(cashbackSummary.cashbackGrowthPercentage, "—")
+          : "—",
+        up: true,
+        href: "/cashback?tab=summary",
+      },
+      {
+        label: "Tỷ lệ chuyển đổi",
+        value: formatPercentage(57.1),
+        delta: "▼ -2.3% so với tháng trước",
+        up: false,
+        href: "/analytics",
+      },
+    ],
+    [cashbackSummary, memberStats]
+  );
+
   return (
     <div className="grid grid-cols-4 gap-4 mb-5 max-lg:grid-cols-2 max-sm:grid-cols-1">
       {kpis.map((kpi) => (
         <div
           key={kpi.label}
           className="bg-surface-1 border border-border rounded-[14px] p-5 relative transition-all hover:border-border-strong hover:-translate-y-0.5 cursor-pointer"
-          onClick={() => router.push("/members")}
+          onClick={() => router.push(kpi.href)}
         >
           <div className="text-[11px] font-semibold text-muted-foreground tracking-[0.08em] uppercase mb-3">
             {kpi.label}
