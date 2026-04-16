@@ -116,7 +116,7 @@ const screenPaths: Record<string, string> = {
 }
 
 const cashbackSubItems = [
-  { title: 'Setting', href: '/cashback?tab=setting', tab: 'setting', icon: 'dollar' },
+  // { title: 'Setting', href: '/cashback?tab=setting', tab: 'setting', icon: 'dollar' },
   { title: 'Summary', href: '/cashback?tab=summary', tab: 'summary', icon: 'file' },
   { title: 'Configs', href: '/cashback?tab=configs', tab: 'configs', icon: 'settings' },
   { title: 'Cycles', href: '/cashback?tab=cycles', tab: 'cycles', icon: 'refresh' },

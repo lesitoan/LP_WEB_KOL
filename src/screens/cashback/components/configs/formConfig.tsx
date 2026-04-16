@@ -56,14 +56,12 @@ export function FormConfig({ isOpen, groups, isSubmitting, onToggle, onClose, on
 
       {isOpen && (
         <CardContent className="grid gap-4 md:grid-cols-2 pt-0">
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <Label htmlFor="cashbackRatePct">Cashback Rate (%)</Label>
-            <Input
-              id="cashbackRatePct"
-              type="number"
-              min={0}
-              max={50}
-              {...register('cashbackRatePct', {
+            <Controller
+              control={control}
+              name="cashbackRatePct"
+              rules={{
                 required: 'Cashback rate là bắt buộc',
                 validate: (value) => {
                   const number = Number(value)
@@ -71,11 +69,36 @@ export function FormConfig({ isOpen, groups, isSubmitting, onToggle, onClose, on
                   if (number < 0 || number > 50) return 'Cashback rate phải trong khoảng 0..50'
                   return true
                 },
-              })}
+              }}
+              render={({ field }) => (
+                <div className="flex flex-col gap-3">
+                  <div className="grid grid-cols-[1fr_auto] gap-4 items-center">
+                    <input
+                      type="range"
+                      min={0}
+                      max={50}
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className="cashback-slider w-full"
+                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        max={50}
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="w-20 h-10 bg-surface-2 border border-border rounded-lg text-center font-geist-mono text-lg font-semibold text-brand outline-none focus:border-brand"
+                      />
+                      <span className="text-sm text-muted-foreground font-medium">%</span>
+                    </div>
+                  </div>
+                  {errors.cashbackRatePct && (
+                    <p className="text-xs text-destructive">{errors.cashbackRatePct.message}</p>
+                  )}
+                </div>
+              )}
             />
-            {errors.cashbackRatePct && (
-              <p className="text-xs text-destructive">{errors.cashbackRatePct.message}</p>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -139,10 +162,17 @@ export function FormConfig({ isOpen, groups, isSubmitting, onToggle, onClose, on
 
           <div className="space-y-2">
             <Label htmlFor="effectiveFrom">Effective From</Label>
-            <Input
-              id="effectiveFrom"
-              type="datetime-local"
-              {...register('effectiveFrom', { required: 'Effective from là bắt buộc' })}
+            <Controller
+              control={control}
+              name="effectiveFrom"
+              rules={{ required: 'Effective from là bắt buộc' }}
+              render={({ field }) => (
+                <Input
+                  id="effectiveFrom"
+                  type="datetime-local"
+                  {...register('effectiveFrom', { required: 'Effective from là bắt buộc' })}
+                />
+              )}
             />
             {errors.effectiveFrom && (
               <p className="text-xs text-destructive">{errors.effectiveFrom.message}</p>
@@ -151,10 +181,16 @@ export function FormConfig({ isOpen, groups, isSubmitting, onToggle, onClose, on
 
           <div className="space-y-2">
             <Label htmlFor="effectiveTo">Effective To</Label>
-            <Input
-              id="effectiveTo"
-              type="datetime-local"
-              {...register('effectiveTo')}
+            <Controller
+              control={control}
+              name="effectiveTo"
+              render={({ field }) => (
+                <Input
+                  id="effectiveTo"
+                  type="datetime-local"
+                  {...register('effectiveTo')}
+                />
+              )}
             />
           </div>
 

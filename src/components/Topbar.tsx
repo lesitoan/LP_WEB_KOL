@@ -52,10 +52,10 @@ export default function Topbar() {
           </svg>
           ELITE · Comm. 50%
         </div>
-        <button className="w-9 h-9 rounded-lg grid place-items-center text-muted-foreground hover:bg-surface-3 hover:text-foreground transition-all relative">
+        {/* <button className="w-9 h-9 rounded-lg grid place-items-center text-muted-foreground hover:bg-surface-3 hover:text-foreground transition-all relative">
           <Bell className="w-4 h-4" />
           <span className="absolute top-2 right-2 w-[7px] h-[7px] rounded-full bg-brand shadow-[0_0_0_2px_hsl(var(--surface-1))]" />
-        </button>
+        </button> */}
 
         {/* User avatar + menu */}
         <div className="flex items-center gap-3">

@@ -9,7 +9,8 @@ import {
   useUpdateCashbackConfigMutation,
 } from '@/services/api/cashbackApi'
 import { useGetGroupsQuery } from '@/services/api/groupsApi'
-import type { CashbackConfigData, CashbackConfigStatus } from '@/types/api'
+import type { CashbackConfigData, CashbackConfigStatus, UpdateCashbackConfigBody } from '@/types/api'
+import type { ConfigStatusFilter } from '../../constants'
 import type { CashbackConfigFormValues } from '../../hooks/useCashbackConfigForm'
 import { useCashbackConfigsFiltersState } from '../../hooks/useCashbackConfigsFiltersState'
 import { FormConfig } from './formConfig'
@@ -35,7 +36,7 @@ export function ConfigsTab() {
   const groupsQuery = useGetGroupsQuery({ page: 1, limit: 100 })
 
   const [createConfig, createConfigState] = useCreateCashbackConfigMutation()
-  const [updateConfigStatus, updateConfigStatusState] = useUpdateCashbackConfigMutation()
+  const [updateConfig, updateConfigState] = useUpdateCashbackConfigMutation()
 
   const configs = data?.items ?? []
   const pagination = data?.pagination
@@ -95,7 +96,7 @@ export function ConfigsTab() {
     const nextStatus: CashbackConfigStatus = config.status === 'active' ? 'inactive' : 'active'
 
     try {
-      await updateConfigStatus({
+      await updateConfig({
         configId: config.id,
         data: {
           status: nextStatus,
@@ -105,6 +106,26 @@ export function ConfigsTab() {
       toast({
         title: 'Cập nhật config thành công',
         description: `Config đã được chuyển sang ${nextStatus}`,
+      })
+    } catch (updateError) {
+      toast({
+        variant: 'destructive',
+        title: 'Không cập nhật được config',
+        description: extractApiErrorMessage(updateError, 'Đã có lỗi xảy ra'),
+      })
+    }
+  }
+
+  const onPatchConfig = async (config: CashbackConfigData, patch: UpdateCashbackConfigBody) => {
+    try {
+      await updateConfig({
+        configId: config.id,
+        data: patch,
+      }).unwrap()
+
+      toast({
+        title: 'Cập nhật config thành công',
+        description: 'Cấu hình cashback đã được cập nhật.',
       })
     } catch (updateError) {
       toast({
@@ -140,21 +161,22 @@ export function ConfigsTab() {
         totalPages={pagination?.totalPages ?? 1}
         isFetching={isFetching}
         statusFilter={statusFilter}
-        isUpdating={updateConfigStatusState.isLoading}
-        onStatusFilterChange={(value) => {
+        isUpdating={updateConfigState.isLoading}
+        onStatusFilterChange={(value: ConfigStatusFilter | 'all') => {
           setQuery({
             ...state.query,
             status: value === 'all' ? undefined : value,
             page: 1,
           })
         }}
-        onPageChange={(nextPage) => {
+        onPageChange={(nextPage: number) => {
           setQuery({
             ...state.query,
             page: nextPage,
           })
         }}
         onToggleConfigStatus={onToggleConfigStatus}
+        onPatchConfig={onPatchConfig}
       />
     </div>
   )
