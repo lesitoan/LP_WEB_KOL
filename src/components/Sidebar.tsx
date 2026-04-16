@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useGetCurrentUserQuery } from '@/services/api/authApi'
+import { Skeleton } from './ui/skeleton'
 
 const navSections = [
   {
@@ -127,6 +129,8 @@ export default function Sidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { data: user, isLoading } = useGetCurrentUserQuery()
+
   const activeCashbackTab = searchParams.get('tab') || 'setting'
   const [isCashbackOpen, setIsCashbackOpen] = useState(pathname === '/cashback')
 
@@ -260,18 +264,32 @@ export default function Sidebar() {
       </nav>
 
       <div className="px-5 pt-4 border-t border-border flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F5B544] to-[#F87171] grid place-items-center text-foreground font-semibold text-[13px]">
-          TA
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-medium">Trang Anh</div>
-          <div className="text-[11px] text-brand flex items-center gap-1">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l2.5 6 6.5.5-5 4.5 1.5 6.5L12 16l-5.5 3.5L8 13 3 8.5 9.5 8z" />
-            </svg>
-            Elite Partner
-          </div>
-        </div>
+        {isLoading ? (
+          <>
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-2 w-16 opacity-50" />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F5B544] to-[#F87171] grid place-items-center text-foreground font-semibold text-[13px]">
+              {user?.name ? (
+                user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+              ) : '??'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[13px] font-medium truncate">{user?.name || 'Unknown User'}</div>
+              <div className="text-[11px] text-brand flex items-center gap-1">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l2.5 6 6.5.5-5 4.5 1.5 6.5L12 16l-5.5 3.5L8 13 3 8.5 9.5 8z" />
+                </svg>
+                {user?.tier || 'Partner'}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </aside>
   )

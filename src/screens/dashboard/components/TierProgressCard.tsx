@@ -84,8 +84,8 @@ export default function TierProgressCard() {
         <div className="mt-4 pt-4 border-t border-border text-[13px] text-muted-foreground flex items-center gap-2">
           {nextTier ? (
             <>
-              💪 Bạn còn <strong className="text-brand font-semibold">{membersNeeded.toLocaleString("en-US")} active members</strong> nữa. Với tốc độ +23/tuần, ước tính
-              <strong className="text-foreground font-semibold"> ~{estimatedWeeks} tuần</strong> sẽ lên {nextTierName}.
+              💪 Bạn còn <strong className="text-brand font-semibold">{membersNeeded.toLocaleString("en-US")} active members</strong> nữa để lên cấp {nextTierName}
+              {/* <strong className="text-foreground font-semibold"> ~{estimatedWeeks} tuần</strong> sẽ lên {nextTierName}. */}
             </>
           ) : (
             <>Bạn đã đạt tier cao nhất, tiếp tục duy trì hiệu suất để giữ vững thứ hạng.</>
