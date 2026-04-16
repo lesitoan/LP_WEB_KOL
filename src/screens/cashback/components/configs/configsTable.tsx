@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react";
+import { CashbackItemSkeleton } from "../../../../components/skeletons/CashbackItemSkeleton";
 import TableFilterBar, {
   type ActiveFilterChip,
   type SelectFilterConfig,
@@ -176,7 +177,7 @@ function ConfigItemCard({ config, group, isBusy, onToggleStatus, onPatchConfig }
             {group?.title ?? "Unknown group"}
           </div>
           <div className="text-xs text-muted-foreground">
-            Chu kỳ: {distributionCycleLabel[config.distributionCycle]} 
+            Chu kỳ: {distributionCycleLabel[config.distributionCycle]}
             · Min payout: {toCurrency(config.minPayoutUsd)}
           </div>
           <div className="mt-1 text-[11px] text-muted-foreground">
@@ -355,10 +356,21 @@ export function ConfigsTable({
       />
 
       <div className="rounded-b-[14px] overflow-hidden p-5 space-y-4">
-        {configs.length === 0 && !isFetching ? (
+        {isFetching && configs.length === 0 ? (
+          <div className="flex flex-col gap-4">
+            {[...Array(3)].map((_, i) => (
+              <CashbackItemSkeleton key={i} />
+            ))}
+          </div>
+        ) : configs.length === 0 ? (
           <div className="text-sm text-muted-foreground">Chưa có cashback config.</div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 relative">
+            {isFetching && (
+              <div className="absolute inset-x-0 -top-2 h-0.5 overflow-hidden">
+                <div className="h-full bg-brand animate-progress-line" />
+              </div>
+            )}
             {configs.map((config) => (
               <ConfigItemCard
                 key={config.id}

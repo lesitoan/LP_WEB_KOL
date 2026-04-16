@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import CashbackHeader from '../CashbackHeader'
 import { CashbackItem } from '../CashbackItem'
+import { CashbackItemSkeleton } from '../../../../components/skeletons/CashbackItemSkeleton'
 import { CashbackSummary } from '../CashbackSummary'
 import { groups } from '../cashback-data'
 
@@ -24,14 +25,17 @@ export function SettingTab() {
       <CashbackHeader saved={saved} onSave={handleSave} />
 
       <div className="flex flex-col gap-4">
-        {groups.map((group) => (
-          <CashbackItem
-            key={group.name}
-            group={group}
-            rate={rates[group.name]}
-            onRateChange={(value) => setRates((prev) => ({ ...prev, [group.name]: value }))}
-          />
-        ))}
+        {groups.length === 0
+          ? [...Array(3)].map((_, i) => <CashbackItemSkeleton key={i} />)
+          : groups.map((group) => (
+            <CashbackItem
+              key={group.name}
+              group={group}
+              rate={rates[group.name]}
+              onRateChange={(value) => setRates((prev) => ({ ...prev, [group.name]: value }))}
+            />
+          ))
+        }
       </div>
 
       <CashbackSummary rates={rates} />
