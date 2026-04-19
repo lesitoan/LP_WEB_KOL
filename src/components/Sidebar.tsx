@@ -232,9 +232,9 @@ export default function Sidebar() {
               }
 
               return (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => handleNavigate(item.id)}
+                  href={screenPaths[item.id] || '#'}
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13.5px] font-medium text-muted-foreground mb-[1px] transition-all relative',
                     'hover:bg-surface-2 hover:text-foreground',
@@ -256,7 +256,7 @@ export default function Sidebar() {
                       {item.badge}
                     </span>
                   )}
-                </button>
+                </Link>
               )
             })}
           </div>

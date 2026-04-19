@@ -113,7 +113,7 @@ export function useListFilters<TQuery, TViewMode extends string>({
     const next = nextParams.toString()
 
     if (current !== next) {
-      router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false })
+      window.history.replaceState(null, '', next ? `${pathname}?${next}` : pathname)
     }
   }, [pathname, router, searchParams, serializeToSearchParams, state])
 

@@ -71,7 +71,7 @@ export function useUrlFilterState<T extends FilterShape>({
       return
     }
 
-    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
+    window.history.replaceState(null, '', nextQuery ? `${pathname}?${nextQuery}` : pathname)
   }, [keyList, pathname, router, searchParamsString, values])
 
   useEffect(() => {
