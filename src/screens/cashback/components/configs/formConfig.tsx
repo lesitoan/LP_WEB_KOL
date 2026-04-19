@@ -106,13 +106,13 @@ export function FormConfig({ isOpen, groups, isSubmitting, onToggle, onClose, on
             <Input
               id="minPayoutUsd"
               type="number"
-              min={0}
+              min={1}
               {...register('minPayoutUsd', {
                 required: 'Min payout là bắt buộc',
                 validate: (value) => {
                   const number = Number(value)
                   if (Number.isNaN(number)) return 'Min payout không hợp lệ'
-                  if (number < 0) return 'Min payout phải lớn hơn hoặc bằng 0'
+                  if (number < 1) return 'Min payout phải lớn hơn hoặc bằng 1'
                   return true
                 },
               })}

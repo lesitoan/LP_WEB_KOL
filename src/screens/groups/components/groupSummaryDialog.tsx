@@ -26,6 +26,14 @@ const accessSummaryLabels: Record<string, string> = {
   totalKolCommissionUsd: 'Tổng hoa hồng KOL (USD)',
   totalCashbackAmountUsd: 'Tổng cashback (USD)',
   lastPayoutAt: 'Lần chi trả gần nhất',
+  totalRecords: 'Tổng số',
+  eligibleCount: 'Đủ điều kiện',
+  warningCount: 'Cảnh báo',
+  finalWarningCount: 'Cảnh báo cuối',
+  kickedCount: 'Đã kick',
+  blockedRejoinCount: 'Chặn vào lại',
+  pendingVerificationCount: 'Chờ xác minh',
+  manualHoldCount: 'Tạm giữ thủ công',
 }
 
 export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
@@ -80,8 +88,8 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
                 <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
                   <p><span className="text-muted-foreground">Tên nhóm:</span> {data.group.title}</p>
                   <p><span className="text-muted-foreground">Trạng thái:</span> {data.group.status}</p>
-                  <p><span className="text-muted-foreground">Volume tối thiểu:</span> {data.group.minVolumeRequired}</p>
-                  <p><span className="text-muted-foreground">Volume tối đa:</span> {data.group.maxVolumeRequired}</p>
+                  <p><span className="text-muted-foreground">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${data.group.minVolumeRequired.toLocaleString()} USD` : '---'}</p>
+                  <p><span className="text-muted-foreground">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${data.group.maxVolumeRequired.toLocaleString()} USD` : '---'}</p>
                 </div>
               </div>
 
