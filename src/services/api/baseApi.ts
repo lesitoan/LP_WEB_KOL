@@ -38,7 +38,11 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   const url = typeof args === 'string' ? args : args.url || ''
 
   // Không cố refresh cho các endpoint auth chính để tránh loop
-  if (url.includes('/kol/auth/login') || url.includes('/kol/auth/refresh')) {
+  if (url.includes('/kol/auth/login')) {
+    return result
+  }
+
+  if (url.includes('/kol/auth/refresh')) {
     handleUnauthorizedSession()
     return result
   }
