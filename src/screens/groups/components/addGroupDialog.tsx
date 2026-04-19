@@ -24,6 +24,7 @@ export function AddGroupDialog({ onAdd, defaultOpen = false }: AddGroupDialogPro
       )}
       initialValues={{
         title: '',
+        telegramGroupId: '',
         description: '',
         minVolumeRequired: '0',
         maxVolumeRequired: '10',

@@ -13,6 +13,7 @@ interface EditGroupDialogProps {
 export function EditGroupDialog({ group, onSave }: EditGroupDialogProps) {
   const initialValues = {
     title: group.title ?? '',
+    telegramGroupId: group.telegramGroupId ?? '',
     description: group.description ?? '',
     minVolumeRequired: group.minVolumeRequired ?? '0',
     maxVolumeRequired: group.maxVolumeRequired ?? '0',

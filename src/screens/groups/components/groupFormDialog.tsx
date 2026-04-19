@@ -13,6 +13,7 @@ import type { CreateGroupBody } from '@/types/api'
 
 export type GroupFormValues = {
   title: string
+  telegramGroupId: string
   description: string
   minVolumeRequired: string
   maxVolumeRequired: string
@@ -86,6 +87,7 @@ export function GroupFormDialog({
     try {
       await onSubmitPayload({
         title: form.title.trim(),
+        telegramGroupId: form.telegramGroupId.trim(),
         description: form.description.trim(),
         minVolumeRequired,
         maxVolumeRequired,
@@ -126,6 +128,21 @@ export function GroupFormDialog({
                 ) : null}
               </Field>
 
+              <Field orientation="vertical" className="w-full">
+                <FieldLabel>ID nhóm telegram</FieldLabel>
+                <Input
+                  className="w-full"
+                  placeholder="Nhập ID nhóm telegram"
+                  {...register('telegramGroupId', {
+                    required: 'ID nhóm Telegram không được để trống.',
+                    validate: (value) => value.trim().length > 0 || 'ID nhóm Telegram không được để trống.',
+                  })}
+                />
+                {errors.telegramGroupId ? (
+                  <FieldDescription className="text-destructive">{errors.telegramGroupId.message}</FieldDescription>
+                ) : null}
+              </Field>
+
               <Field orientation="vertical">
                 <FieldLabel>Mô tả</FieldLabel>
                 <Textarea
@@ -143,7 +160,7 @@ export function GroupFormDialog({
 
               <div className="grid gap-4 md:grid-cols-2">
                 <Field orientation="vertical">
-                  <FieldLabel>Ngưỡng volume tối thiểu</FieldLabel>
+                  <FieldLabel>{`Ngưỡng volume tối thiểu (USD)`}</FieldLabel>
                   <Input
                     type="number"
                     min={0}
@@ -170,7 +187,7 @@ export function GroupFormDialog({
                 </Field>
 
                 <Field orientation="vertical">
-                  <FieldLabel>Ngưỡng volume tối đa</FieldLabel>
+                  <FieldLabel>{`Ngưỡng volume tối đa (USD)`}</FieldLabel>
                   <Input
                     type="number"
                     min={minVolume ? Number(minVolume) : 0}
