@@ -38,14 +38,34 @@ function formatUsdVolume(value: string) {
 
 function statusClass(status: string) {
   switch (status.toLowerCase()) {
+    case "active":
     case "verified":
       return "bg-success/[0.12] text-success border border-success/20";
+    case "disabled":
     case "pending":
       return "bg-warning/[0.12] text-warning border border-warning/20";
+    case "banned":
     case "blocked":
       return "bg-destructive/[0.12] text-destructive border border-destructive/20";
+    case "unknown":
+      return "bg-muted/[0.12] text-muted-foreground border border-muted/20";
     default:
       return "bg-info/[0.12] text-info border border-info/20";
+  }
+}
+
+function formatLpexUserStatusValue(status: string) {
+  switch (status.toLowerCase()) {
+    case "active":
+      return "Hoạt động";
+    case "disabled":
+      return "Vô hiệu hoá";
+    case "banned":
+      return "Đã cấm";
+    case "unknown":
+      return "Không rõ";
+    default:
+      return status.charAt(0).toUpperCase() + status.slice(1);
   }
 }
 
@@ -73,24 +93,6 @@ function statusTone(status: string): "warning" | "info" | "danger" | "neutral" {
   return "info";
 }
 
-function fakeGroups(member: MemberItem) {
-  const pool = [
-    ["V", "B", "Đ"],
-    ["V", "Đ"],
-    ["B", "Đ"],
-    ["Đ"],
-    [],
-  ] as const;
-  const keySource = member.id || member.telegramUserId || member.lpexUid || "0";
-  const numericSeed = keySource.split("").reduce((total, char) => total + char.charCodeAt(0), 0);
-  return pool[numericSeed % pool.length];
-}
-
-const groupColorMap: Record<string, string> = {
-  V: "bg-group-gold",
-  B: "bg-group-silver",
-  Đ: "bg-group-bronze",
-};
 
 const GROUP_FILTER_OPTIONS = [
   { value: "8f7de4de-4f16-4b75-b4f9-c82fe2de4f01", label: "Vàng" },
@@ -144,9 +146,9 @@ export default function MembersTable() {
       groupId: values.groupId || undefined,
       membershipState: values.membershipState || undefined,
       eligibilityStatus: values.eligibilityStatus || undefined,
-      includeGroups: values.includeGroups ? values.includeGroups === "1" : undefined,
+      includeGroups: true,
     }),
-    [limit, page, values.countryCode, values.eligibilityStatus, values.groupId, values.includeGroups, values.membershipState, values.search],
+    [limit, page, values.countryCode, values.eligibilityStatus, values.groupId, values.membershipState, values.search],
   );
 
   const { data, isLoading, isFetching, error } = useGetMembersQuery(query);
@@ -279,21 +281,24 @@ export default function MembersTable() {
       id: "groups",
       header: "Groups",
       cell: (member) => {
-        const groups = fakeGroups(member);
+        const groups = member.eligibleGroups || [];
         if (groups.length === 0) {
           return <span className="text-muted-foreground">—</span>;
         }
 
         return (
-          <div className="inline-flex gap-1 items-center">
-            {groups.map((group) => (
-              <span
-                key={group}
-                className={`w-[18px] h-[18px] rounded-full grid place-items-center text-[9px] font-bold text-primary-foreground ${groupColorMap[group]}`}
-              >
-                {group}
-              </span>
-            ))}
+          <div className="flex flex-col gap-1 items-start">
+            {groups.map((group: any, idx: number) => {
+              const fullTitle = group.title || "";
+              const displayTitle = fullTitle.length > 15 ? fullTitle.substring(0, 15) + "..." : fullTitle;
+              
+              return (
+                <div key={idx} className="flex items-center text-[12.5px] cursor-help" title={fullTitle}>
+                  <span className="mr-1.5 text-muted-foreground">-</span>
+                  <span className="font-medium">{displayTitle}</span>
+                </div>
+              );
+            })}
           </div>
         );
       },
@@ -310,10 +315,10 @@ export default function MembersTable() {
       cell: (member) => (
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusClass(
-            member.lpexUserStatus,
+            member.lpexUserStatus || "unknown",
           )}`}
         >
-          {member.lpexUserStatus}
+          {formatLpexUserStatusValue(member.lpexUserStatus || "unknown")}
         </span>
       ),
     },
