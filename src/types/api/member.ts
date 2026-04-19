@@ -14,6 +14,18 @@ export interface MemberItem {
   usdVolume: string
   createdAt: string
   updatedAt: string
+  eligibleGroups?: {
+    accessId: string
+    groupId: string
+    telegramGroupId: string
+    title: string
+    tierLabel: string
+    minVolumeRequired: string
+    maxVolumeRequired: string
+    telegramMembershipState: string
+    telegramMembershipStatus: string
+    lastMembershipVerifiedAt: string | null
+  }[]
 }
 
 export interface MembersPagination {
