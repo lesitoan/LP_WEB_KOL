@@ -42,10 +42,10 @@ export default function TierComparisonTable() {
     return [...data].sort((a, b) => a.minActiveMembers - b.minActiveMembers)
   }, [data])
 
-  const currentTierCode = (currentTierData?.matchedTier?.code || currentTierData?.currentTier?.code || '').toUpperCase()
-  const currentIdx = tiers.findIndex((tier) => tier.code.toUpperCase() === currentTierCode)
+  const currentTierName = (currentTierData?.matchedTier?.name || currentTierData?.currentTier?.name || '').toUpperCase()
+  const currentIdx = tiers.findIndex((tier) => tier.name.toUpperCase() === currentTierName)
 
-  const headers = tiers.map((tier) => (tier.code.toUpperCase() === currentTierCode ? `${tier.code} ✓` : tier.code))
+  const headers = tiers.map((tier) => (tier.name.toUpperCase() === currentTierName ? `${tier.name} ✓` : tier.name))
 
   const tableRows = useMemo<TierFeatureRow[]>(() => {
     if (!tiers.length) return []
