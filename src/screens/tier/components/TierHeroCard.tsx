@@ -1,31 +1,46 @@
-import { useGetKolCurrentTierQuery } from '@/services/api/tierApi'
+﻿import { useGetKolCurrentTierQuery, useGetKolTiersQuery } from '@/services/api/tierApi'
 import { TierHeroCardSkeleton } from '@/components/skeletons/TierHeroCardSkeleton'
 
-function formatTierCode(code: string | undefined) {
-  if (!code) return '---'
-  return code.toUpperCase()
-}
+
 
 export default function TierHeroCard() {
   const { data, isLoading } = useGetKolCurrentTierQuery()
+  const { data: tiers = [], isLoading: isTiersLoading } = useGetKolTiersQuery()
 
-  if (isLoading) {
+  if (isLoading || isTiersLoading) {
     return <TierHeroCardSkeleton />
   }
 
   const activeMemberCount = data?.activeMemberCount ?? 0
-  const matchedTier = data?.matchedTier
-  const nextTier = data?.nextTier
-  const membersNeeded = data?.membersNeededForNextTier
+  const currentTierFromApi = data?.matchedTier ?? data?.currentTier ?? null
 
-  const currentTierName = formatTierCode(matchedTier?.code || data?.currentTier?.code)
+  const sortedTiers = [...tiers].sort((a, b) => a.minActiveMembers - b.minActiveMembers)
 
-  const min = matchedTier?.minActiveMembers ?? 0
-  const max = matchedTier?.maxActiveMembers ?? null
+  const matchedTierByCount =
+    sortedTiers
+      .filter(
+        (tier) =>
+          activeMemberCount >= tier.minActiveMembers &&
+          (tier.maxActiveMembers === null || activeMemberCount <= tier.maxActiveMembers),
+      )
+      .at(-1) ?? null
+
+  const matchedTier = matchedTierByCount ?? currentTierFromApi
+
+  const nextTier =
+    sortedTiers.find((tier) => tier.minActiveMembers > activeMemberCount) ?? null
+
+  const membersNeeded = nextTier
+    ? Math.max(0, nextTier.minActiveMembers - activeMemberCount)
+    : null
+
+  const currentTierName = matchedTier?.name || data?.currentTier?.name
+
+  const nextTierTarget = nextTier?.minActiveMembers ?? activeMemberCount
   const progressPercent =
-    max === null || max <= min
-      ? 100
-      : Math.max(0, Math.min(100, ((activeMemberCount - min) / (max - min + 1)) * 100))
+    nextTier && nextTierTarget > 0
+      ? Math.max(0, Math.min(100, (activeMemberCount / nextTierTarget) * 100))
+      : 100
 
   const splitBenefits = (matchedTier?.description || '')
     .split('+')
@@ -58,26 +73,32 @@ export default function TierHeroCard() {
           <div className="flex justify-between mt-3 text-[13px]">
             <span>
               <strong className="text-foreground font-semibold">{activeMemberCount}</strong>{' '}
-              <span className="text-muted-foreground">active members</span>
+              <span className="text-muted-foreground">thành viên</span>
             </span>
             <span className="text-muted-foreground">
-              {Math.round(progressPercent)}% {'→'} <strong className="text-tier-legend font-semibold">{nextTier ? formatTierCode(nextTier.code) : 'MAX'}</strong>
+              {Math.round(progressPercent)}% {'→'}{' '}
+              <strong className="text-tier-legend font-semibold">{nextTier ? nextTier.name : 'MAX'}</strong>
             </span>
           </div>
         </div>
 
-        <div className="text-[13px] text-muted-foreground mb-4">
-          💪 Còn <strong className="text-foreground font-semibold">{membersNeeded ?? 0} active members</strong> nữa{nextTier ? ` để lên ${formatTierCode(nextTier.code)}` : ' để đạt tier cao nhất'}
-        </div>
+        {nextTier ? (
+          <div className="text-[13px] text-muted-foreground mb-4">
+            💪 Còn <strong className="text-foreground font-semibold">{membersNeeded ?? 0} thành viên</strong> nữa để lên{' '}
+            {nextTier.name}
+          </div>
+        ) : null}
 
         <div className="inline-flex flex-col gap-2 text-left mx-auto mt-5 p-4 px-5 bg-surface-2 border border-border rounded-lg text-[13px]">
           <div className="text-[11px] text-muted-foreground tracking-[0.04em] uppercase font-medium mb-1">
-            {nextTier ? `Lên ${formatTierCode(nextTier.code)}, bạn sẽ unlock` : 'Bạn đang ở tier cao nhất'}
+            {nextTier ? `Lên ${nextTier.name}, bạn sẽ unlock` : 'Bạn đang ở tier cao nhất'}
           </div>
           {nextTier ? (
             <div className="flex items-center gap-3 text-muted-foreground">
               <span className="text-brand">✨</span> Commission{' '}
-              <strong className="text-foreground">{matchedTier?.commissionRatePct ?? data?.kol.currentCommissionRate ?? '-'}% {'→'} {nextTier.commissionRatePct}%</strong>
+              <strong className="text-foreground">
+                {matchedTier?.commissionRatePct ?? data?.kol.currentCommissionRate ?? '-'}% {'→'} {nextTier.commissionRatePct}%
+              </strong>
             </div>
           ) : null}
           {(nextTier?.description || splitBenefits.join(' + '))

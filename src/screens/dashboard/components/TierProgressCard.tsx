@@ -1,30 +1,37 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
-import { useGetKolCurrentTierQuery } from "@/services/api/tierApi";
+import { useGetKolCurrentTierQuery, useGetKolTiersQuery } from "@/services/api/tierApi";
 import { TierProgressCardSkeleton } from "@/components/skeletons/TierProgressCardSkeleton";
-
-function formatTierCode(code?: string | null) {
-  if (!code) return "---";
-  return code.toUpperCase();
-}
 
 export default function TierProgressCard() {
   const router = useRouter();
   const { data, isLoading } = useGetKolCurrentTierQuery();
+  const { data: tiers = [], isLoading: isTiersLoading } = useGetKolTiersQuery();
 
-  if (isLoading) {
+  if (isLoading || isTiersLoading) {
     return <TierProgressCardSkeleton />;
   }
 
   const activeMemberCount = data?.activeMemberCount ?? 0;
-  const currentTier = data?.matchedTier ?? data?.currentTier;
-  const nextTier = data?.nextTier;
+  const sortedTiers = [...tiers].sort((a, b) => a.minActiveMembers - b.minActiveMembers);
 
-  const tierName = formatTierCode(currentTier?.code);
-  const nextTierName = nextTier ? formatTierCode(nextTier.code) : "MAX";
+  const matchedTierByCount =
+    sortedTiers
+      .filter(
+        (tier) =>
+          activeMemberCount >= tier.minActiveMembers &&
+          (tier.maxActiveMembers === null || activeMemberCount <= tier.maxActiveMembers),
+      )
+      .at(-1) ?? null;
+
+  const currentTier = matchedTierByCount ?? data?.matchedTier ?? data?.currentTier;
+  const nextTier = sortedTiers.find((tier) => tier.minActiveMembers > activeMemberCount) ?? null;
+
+  const tierName = currentTier?.name ?? "---";
+  const nextTierName = nextTier?.name ?? "MAX";
   const nextTierTarget = nextTier?.minActiveMembers ?? activeMemberCount;
-  const membersNeeded = Math.max(0, data?.membersNeededForNextTier ?? 0);
+  const membersNeeded = nextTier ? Math.max(0, nextTier.minActiveMembers - activeMemberCount) : 0;
 
   const progressPercent =
     nextTier && nextTierTarget > 0
@@ -84,8 +91,8 @@ export default function TierProgressCard() {
         <div className="mt-4 pt-4 border-t border-border text-[13px] text-muted-foreground flex items-center gap-2">
           {nextTier ? (
             <>
-              💪 Bạn còn <strong className="text-brand font-semibold">{membersNeeded.toLocaleString("en-US")} active members</strong> nữa để lên cấp {nextTierName}
-              {/* <strong className="text-foreground font-semibold"> ~{estimatedWeeks} tuần</strong> sẽ lên {nextTierName}. */}
+              💪 Bạn còn <strong className="text-brand font-semibold">{membersNeeded.toLocaleString("en-US")} thành viên</strong> nữa để lên cấp {nextTierName}
+              {/* <strong className="text-foreground font-semibold"> ~{estimatedWeeks} tuáº§n</strong> sáº½ lÃªn {nextTierName}. */}
             </>
           ) : (
             <>Bạn đã đạt tier cao nhất, tiếp tục duy trì hiệu suất để giữ vững thứ hạng.</>
