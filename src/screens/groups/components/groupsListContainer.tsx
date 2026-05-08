@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import type { GroupItem, ListGroupsQuery, UpdateGroupBody } from "@/types/api";
 import { GroupsFilters } from "./groupsFilters";
-import { GroupsTableView } from "./groupsTableView";
+import { getStatusVariant, GroupsTableView } from "./groupsTableView";
 import { GroupsItemView } from "./groupsItemView";
 import type { GroupsViewMode } from "../hooks/useGroupsFiltersState";
 
@@ -55,7 +55,7 @@ export function GroupsListContainer({
 
         return {
           key: status,
-          label: status,
+          label: getStatusVariant(status).label,
           count,
           tone,
         }

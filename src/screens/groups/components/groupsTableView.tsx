@@ -17,13 +17,37 @@ type GroupsTableViewProps = {
   onDeleteGroup: (groupId: string, title: string) => Promise<void>
 }
 
-function getStatusVariant(status: string) {
+export function getStatusVariant(status: string) {
   const normalized = status.toLowerCase()
-  if (normalized === 'active') return 'bg-success/[0.12] text-success border border-success/20'
-  if (normalized === 'inactive') return 'bg-muted text-muted-foreground border border-border'
-  if (normalized === 'paused') return 'bg-warning/[0.12] text-warning border border-warning/20'
-  if (normalized === 'blocked') return 'bg-destructive/[0.12] text-destructive border border-destructive/20'
-  return 'bg-info/[0.12] text-info border border-info/20'
+  if (normalized === 'active') return {
+    cssClass: 'bg-success/[0.12] text-success border border-success/20',
+    label: "Hoạt động"
+  }
+  if (normalized === 'inactive' || normalized === 'disabled') return {
+    cssClass: 'bg-muted text-muted-foreground border border-border',
+    label: "Không hoạt động"
+  }
+  if (normalized === 'paused') return {
+    cssClass: 'bg-warning/[0.12] text-warning border border-warning/20',
+    label: "Tạm dừng"
+  }
+  if (normalized === 'blocked') return {
+    cssClass: 'bg-destructive/[0.12] text-destructive border border-destructive/20',
+    label: "Bị chặn"
+  }
+  return {
+    cssClass: 'bg-info/[0.12] text-info border border-info/20',
+    label: "Không xác định"
+  }
+}
+
+function ToggleStatusBadge({ enabled }: { enabled: boolean }) {
+  const statusVariant = enabled ? getStatusVariant('active').cssClass : getStatusVariant('inactive').cssClass
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusVariant}`}>
+      {enabled ? 'Bật' : 'Tắt'}
+    </span>
+  )
 }
 
 function truncateDescription(value: string | null, maxLength = 30) {
@@ -54,8 +78,8 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
       id: 'status',
       header: 'Trạng thái',
       cell: (group) => (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${getStatusVariant(group.status || '')}`}>
-          {group.status || 'unknown'}
+        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${getStatusVariant(group.status || '')?.cssClass}`}>
+          {getStatusVariant(group.status || '')?.label}
         </span>
       ),
     },
@@ -78,12 +102,12 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     {
       id: 'autoKick',
       header: 'Auto-kick',
-      cell: (group) => (group.autoKickEnabled ? 'Bật' : 'Tắt'),
+      cell: (group) => <ToggleStatusBadge enabled={group.autoKickEnabled} />,
     },
     {
       id: 'rejoin',
       header: 'Rejoin',
-      cell: (group) => (group.rejoinEnabled ? 'Bật' : 'Tắt'),
+      cell: (group) => <ToggleStatusBadge enabled={group.rejoinEnabled} />,
     },
     {
       id: 'actions',

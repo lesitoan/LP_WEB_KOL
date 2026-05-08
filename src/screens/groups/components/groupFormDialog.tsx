@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -42,6 +42,7 @@ export function GroupFormDialog({
 }: GroupFormDialogProps) {
   const [open, setOpen] = useState(defaultOpen)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const wasOpenRef = useRef(false) // Để khỏi quay về state cũ khi nhấn update
 
   const {
     control,
@@ -56,9 +57,10 @@ export function GroupFormDialog({
   })
 
   useEffect(() => {
-    if (open) {
+    if (open && !wasOpenRef.current) {
       reset(initialValues)
     }
+    wasOpenRef.current = open
   }, [initialValues, open, reset])
 
   const minVolume = watch('minVolumeRequired')
@@ -244,14 +246,14 @@ export function GroupFormDialog({
                 </Field>
 
                 <Field orientation="vertical">
-                  <FieldLabel>Grace period (ngày)</FieldLabel>
+                  <FieldLabel>Thời gian ân hận (ngày)</FieldLabel>
                   <Controller
                     control={control}
                     name="gracePeriodDays"
                     rules={{
                       validate: (value) => {
                         const current = value[0]
-                        return current >= 3 && current <= 30 || 'Grace period phải trong khoảng 3 đến 30 ngày.'
+                        return current >= 3 && current <= 30 || 'Thời gian ân hận phải trong khoảng 3 đến 30 ngày.'
                       },
                     }}
                     render={({ field }) => (

@@ -3,6 +3,8 @@
 import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
+import countries from 'i18n-iso-countries'
+import enLocale from 'i18n-iso-countries/langs/en.json'
 import TableFilterBar, {
   type ActiveFilterChip,
   type SelectFilterConfig,
@@ -26,6 +28,8 @@ type GroupMembersScreenProps = {
   groupId: string
 }
 
+countries.registerLocale(enLocale)
+
 function fullName(member: MemberItem) {
   return `${member.telegramFirstName || ''} ${member.telegramLastName || ''}`.trim() || member.telegramUsername
 }
@@ -48,7 +52,8 @@ function formatDate(dateIso: string) {
 function formatUsdVolume(value: string) {
   const parsed = Number(value)
   if (Number.isNaN(parsed)) return value
-  return parsed.toLocaleString('vi-VN', { style: 'currency', currency: 'USD' })
+  // return parsed.toLocaleString('vi-VN', { style: 'currency', currency: 'USD' })
+  return parsed;
 }
 
 function getTelegramStatusClass(status: string) {
@@ -156,6 +161,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     [],
   )
 
+
   const activeFilterChips: ActiveFilterChip[] = useMemo(() => {
     const chips: ActiveFilterChip[] = []
 
@@ -257,7 +263,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     {
       id: 'country',
       header: 'Quốc gia',
-      cell: (member) => member.countryCode || '—',
+      cell: (member) => countries.getName(member.countryCode || 'US', "en") || '—',
     },
     {
       id: 'registeredAt',
@@ -279,7 +285,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Quay lại nhóm
         </Button>
-        <h2 className="text-base font-medium text-right">Thành viên nhóm ({pagination.totalItems} dòng)</h2>
+        <h2 className="text-base font-medium text-right">Thành viên nhóm ({pagination.totalItems})</h2>
       </div>
 
       <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">

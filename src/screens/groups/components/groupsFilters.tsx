@@ -26,10 +26,10 @@ type GroupsFiltersProps = {
 }
 
 const STATUS_FILTER_OPTIONS = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'paused', label: 'Paused' },
-  { value: 'blocked', label: 'Blocked' },
+  { value: 'active', label: 'Hoạt động' },
+  { value: 'disabled', label: 'Không hoạt động' },
+  { value: 'paused', label: 'Tạm dừng' },
+  { value: 'blocked', label: 'Bị chặn' },
 ]
 
 export function GroupsFilters({
@@ -50,6 +50,7 @@ export function GroupsFilters({
       options: STATUS_FILTER_OPTIONS,
     },
   ]
+
 
   const activeFilterChips: ActiveFilterChip[] =
     statusValue && statusValue !== 'all'
