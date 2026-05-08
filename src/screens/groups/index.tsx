@@ -62,7 +62,7 @@ export function GroupsScreen() {
         title: 'Không cập nhật được group',
         description: extractApiErrorMessage(updateError, 'Đã có lỗi xảy ra'),
       })
-      throw updateError
+      // throw updateError
     }
   }
 

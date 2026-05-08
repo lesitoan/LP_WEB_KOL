@@ -149,7 +149,7 @@ export function GroupSettingsCard({
           {/* Grace Period */}
           <Field orientation="horizontal" className="items-center justify-between">
             <FieldLabel className="text-sm font-medium text-muted-foreground">
-              Thời gian ân hạn (grace period)
+              Thời gian ân hạn (ngày)
             </FieldLabel>
             <span className="text-sm font-medium text-foreground text-right">
               {group.gracePeriodDays ?? 7} ngày
