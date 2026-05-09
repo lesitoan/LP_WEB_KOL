@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -43,7 +43,6 @@ export function GroupFormDialog({
   const [open, setOpen] = useState(defaultOpen)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const wasOpenRef = useRef(false) // Để khỏi quay về state cũ khi nhấn update
-
   const {
     control,
     register,
@@ -107,43 +106,45 @@ export function GroupFormDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-3xl">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
+      <DialogContent className="max-w-2xl lg:max-w-4xl xl:max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden p-0">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex max-h-[92vh] flex-col">
+          <DialogHeader className="px-4 sm:px-5 pt-5">
             <DialogTitle>{dialogTitle}</DialogTitle>
           </DialogHeader>
 
-          <div className="py-6">
-            <FieldGroup className="gap-5">
-              <Field orientation="vertical" className="w-full">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-5 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <FieldGroup className="gap-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <Field orientation="vertical" className="w-full">
                 <FieldLabel>Tên group</FieldLabel>
-                <Input
-                  className="w-full"
+                  <Input
+                    className="w-full"
                   placeholder="Nhập tên group"
-                  {...register('title', {
+                    {...register('title', {
                     required: 'Tên group không được để trống.',
                     validate: (value) => value.trim().length > 0 || 'Tên group không được để trống.',
-                  })}
-                />
-                {errors.title ? (
-                  <FieldDescription className="text-destructive">{errors.title.message}</FieldDescription>
-                ) : null}
-              </Field>
+                    })}
+                  />
+                  {errors.title ? (
+                    <FieldDescription className="text-destructive">{errors.title.message}</FieldDescription>
+                  ) : null}
+                </Field>
 
-              <Field orientation="vertical" className="w-full">
+                <Field orientation="vertical" className="w-full">
                 <FieldLabel>ID nhóm telegram</FieldLabel>
-                <Input
-                  className="w-full"
+                  <Input
+                    className="w-full"
                   placeholder="Nhập ID nhóm telegram"
-                  {...register('telegramGroupId', {
+                    {...register('telegramGroupId', {
                     required: 'ID nhóm Telegram không được để trống.',
                     validate: (value) => value.trim().length > 0 || 'ID nhóm Telegram không được để trống.',
-                  })}
-                />
-                {errors.telegramGroupId ? (
-                  <FieldDescription className="text-destructive">{errors.telegramGroupId.message}</FieldDescription>
-                ) : null}
-              </Field>
+                    })}
+                  />
+                  {errors.telegramGroupId ? (
+                    <FieldDescription className="text-destructive">{errors.telegramGroupId.message}</FieldDescription>
+                  ) : null}
+                </Field>
+              </div>
 
               <Field orientation="vertical">
                 <FieldLabel>Mô tả</FieldLabel>
@@ -160,7 +161,7 @@ export function GroupFormDialog({
                 ) : null}
               </Field>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <Field orientation="vertical">
                   <FieldLabel>{`Ngưỡng volume tối thiểu (USD)`}</FieldLabel>
                   <Input
@@ -213,9 +214,6 @@ export function GroupFormDialog({
                     <FieldDescription className="text-destructive">{errors.maxVolumeRequired.message}</FieldDescription>
                   ) : null}
                 </Field>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
                 <Field orientation="vertical">
                   <FieldLabel>Số lần cảnh báo trước kick</FieldLabel>
                   <Controller
@@ -273,33 +271,35 @@ export function GroupFormDialog({
                 </Field>
               </div>
 
-              <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-border p-4">
-                <div className="space-y-0.5">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-border p-4">
+                  <div className="space-y-0.5">
                   <FieldLabel>Bật auto-kick</FieldLabel>
                   <FieldDescription>Group sẽ tự động kick khi vượt quá ngưỡng cảnh báo.</FieldDescription>
-                </div>
-                <Controller
-                  control={control}
-                  name="autoKickEnabled"
-                  render={({ field }) => (
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  )}
-                />
-              </Field>
+                  </div>
+                  <Controller
+                    control={control}
+                    name="autoKickEnabled"
+                    render={({ field }) => (
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    )}
+                  />
+                </Field>
 
-              <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-border p-4">
-                <div className="space-y-0.5">
+                <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-border p-4">
+                  <div className="space-y-0.5">
                   <FieldLabel>Cho phép rejoin</FieldLabel>
                   <FieldDescription>Thành viên có thể tham gia lại sau khi bị kick.</FieldDescription>
-                </div>
-                <Controller
-                  control={control}
-                  name="rejoinEnabled"
-                  render={({ field }) => (
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  )}
-                />
-              </Field>
+                  </div>
+                  <Controller
+                    control={control}
+                    name="rejoinEnabled"
+                    render={({ field }) => (
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    )}
+                  />
+                </Field>
+              </div>
 
               {descriptionInvalid || rangeInvalid ? (
                 <p className="text-sm text-destructive">
@@ -310,7 +310,7 @@ export function GroupFormDialog({
             </FieldGroup>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="px-4 sm:px-5 pb-5 pt-4 border-t border-border">
             <Button type="button" variant="outline" disabled={isSubmitting} onClick={() => setOpen(false)}>
               Hủy
             </Button>
