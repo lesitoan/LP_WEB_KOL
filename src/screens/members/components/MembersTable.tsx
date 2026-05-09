@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo } from "react";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
@@ -34,8 +34,15 @@ function formatDate(dateIso: string) {
 
 function formatUsdVolume(value: string) {
   const parsed = Number(value);
+
   if (Number.isNaN(parsed)) return value || "$0";
-  return parsed.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+  return parsed.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
 }
 
 function statusClass(status: string) {
@@ -75,10 +82,6 @@ function normalizeStatus(value: string | null | undefined) {
   return (value ?? "UNKNOWN").trim().toUpperCase();
 }
 
-function formatStatusLabel(status: string) {
-  return status.toLowerCase().replace(/_/g, " ");
-}
-
 function statusTone(status: string): "warning" | "info" | "danger" | "neutral" {
   if (status.includes("KICK") || status.includes("BLOCK")) {
     return "danger";
@@ -104,9 +107,9 @@ const GROUP_FILTER_OPTIONS = [
 
 const MEMBERSHIP_STATE_OPTIONS = [
   { value: "ACTIVE", label: "Hoạt động" },
-  { value: "LEFT", label: "Đã rời" },
-  { value: "KICKED", label: "Đã bị đá" },
-  { value: "RESTRICTED", label: "Bị hạn chế" },
+  { value: "DISABLED", label: "Vô hiệu hoá" },
+  { value: "BANNED", label: "Đã cấm" },
+  { value: "UNKNOWN", label: "Không rõ" },
 ];
 
 const ELIGIBILITY_OPTIONS = [
@@ -188,17 +191,12 @@ export default function MembersTable() {
       if (lpexStatus !== "ACTIVE") {
         counter.set(lpexStatus, (counter.get(lpexStatus) ?? 0) + 1);
       }
-
-      const telegramState = normalizeStatus(member.telegramStatus);
-      if (telegramState !== "ACTIVE" && telegramState !== lpexStatus) {
-        counter.set(telegramState, (counter.get(telegramState) ?? 0) + 1);
-      }
     }
 
     return Array.from(counter.entries())
       .map(([status, count]) => ({
         key: status,
-        label: formatStatusLabel(status),
+        label: formatLpexUserStatusValue(status),
         count,
         tone: statusTone(status),
       }))
