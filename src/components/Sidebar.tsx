@@ -12,7 +12,7 @@ const navSections = [
     label: 'Vận hành',
     items: [
       { id: 'home', label: 'Tổng quan', icon: 'home' },
-      { id: 'members', label: 'Cộng đồng', icon: 'users', badge: '742' },
+      { id: 'members', label: 'Cộng đồng', icon: 'users' },
       { id: 'groups', label: 'Groups', icon: 'layers' },
     ],
   },
@@ -20,7 +20,7 @@ const navSections = [
     label: 'Doanh thu',
     items: [
       { id: 'cashback', label: 'Cashback', icon: 'dollar' },
-      { id: 'campaign', label: 'Chiến dịch', icon: 'trophy', badge: '1', badgeAlert: true },
+      { id: 'campaign', label: 'Chiến dịch', icon: 'trophy' },
     ],
   },
   {
@@ -125,7 +125,11 @@ const cashbackSubItems = [
   { title: 'Payouts', href: '/cashback?tab=payouts', tab: 'payouts', icon: 'wallet' },
 ]
 
-export default function Sidebar() {
+type SidebarProps = {
+  onItemClick?: () => void
+}
+
+export default function Sidebar({ onItemClick }: SidebarProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -213,6 +217,7 @@ export default function Sidebar() {
                             <Link
                               key={subItem.tab}
                               href={subItem.href}
+                              onClick={onItemClick}
                               className={cn(
                                 'flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] mb-[1px] transition-all',
                                 isActive
@@ -235,6 +240,7 @@ export default function Sidebar() {
                 <Link
                   key={item.id}
                   href={screenPaths[item.id] || '#'}
+                  onClick={onItemClick}
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13.5px] font-medium text-muted-foreground mb-[1px] transition-all relative',
                     'hover:bg-surface-2 hover:text-foreground',
@@ -282,10 +288,10 @@ export default function Sidebar() {
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-medium truncate">{user?.name || 'Unknown User'}</div>
               <div className="text-[11px] text-brand flex items-center gap-1">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                {/* <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2l2.5 6 6.5.5-5 4.5 1.5 6.5L12 16l-5.5 3.5L8 13 3 8.5 9.5 8z" />
-                </svg>
-                {user?.tier || 'Partner'}
+                </svg> */}
+                {user?.email}
               </div>
             </div>
           </>

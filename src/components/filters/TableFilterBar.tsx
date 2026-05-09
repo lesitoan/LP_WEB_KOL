@@ -1,6 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { Check, ChevronDown } from 'lucide-react'
 
 export type FilterOption = {
   value: string
@@ -58,6 +59,7 @@ export default function TableFilterBar({
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeFilterKey, setActiveFilterKey] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const selectedValueByFilterKey = new Map(activeFilterChips.map((chip) => [chip.key, chip.valueLabel]))
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -71,8 +73,6 @@ export default function TableFilterBar({
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
-
-  const activeFilter = selectFilters.find((filter) => filter.key === activeFilterKey) ?? null
 
   return (
     <div className="p-4 px-5 border-b border-border space-y-3">
@@ -139,52 +139,50 @@ export default function TableFilterBar({
           </button>
 
           {isMenuOpen ? (
-            <div
-              className={`absolute left-0 top-8 z-50 rounded-xl border border-border bg-surface-1 shadow-xl p-3 flex gap-3 ${
-                activeFilter ? 'min-w-[500px]' : 'min-w-[220px]'
-              }`}
-            >
-              <div className={`${activeFilter ? 'w-[200px] border-r border-border pr-3' : 'w-[200px]'}`}>
-                <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">Bộ lọc chính</div>
-                <div className="space-y-1">
-                  {selectFilters.map((filter) => (
-                    <button
-                      key={filter.key}
-                      type="button"
-                      className={`w-full text-left px-2.5 py-2 rounded-md text-sm transition-colors ${
-                        filter.key === activeFilterKey
-                          ? 'bg-surface-3 text-foreground font-medium'
-                          : 'text-muted-foreground hover:bg-surface-2 hover:text-foreground'
-                      }`}
-                      onClick={() => setActiveFilterKey(filter.key)}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {activeFilter ? (
-                <div className="flex-1 min-w-[240px]">
-                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">{activeFilter.label}</div>
-                  <div className="space-y-1 max-h-[220px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(232,184,77,0.7)_rgba(255,255,255,0.06)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[rgba(255,255,255,0.06)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[rgba(232,184,77,0.7)] [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(232,184,77,0.9)]">
-                    {activeFilter.options.map((option) => (
+            <div className="absolute left-0 top-8 z-50 rounded-xl border border-border bg-surface-1 shadow-xl p-3 min-w-[260px] max-w-[min(92vw,360px)]">
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">Bộ lọc chính</div>
+              <div className="space-y-1">
+                {selectFilters.map((filter) => {
+                  const isActive = filter.key === activeFilterKey
+                  const selectedValueLabel = selectedValueByFilterKey.get(filter.key)
+                  return (
+                    <div key={filter.key} className="rounded-md">
                       <button
-                        key={option.value}
                         type="button"
-                        className="w-full text-left px-2.5 py-2 rounded-md text-sm text-foreground hover:bg-surface-2 transition-colors"
-                        onClick={() => {
-                          onSelectFilter(activeFilter.key, option.value)
-                          setIsMenuOpen(false)
-                          setActiveFilterKey(null)
-                        }}
+                        className={`w-full text-left px-2.5 py-2 rounded-md text-sm transition-colors flex items-center justify-between ${
+                          isActive
+                            ? 'bg-surface-3 text-foreground font-medium'
+                            : 'text-muted-foreground hover:bg-surface-2 hover:text-foreground'
+                        }`}
+                        onClick={() => setActiveFilterKey((prev) => (prev === filter.key ? null : filter.key))}
                       >
-                        {option.label}
+                        <span>{filter.label}</span>
+                        <ChevronDown className={`h-4 w-4 transition-transform ${isActive ? 'rotate-180' : ''}`} />
                       </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
+
+                      {isActive ? (
+                        <div className="mt-1 pl-2 border-l border-border/70 space-y-1">
+                          {filter.options.map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              className="w-full text-left px-2.5 py-2 rounded-md text-sm text-foreground hover:bg-surface-2 transition-colors flex items-center justify-between gap-2"
+                              onClick={() => {
+                                onSelectFilter(filter.key, option.value)
+                                setIsMenuOpen(false)
+                                setActiveFilterKey(null)
+                              }}
+                            >
+                              <span>{option.label}</span>
+                              {selectedValueLabel === option.label ? <Check className="h-4 w-4 text-brand" /> : null}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           ) : null}
         </div>

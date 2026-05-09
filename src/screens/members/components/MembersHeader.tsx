@@ -181,14 +181,14 @@ export default function MembersHeader() {
   };
 
   return (
-    <div className="flex items-start justify-between mb-6 gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
       <div>
         <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Cộng đồng / Members</h1>
         <div className="text-[13px] text-muted-foreground">
           Quản lý và theo dõi tất cả members trên các groups
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-col md:flex-row gap-2 sm:ml-auto">
         <button
           className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-[13px] font-medium bg-surface-2 border border-border text-foreground hover:bg-surface-3 transition-all disabled:opacity-60"
           type="button"

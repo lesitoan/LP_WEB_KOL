@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type { ReactNode } from "react";
 import { DataTableSkeleton } from "@/components/skeletons/DataTableSkeleton";
@@ -112,68 +112,70 @@ export function DataTable<T>({
       </div>
 
       {pagination ? (
-        <div className="px-5 py-3 border-t border-border flex flex-col gap-2 md:flex-row md:items-center md:justify-between text-[12.5px] text-muted-foreground">
-          <span>{pagination.summaryText ?? `Tổng ${pagination.totalItems} dòng`}</span>
+        <div className="px-5 py-3 border-t border-border text-[12.5px] text-muted-foreground md:flex md:items-center md:justify-between">
+          <span className="block text-center md:text-left">{pagination.summaryText ?? `Tổng ${pagination.totalItems} dòng`}</span>
 
-          <div className="flex gap-1">
-            <button
-              className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-              onClick={() => pagination.onPageChange(Math.max(1, pagination.page - 1))}
-              disabled={pagination.isDisabled || pagination.page <= 1}
-              type="button"
+          <div className="mt-2 flex items-center justify-center gap-3 md:mt-0 md:justify-end">
+            <div className="flex gap-1">
+              <button
+                className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => pagination.onPageChange(Math.max(1, pagination.page - 1))}
+                disabled={pagination.isDisabled || pagination.page <= 1}
+                type="button"
               aria-label="Trang trước"
-            >
-              {'<'}
-            </button>
-
-            {pageList(pagination.page, Math.max(1, pagination.totalPages)).map((value, idx) =>
-              value === 'ellipsis' ? (
-                <span key={`ellipsis-${idx}`} className="w-7 h-7 grid place-items-center text-xs">
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={value}
-                  className={`w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground ${
-                    value === pagination.page ? 'bg-surface-3 text-foreground font-semibold' : ''
-                  }`}
-                  onClick={() => pagination.onPageChange(value)}
-                  disabled={pagination.isDisabled}
-                  type="button"
-                >
-                  {value}
-                </button>
-              ),
-            )}
-
-            <button
-              className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-              onClick={() => pagination.onPageChange(Math.min(pagination.totalPages, pagination.page + 1))}
-              disabled={pagination.isDisabled || pagination.page >= pagination.totalPages}
-              type="button"
-              aria-label="Trang sau"
-            >
-              {'>'}
-            </button>
-          </div>
-
-          {pagination.onLimitChange ? (
-            <label className="inline-flex items-center gap-2">
-              <span>Rows/page</span>
-              <select
-                className="h-7 rounded-md bg-surface-2 border border-border px-2 text-xs text-foreground"
-                value={pagination.limit}
-                onChange={(event) => pagination.onLimitChange?.(Number(event.target.value))}
-                disabled={pagination.isDisabled}
               >
-                {(pagination.limitOptions ?? [10, 20, 50]).map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
+                {'<'}
+              </button>
+
+              {pageList(pagination.page, Math.max(1, pagination.totalPages)).map((value, idx) =>
+                value === 'ellipsis' ? (
+                  <span key={`ellipsis-${idx}`} className="w-7 h-7 grid place-items-center text-xs">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={value}
+                    className={`w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground ${
+                      value === pagination.page ? 'bg-surface-3 text-foreground font-semibold' : ''
+                    }`}
+                    onClick={() => pagination.onPageChange(value)}
+                    disabled={pagination.isDisabled}
+                    type="button"
+                  >
+                    {value}
+                  </button>
+                ),
+              )}
+
+              <button
+                className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => pagination.onPageChange(Math.min(pagination.totalPages, pagination.page + 1))}
+                disabled={pagination.isDisabled || pagination.page >= pagination.totalPages}
+                type="button"
+                aria-label="Trang sau"
+              >
+                {'>'}
+              </button>
+            </div>
+
+            {pagination.onLimitChange ? (
+              <label className="inline-flex items-center gap-2 whitespace-nowrap">
+                <span>Dòng/trang</span>
+                <select
+                  className="h-7 rounded-md bg-surface-2 border border-border px-2 text-xs text-foreground"
+                  value={pagination.limit}
+                  onChange={(event) => pagination.onLimitChange?.(Number(event.target.value))}
+                  disabled={pagination.isDisabled}
+                >
+                  {(pagination.limitOptions ?? [10, 20, 50]).map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+          </div>
         </div>
       ) : null}
     </div>

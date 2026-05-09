@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo } from "react";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
+import countries from 'i18n-iso-countries';
+import enLocale from 'i18n-iso-countries/langs/en.json';
 import type { ActiveFilterChip, SelectFilterConfig } from "@/components/filters/TableFilterBar";
 import { toast } from "@/hooks/useToast";
 import { useUrlFilterState } from "@/hooks/useUrlFilterState";
@@ -101,24 +103,25 @@ const GROUP_FILTER_OPTIONS = [
 ];
 
 const MEMBERSHIP_STATE_OPTIONS = [
-  { value: "ACTIVE", label: "Active" },
-  { value: "LEFT", label: "Left" },
-  { value: "KICKED", label: "Kicked" },
-  { value: "RESTRICTED", label: "Restricted" },
+  { value: "ACTIVE", label: "Hoạt động" },
+  { value: "LEFT", label: "Đã rời" },
+  { value: "KICKED", label: "Đã bị đá" },
+  { value: "RESTRICTED", label: "Bị hạn chế" },
 ];
 
 const ELIGIBILITY_OPTIONS = [
-  { value: "ELIGIBLE", label: "Eligible" },
-  { value: "INELIGIBLE", label: "Ineligible" },
-  { value: "PENDING", label: "Pending" },
+  { value: "ELIGIBLE", label: "Đủ điều kiện" },
+  { value: "INELIGIBLE", label: "Không đủ điều kiện" },
+  { value: "PENDING", label: "Đang chờ" },
 ];
 
 const INCLUDE_GROUPS_OPTIONS = [
-  { value: "1", label: "Bật include groups" },
-  { value: "0", label: "Tắt include groups" },
+  { value: "1", label: "Có nhóm" },
+  { value: "0", label: "Không có nhóm" },
 ];
 
 export default function MembersTable() {
+  countries.registerLocale(enLocale)
   const { values, draftValues, setFilter, setMany, clearFilter } = useUrlFilterState({
     initialValues: {
       page: "1",
@@ -207,22 +210,22 @@ export default function MembersTable() {
     () => [
       {
         key: "groupId",
-        label: "Group",
+        label: "Nhóm",
         options: GROUP_FILTER_OPTIONS,
       },
       {
         key: "membershipState",
-        label: "Status",
+        label: "Trạng thái",
         options: MEMBERSHIP_STATE_OPTIONS,
       },
       {
         key: "eligibilityStatus",
-        label: "Eligibility",
+        label: "Điều kiện",
         options: ELIGIBILITY_OPTIONS,
       },
       {
         key: "includeGroups",
-        label: "Include Groups",
+        label: "Nhóm",
         options: INCLUDE_GROUPS_OPTIONS,
       },
     ],
@@ -275,7 +278,9 @@ export default function MembersTable() {
     {
       id: "country",
       header: "Country",
-      cell: (member) => <span>{member.countryCode || "—"}</span>,
+      cell: (member) => <span>
+          {member.countryCode ? countries.getName(member.countryCode, "en") +  " (" + member.countryCode + ")" : "—"}
+        </span>,
     },
     {
       id: "groups",

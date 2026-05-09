@@ -113,7 +113,7 @@ export function GroupsListContainer({
             onDeleteGroup={onDeleteGroup}
           />
         ) : (
-          <div className="p-5 space-y-4">
+          <div className="p-3 sm:p-5 space-y-4">
             <GroupsItemView
               groups={groups}
               onUpdateGroup={onUpdateGroup}

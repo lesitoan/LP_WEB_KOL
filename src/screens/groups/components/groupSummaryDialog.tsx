@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import { Eye } from 'lucide-react'
@@ -67,45 +67,47 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
       </Tooltip>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
+        <DialogContent className="max-w-3xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden p-0">
+          <DialogHeader className="mb-2 border-b border-border px-4 pt-4 pb-3 sm:px-6 sm:pt-6">
             <DialogTitle>Tổng quan nhóm</DialogTitle>
           </DialogHeader>
+          <div className="max-h-[calc(92vh-72px)] overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
 
-          {isFetching ? (
-            <div className="flex min-h-[180px] items-center justify-center gap-2 text-muted-foreground">
-              <Spinner className="h-4 w-4" />
-              Đang tải dữ liệu tổng quan...
-            </div>
-          ) : isError ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-              Không tải được thông tin tổng quan của nhóm.
-            </div>
-          ) : data ? (
-            <div className="space-y-4">
-              <div className="rounded-lg border border-border p-4">
-                <h4 className="text-sm font-semibold text-muted-foreground">Thông tin nhóm</h4>
-                <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-                  <p><span className="text-muted-foreground">Tên nhóm:</span> {data.group.title}</p>
-                  <p><span className="text-muted-foreground">Trạng thái:</span> {data.group.status}</p>
-                  <p><span className="text-muted-foreground">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${data.group.minVolumeRequired.toLocaleString()} USD` : '---'}</p>
-                  <p><span className="text-muted-foreground">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${data.group.maxVolumeRequired.toLocaleString()} USD` : '---'}</p>
+            {isFetching ? (
+              <div className="flex min-h-[180px] items-center justify-center gap-2 text-muted-foreground">
+                <Spinner className="h-4 w-4" />
+                Đang tải dữ liệu tổng quan...
+              </div>
+            ) : isError ? (
+              <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                Không tải được thông tin tổng quan của nhóm.
+              </div>
+            ) : data ? (
+              <div className="space-y-4">
+                <div className="rounded-lg border border-border p-4">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Thông tin nhóm</h4>
+                  <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
+                    <p className="min-w-0 break-all"><span className="text-muted-foreground">Tên nhóm:</span> {data.group.title}</p>
+                    <p><span className="text-muted-foreground">Trạng thái:</span> {data.group.status}</p>
+                    <p><span className="text-muted-foreground">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${data.group.minVolumeRequired.toLocaleString()} USD` : '---'}</p>
+                    <p><span className="text-muted-foreground">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${data.group.maxVolumeRequired.toLocaleString()} USD` : '---'}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border p-4">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Tóm tắt truy cập</h4>
+                  <div className="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+                    {summaryEntries.map(([label, value]) => (
+                      <div key={String(label)} className="min-w-0 rounded-md border border-border px-3 py-2">
+                        <p className="text-xs text-muted-foreground break-words">{label}</p>
+                        <p className="font-medium break-all">{value ?? '---'}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-
-              <div className="rounded-lg border border-border p-4">
-                <h4 className="text-sm font-semibold text-muted-foreground">Tóm tắt truy cập</h4>
-                <div className="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
-                  {summaryEntries.map(([label, value]) => (
-                    <div key={String(label)} className="rounded-md border border-border px-3 py-2">
-                      <p className="text-xs text-muted-foreground">{label}</p>
-                      <p className="font-medium">{value ?? '---'}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </DialogContent>
       </Dialog>
     </>

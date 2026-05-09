@@ -82,7 +82,45 @@ export default function TierComparisonTable() {
 
   return (
     <div className="bg-surface-1 border border-border rounded-[14px] overflow-hidden mb-6">
-      <table className="w-full border-collapse">
+      <div className="p-4 space-y-3 lg:hidden">
+        {tiers.map((tier, idx) => {
+          const activeMembers = tableRows[0]?.values[idx]
+          const commissionRate = tableRows[1]?.values[idx]
+          const benefits = tableRows[2]?.values[idx]
+          const isCurrent = idx === currentIdx
+          const isLegend = idx === tiers.length - 1
+          return (
+            <div
+              key={tier.name}
+              className={`rounded-xl border p-4 space-y-3 ${isCurrent ? 'border-[hsl(40_78%_55%/0.45)] bg-[hsl(40_78%_55%/0.06)]' : 'border-border'}`}
+            >
+              <div className={`text-sm font-semibold uppercase tracking-wide ${isCurrent ? 'text-brand' : 'text-foreground'}`}>
+                {headers[idx]}
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Active members</span>
+                <span className={isCurrent ? 'font-semibold' : ''}>{activeMembers as string}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Commission rate</span>
+                <span className={isCurrent ? 'font-semibold' : isLegend ? 'font-semibold text-tier-legend' : ''}>{commissionRate as string}</span>
+              </div>
+              <div className="text-sm">
+                <div className="text-muted-foreground mb-1">Quyền lợi</div>
+                <div className="space-y-1">
+                  {(Array.isArray(benefits) ? benefits : [String(benefits)]).map((item, lineIndex) => (
+                    <div key={`${tier.name}-${lineIndex}`} className={isCurrent ? 'font-medium' : 'text-muted-foreground'}>
+                      - {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <table className="hidden lg:table w-full border-collapse">
         <thead>
           <tr>
             <th className="text-left p-3 px-5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-surface-2 border-b border-border" />

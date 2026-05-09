@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Gift, Trash2, Users } from 'lucide-react'
+import { ChevronDown, ChevronUp, Gift, Trash2, Users } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -30,8 +31,11 @@ export function GroupSettingsCard({
   onDeleteGroup,
 }: GroupSettingsCardProps) {
   const router = useRouter()
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const volumeLabel = `${group.minVolumeRequired} - ${group.maxVolumeRequired} USD`
   const status = (group.status || '').toLowerCase()
+  const titleFull = (group.title || '').trim()
+  const titleDisplay = titleFull.length > 30 ? `${titleFull.slice(0, 30)}...` : titleFull
 
   const truncateDescription = (value: string | null, maxLength = 30) => {
     const description = (value || '').trim()
@@ -48,10 +52,26 @@ export function GroupSettingsCard({
   }
 
   return (
-    <Card className="relative">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base font-medium">{group.title}</CardTitle>
-        <div className="flex items-center gap-1">
+    <Card className="relative transition-all duration-200 hover:border-[hsl(40_78%_55%/0.65)] hover:shadow-[0_0_0_1px_hsl(40_78%_55%/0.25),0_12px_28px_rgba(232,184,77,0.14)] hover:-translate-y-[1px]">
+      <CardHeader className="flex flex-col items-start gap-1.5 p-4 sm:p-6">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <CardTitle className="order-2 text-base font-medium w-full truncate cursor-default">
+              {titleDisplay}
+            </CardTitle>
+          </TooltipTrigger>
+          <TooltipContent>{titleFull || group.title}</TooltipContent>
+        </Tooltip>
+        <div className="order-1 flex w-full items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setIsCollapsed((prev) => !prev)}
+            aria-label={isCollapsed ? 'Mở rộng nội dung nhóm' : 'Thu gọn nội dung nhóm'}
+          >
+            {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+          </Button>
           <GroupSummaryDialog groupId={group.id} />
           <Tooltip>
             <TooltipTrigger asChild>
@@ -93,7 +113,7 @@ export function GroupSettingsCard({
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className={`p-4 pt-0 sm:p-6 sm:pt-0 ${isCollapsed ? 'hidden' : ''}`}>
         <FieldGroup className="gap-5">
           <div className="space-y-2">
             <FieldLabel className="text-sm font-medium text-muted-foreground">
