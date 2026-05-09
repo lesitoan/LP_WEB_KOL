@@ -1,53 +1,138 @@
-"use client";
+﻿"use client";
 
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import countries from "i18n-iso-countries";
+import enLocale from "i18n-iso-countries/langs/en.json";
 import * as XLSX from "xlsx";
 import { toast } from "@/hooks/useToast";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
 import { useLazyGetMembersQuery } from "@/services/api/membersApi";
 import type { ListMembersQuery, MemberItem } from "@/types/api";
 
+countries.registerLocale(enLocale);
+
 function fullName(member: MemberItem) {
   return `${member.telegramFirstName ?? ""} ${member.telegramLastName ?? ""}`.trim() || member.telegramUsername || "";
 }
 
-function fakeGroups(member: MemberItem) {
-  const pool = [
-    ["V", "B", "Đ"],
-    ["V", "Đ"],
-    ["B", "Đ"],
-    ["Đ"],
-    [],
-  ] as const;
-  const keySource = member.id || member.telegramUserId || member.lpexUid || "0";
-  const numericSeed = keySource.split("").reduce((total, char) => total + char.charCodeAt(0), 0);
-  return pool[numericSeed % pool.length].join("|");
+function formatLpexUserStatusValue(status: string) {
+  switch ((status || "").toLowerCase()) {
+    case "active":
+      return "Hoạt động";
+    case "disabled":
+      return "Vô hiệu hoá";
+    case "banned":
+      return "Đã cấm";
+    case "unknown":
+      return "Không rõ";
+    default:
+      return status || "Không rõ";
+  }
+}
+
+function formatCountry(member: MemberItem) {
+  const code = (member.countryCode || "").trim().toUpperCase();
+  if (!code) return "—";
+  const countryName = countries.getName(code, "en");
+  return countryName ? `${countryName} (${code})` : code;
+}
+
+function formatRegisteredDate(member: MemberItem) {
+  const source = member.registeredAtLpex || member.createdAt;
+  if (!source) return "—";
+  const date = new Date(source);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("vi-VN");
+}
+
+function formatVolume(value: string) {
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) return value || "$0";
+  return parsed.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+}
+
+function formatGroups(member: MemberItem) {
+  const groups = member.eligibleGroups || [];
+  if (!groups.length) return "—";
+  return groups.map((group) => `- ${group.title || "—"}`).join("\n");
 }
 
 function toWorkbook(members: MemberItem[]) {
   const rows = members.map((member) => ({
-    id: member.id,
-    name: fullName(member),
-    telegramUsername: member.telegramUsername ?? "",
-    telegramUserId: member.telegramUserId ?? "",
-    lpexUid: member.lpexUid ?? "",
-    countryCode: member.countryCode ?? "",
-    usdVolume: member.usdVolume ?? "",
-    lpexUserStatus: member.lpexUserStatus ?? "",
-    telegramStatus: member.telegramStatus ?? "",
-    registeredAtLpex: member.registeredAtLpex ?? "",
-    groups: fakeGroups(member),
+    "ID member": member.id || "—",
+    "Tên member": fullName(member),
+    "Telegram username": member.telegramUsername ? `@${member.telegramUsername}` : "—",
+    "Telegram ID": member.telegramUserId ?? "—",
+    UID: member.lpexUid ?? "—",
+    "Quốc gia": formatCountry(member),
+    "Volume 30D": formatVolume(member.usdVolume),
+    "Trạng thái": formatLpexUserStatusValue(member.lpexUserStatus || "unknown"),
+    "Ngày đăng ký": formatRegisteredDate(member),
+    Groups: formatGroups(member),
   }));
 
-  const worksheet = XLSX.utils.json_to_sheet(rows);
+  const worksheet = XLSX.utils.json_to_sheet(rows, { skipHeader: false });
+
+  const headers = Object.keys(rows[0] ?? {
+    "ID member": "",
+    "Tên member": "",
+    "Telegram username": "",
+    "Telegram ID": "",
+    UID: "",
+    "Quốc gia": "",
+    "Volume 30D": "",
+    "Trạng thái": "",
+    "Ngày đăng ký": "",
+    Groups: "",
+  });
+
+  const maxLenByCol = headers.map((header) => header.length);
+
+  rows.forEach((row) => {
+    headers.forEach((header, colIndex) => {
+      const raw = String((row as Record<string, unknown>)[header] ?? "");
+      const lineMax = raw
+        .split("\n")
+        .reduce((acc, line) => Math.max(acc, line.length), 0);
+      maxLenByCol[colIndex] = Math.max(maxLenByCol[colIndex], lineMax);
+    });
+  });
+
+  worksheet["!cols"] = maxLenByCol.map((len) => ({ wch: Math.min(80, len + 2) }));
+
+  const groupColIndex = headers.indexOf("Groups");
+  if (groupColIndex >= 0) {
+    const range = XLSX.utils.decode_range(worksheet["!ref"] || "A1");
+    for (let rowIndex = 1; rowIndex <= range.e.r; rowIndex += 1) {
+      const address = XLSX.utils.encode_cell({ r: rowIndex, c: groupColIndex });
+      const cell = worksheet[address];
+      if (!cell) continue;
+
+      cell.s = {
+        ...(cell.s ?? {}),
+        alignment: {
+          ...((cell.s as { alignment?: Record<string, unknown> } | undefined)?.alignment ?? {}),
+          wrapText: true,
+          vertical: "top",
+        },
+      };
+    }
+
+  }
+
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Members");
   return workbook;
 }
 
 function workbookToBlob(workbook: XLSX.WorkBook) {
-  const data = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const data = XLSX.write(workbook, { bookType: "xlsx", type: "array", cellStyles: true });
   const arrayBuffer = data instanceof ArrayBuffer ? data : new Uint8Array(data).buffer;
   return new Blob([arrayBuffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -132,6 +217,7 @@ export default function MembersHeader() {
         ...queryFromUrl,
         page: 1,
         limit: 100,
+        includeGroups: true,
       };
 
       const firstPageData = await triggerGetMembers(firstPageQuery).unwrap();
