@@ -86,7 +86,7 @@ export function GroupsScreen() {
   const handleDeleteGroup = async (groupId: string, title: string) => {
     const accepted = await showConfirm({
       title: 'Xác nhận xóa nhóm',
-      description: `Bạn có chắc chắn muốn xóa nhóm \"${title}\"? ành động này không thể hoàn tác.`,
+      description: `Bạn có chắc chắn muốn xóa nhóm \"${title}\". Hành động này không thể hoàn tác.`,
       confirmText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       destructive: true,

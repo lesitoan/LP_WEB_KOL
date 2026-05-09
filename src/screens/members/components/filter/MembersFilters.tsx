@@ -1,5 +1,7 @@
 'use client'
 
+import countries from 'i18n-iso-countries'
+import enLocale from 'i18n-iso-countries/langs/en.json'
 import TableFilterBar, {
   type ActiveFilterChip,
   type SelectFilterConfig,
@@ -35,6 +37,25 @@ export default function MembersFilters({
   onRemoveChip,
   statusBadges = [],
 }: MembersFiltersProps) {
+  countries.registerLocale(enLocale)
+
+  const normalizeCountryCodeInput = (value: string): string => {
+    const normalized = value.trim()
+    if (!normalized) return ''
+
+    const upperCode = normalized.toUpperCase()
+    if (/^[A-Z]{2}$/.test(upperCode)) {
+      return upperCode
+    }
+
+    const alpha2 = countries.getAlpha2Code(normalized, 'en')
+    if (alpha2) {
+      return alpha2.toUpperCase()
+    }
+
+    return normalized
+  }
+
   return (
     <TableFilterBar
       textFilters={[
@@ -64,7 +85,7 @@ export default function MembersFilters({
         }
 
         if (key === 'countryCode') {
-          onCountryCodeInputChange(value.toUpperCase().slice(0, 2))
+          onCountryCodeInputChange(normalizeCountryCodeInput(value))
         }
       }}
       onSelectFilter={onSelectFilter}
