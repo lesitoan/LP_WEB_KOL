@@ -1,6 +1,8 @@
 ﻿"use client";
 
 import { useEffect, useMemo } from "react";
+import { ArrowDown } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
@@ -78,6 +80,12 @@ function formatLpexUserStatusValue(status: string) {
   }
 }
 
+function formatTelegramMembershipState(status: string | null | undefined) {
+  const normalizedStatus = normalizeStatus(status);
+  const option = MEMBERSHIP_STATE_OPTIONS.find((item) => item.value === normalizedStatus);
+  return option?.label ?? normalizedStatus;
+}
+
 function normalizeStatus(value: string | null | undefined) {
   return (value ?? "UNKNOWN").trim().toUpperCase();
 }
@@ -99,29 +107,23 @@ function statusTone(status: string): "warning" | "info" | "danger" | "neutral" {
 }
 
 
-const GROUP_FILTER_OPTIONS = [
-  { value: "8f7de4de-4f16-4b75-b4f9-c82fe2de4f01", label: "Vàng" },
-  { value: "5b7b6e39-96af-4cca-8713-01a2792e1fd9", label: "Bạc" },
-  { value: "dd3d9d84-040d-4bc6-b76f-88ec6525ec8b", label: "Đồng" },
-];
-
 const MEMBERSHIP_STATE_OPTIONS = [
-  { value: "ACTIVE", label: "Hoạt động" },
-  { value: "DISABLED", label: "Vô hiệu hoá" },
-  { value: "BANNED", label: "Đã cấm" },
-  { value: "UNKNOWN", label: "Không rõ" },
+  { value: "UNKNOWN", label: "Không xác định" },
+  { value: "ACTIVE", label: "Đang tham gia" },
+  { value: "LEFT", label: "Đã rời nhóm" },
+  { value: "KICKED", label: "Đã bị kick" },
+  { value: "BANNED", label: "Đã bị cấm" },
 ];
 
-const ELIGIBILITY_OPTIONS = [
-  { value: "ELIGIBLE", label: "Đủ điều kiện" },
-  { value: "INELIGIBLE", label: "Không đủ điều kiện" },
-  { value: "PENDING", label: "Đang chờ" },
-];
-
-const INCLUDE_GROUPS_OPTIONS = [
-  { value: "1", label: "Có nhóm" },
-  { value: "0", label: "Không có nhóm" },
-];
+// const ELIGIBILITY_OPTIONS = [
+//   { value: "ELIGIBLE", label: "Đủ điều kiện" },
+//   { value: "WARNING", label: "Cảnh báo" },
+//   { value: "FINAL_WARNING", label: "Cảnh báo cuối cùng" },
+//   { value: "KICKED", label: "Đã bị loại" },
+//   { value: "BLOCKED_REJOIN", label: "Bị chặn tham gia lại" },
+//   { value: "PENDING_VERIFICATION", label: "Đang chờ xác minh" },
+//   { value: "MANUAL_HOLD", label: "Tạm giữ thủ công" }
+// ];
 
 export default function MembersTable() {
   countries.registerLocale(enLocale)
@@ -207,25 +209,15 @@ export default function MembersTable() {
   const selectFilters: SelectFilterConfig[] = useMemo(
     () => [
       {
-        key: "groupId",
-        label: "Nhóm",
-        options: GROUP_FILTER_OPTIONS,
-      },
-      {
         key: "membershipState",
-        label: "Trạng thái",
+        label: "Trạng thái telegram",
         options: MEMBERSHIP_STATE_OPTIONS,
       },
-      {
-        key: "eligibilityStatus",
-        label: "Điều kiện",
-        options: ELIGIBILITY_OPTIONS,
-      },
-      {
-        key: "includeGroups",
-        label: "Nhóm",
-        options: INCLUDE_GROUPS_OPTIONS,
-      },
+      // {
+      //   key: "eligibilityStatus",
+      //   label: "Điều kiện",
+      //   options: ELIGIBILITY_OPTIONS,
+      // }
     ],
     [],
   );
@@ -276,9 +268,24 @@ export default function MembersTable() {
     {
       id: "country",
       header: "Country",
-      cell: (member) => <span>
-          {member.countryCode ? countries.getName(member.countryCode, "en") +  " (" + member.countryCode + ")" : "—"}
-        </span>,
+      cell: (member) => {
+        const code = (member.countryCode || "").trim().toUpperCase();
+        if (!code) return <span>—</span>;
+
+        const countryName = countries.getName(code, "en") || code;
+
+        return (
+          <span className="inline-flex items-center gap-1.5">
+            <span>{countryName} ({code})</span>
+            <ReactCountryFlag
+              countryCode={code}
+              svg
+              style={{ width: "1em", height: "1em" }}
+              aria-label={countryName}
+            />
+          </span>
+        );
+      },
     },
     {
       id: "groups",
@@ -308,7 +315,12 @@ export default function MembersTable() {
     },
     {
       id: "volume",
-      header: "Volume 30D",
+      header: (
+        <span className="inline-flex items-center gap-1">
+          <span>Volume 30D</span>
+          <ArrowDown className="w-3 h-3 shrink-0" aria-hidden="true" />
+        </span>
+      ),
       cellClassName: "font-geist-mono font-medium",
       cell: (member) => formatUsdVolume(member.usdVolume),
     },
@@ -322,6 +334,19 @@ export default function MembersTable() {
           )}`}
         >
           {formatLpexUserStatusValue(member.lpexUserStatus || "unknown")}
+        </span>
+      ),
+    },
+    {
+      id: "telegramStatus",
+      header: "Trạng thái telegram",
+      cell: (member) => (
+        <span
+          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusClass(
+            member.telegramStatus || "unknown",
+          )}`}
+        >
+          {formatTelegramMembershipState(member.telegramStatus)}
         </span>
       ),
     },
