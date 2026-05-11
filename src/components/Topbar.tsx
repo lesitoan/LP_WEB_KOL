@@ -72,7 +72,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
       </div> */}
 
       <div className="ml-auto flex items-center gap-3">
-        <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[hsl(40_78%_55%/0.1)] to-[hsl(40_78%_55%/0.02)] border border-[hsl(40_78%_55%/0.3)] rounded-lg text-xs font-semibold text-brand">
+        <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[hsl(40_78%_55%/0.1)] to-[hsl(40_78%_55%/0.02)] border border-[hsl(40_78%_55%/0.3)] rounded-lg text-xs font-semibold text-brand">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l2.5 6 6.5.5-5 4.5 1.5 6.5L12 16l-5.5 3.5L8 13 3 8.5 9.5 8z" />
           </svg>
