@@ -78,6 +78,12 @@ function formatLpexUserStatusValue(status: string) {
   }
 }
 
+function formatTelegramMembershipState(status: string | null | undefined) {
+  const normalizedStatus = normalizeStatus(status);
+  const option = MEMBERSHIP_STATE_OPTIONS.find((item) => item.value === normalizedStatus);
+  return option?.label ?? normalizedStatus;
+}
+
 function normalizeStatus(value: string | null | undefined) {
   return (value ?? "UNKNOWN").trim().toUpperCase();
 }
@@ -99,28 +105,22 @@ function statusTone(status: string): "warning" | "info" | "danger" | "neutral" {
 }
 
 
-const GROUP_FILTER_OPTIONS = [
-  { value: "8f7de4de-4f16-4b75-b4f9-c82fe2de4f01", label: "Vàng" },
-  { value: "5b7b6e39-96af-4cca-8713-01a2792e1fd9", label: "Bạc" },
-  { value: "dd3d9d84-040d-4bc6-b76f-88ec6525ec8b", label: "Đồng" },
-];
-
 const MEMBERSHIP_STATE_OPTIONS = [
-  { value: "ACTIVE", label: "Hoạt động" },
-  { value: "DISABLED", label: "Vô hiệu hoá" },
-  { value: "BANNED", label: "Đã cấm" },
-  { value: "UNKNOWN", label: "Không rõ" },
+  { value: "UNKNOWN", label: "Không xác định" },
+  { value: "ACTIVE", label: "Đang tham gia" },
+  { value: "LEFT", label: "Đã rời nhóm" },
+  { value: "KICKED", label: "Đã bị kick" },
+  { value: "BANNED", label: "Đã bị cấm" },
 ];
 
 const ELIGIBILITY_OPTIONS = [
   { value: "ELIGIBLE", label: "Đủ điều kiện" },
-  { value: "INELIGIBLE", label: "Không đủ điều kiện" },
-  { value: "PENDING", label: "Đang chờ" },
-];
-
-const INCLUDE_GROUPS_OPTIONS = [
-  { value: "1", label: "Có nhóm" },
-  { value: "0", label: "Không có nhóm" },
+  { value: "WARNING", label: "Cảnh báo" },
+  { value: "FINAL_WARNING", label: "Cảnh báo cuối cùng" },
+  { value: "KICKED", label: "Đã bị loại" },
+  { value: "BLOCKED_REJOIN", label: "Bị chặn tham gia lại" },
+  { value: "PENDING_VERIFICATION", label: "Đang chờ xác minh" },
+  { value: "MANUAL_HOLD", label: "Tạm giữ thủ công" }
 ];
 
 export default function MembersTable() {
@@ -207,25 +207,15 @@ export default function MembersTable() {
   const selectFilters: SelectFilterConfig[] = useMemo(
     () => [
       {
-        key: "groupId",
-        label: "Nhóm",
-        options: GROUP_FILTER_OPTIONS,
-      },
-      {
         key: "membershipState",
-        label: "Trạng thái",
+        label: "Trạng thái telegram",
         options: MEMBERSHIP_STATE_OPTIONS,
       },
       {
         key: "eligibilityStatus",
         label: "Điều kiện",
         options: ELIGIBILITY_OPTIONS,
-      },
-      {
-        key: "includeGroups",
-        label: "Nhóm",
-        options: INCLUDE_GROUPS_OPTIONS,
-      },
+      }
     ],
     [],
   );
@@ -322,6 +312,19 @@ export default function MembersTable() {
           )}`}
         >
           {formatLpexUserStatusValue(member.lpexUserStatus || "unknown")}
+        </span>
+      ),
+    },
+    {
+      id: "telegramStatus",
+      header: "Trạng thái telegram",
+      cell: (member) => (
+        <span
+          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusClass(
+            member.telegramStatus || "unknown",
+          )}`}
+        >
+          {formatTelegramMembershipState(member.telegramStatus)}
         </span>
       ),
     },
