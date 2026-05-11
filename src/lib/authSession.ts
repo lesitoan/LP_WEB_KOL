@@ -38,8 +38,12 @@ export function readAuthSession(): AuthSession {
 export function writeAuthSession(session: AuthSession) {
   if (typeof document === 'undefined') return
 
-  if (typeof window !== 'undefined' && session.user) {
-    localStorage.setItem('user', JSON.stringify(session.user))
+  if (typeof window !== 'undefined') {
+    if (session.user) {
+      localStorage.setItem('user', JSON.stringify(session.user))
+    } else {
+      localStorage.removeItem('user')
+    }
   }
 
   const cookieBase = 'path=/'

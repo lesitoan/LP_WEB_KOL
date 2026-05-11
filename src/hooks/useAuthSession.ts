@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useDispatch } from 'react-redux'
 import { useGetCurrentUserQuery } from '@/services/api/authApi'
+import { api } from '@/services/api/baseApi'
 import { clearAuthSession, readAuthSession } from '@/lib/authSession'
 import type { UserProfile } from '@/types/api'
 
@@ -15,6 +17,7 @@ type AuthSessionState = {
 
 export function useAuthSession() {
   const router = useRouter()
+  const dispatch = useDispatch()
   const [session, setSession] = useState<AuthSessionState>({
     accessToken: null,
     refreshToken: null,
@@ -41,6 +44,7 @@ export function useAuthSession() {
   const profile = useMemo(() => currentUser ?? session.profile, [currentUser, session.profile])
 
   const logout = () => {
+    dispatch(api.util.resetApiState())
     clearAuthSession()
     setSession({
       accessToken: null,
