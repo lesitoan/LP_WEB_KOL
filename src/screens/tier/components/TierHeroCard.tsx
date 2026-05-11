@@ -47,6 +47,13 @@ export default function TierHeroCard() {
     .map((item) => item.trim())
     .filter(Boolean)
 
+  const currentTierBenefits = (matchedTier?.description || data?.currentTier?.description || '')
+    .split('+')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const benefitsDescription = nextTier?.description || currentTierBenefits.join(' + ')
+
   return (
     <div className="bg-[radial-gradient(ellipse_at_center_top,hsl(40_78%_55%/0.15),transparent_60%),linear-gradient(180deg,hsl(var(--surface-2)),hsl(var(--surface-1)))] border border-border rounded-[20px] px-8 py-10 text-center mb-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,hsl(40_78%_55%/0.08),transparent_40%),radial-gradient(circle_at_80%_60%,hsl(28_88%_60%/0.05),transparent_40%)] pointer-events-none" />
@@ -75,10 +82,16 @@ export default function TierHeroCard() {
               <strong className="text-foreground font-semibold">{activeMemberCount}</strong>{' '}
               <span className="text-muted-foreground">thành viên</span>
             </span>
-            <span className="text-muted-foreground">
-              {Math.round(progressPercent)}% {'→'}{' '}
-              <strong className="text-tier-legend font-semibold">{nextTier ? nextTier.name : 'MAX'}</strong>
-            </span>
+            {nextTier ? (
+              <span className="text-muted-foreground">
+                {Math.round(progressPercent)}% {'→'}{' '}
+                <strong className="text-tier-legend font-semibold">{nextTier.name}</strong>
+              </span>
+            ) : (
+              <span className="text-muted-foreground">
+                {Math.round(progressPercent)}%
+              </span>
+            )}
           </div>
         </div>
 
@@ -101,11 +114,10 @@ export default function TierHeroCard() {
               </strong>
             </div>
           ) : null}
-          {(nextTier?.description || splitBenefits.join(' + '))
+          {benefitsDescription
             .split('+')
             .map((item) => item.trim())
             .filter(Boolean)
-            .slice(0, 3)
             .map((benefit) => (
               <div key={benefit} className="flex items-center gap-3 text-muted-foreground">
                 <span className="text-brand">✨</span>

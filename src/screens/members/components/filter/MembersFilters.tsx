@@ -61,7 +61,7 @@ export default function MembersFilters({
       textFilters={[
         {
           key: 'search',
-          placeholder: 'Tìm theo username, UID, Telegram ID...',
+          placeholder: 'Tìm theo username, UID',
           widthClassName: 'flex-1 min-w-[260px] max-w-[420px]',
         },
         {
