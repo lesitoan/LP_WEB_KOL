@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Gift, Trash2, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { DataTable, type DataTablePagination, type DataTableColumn } from '@/components/ui/dataTable'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { GroupItem, UpdateGroupBody } from '@/types/api'
@@ -62,6 +64,17 @@ function formatVolumeRange(group: GroupItem) {
 
 export function GroupsTableView({ groups, isFetching = false, pagination, onUpdateGroup, onDeleteGroup }: GroupsTableViewProps) {
   const router = useRouter()
+  const [updatingStatusById, setUpdatingStatusById] = useState<Record<string, boolean>>({})
+
+  const handleToggleGroupStatus = async (group: GroupItem, checked: boolean) => {
+    const nextStatus = checked ? 'ACTIVE' : 'INACTIVE'
+    setUpdatingStatusById((prev) => ({ ...prev, [group.id]: true }))
+    try {
+      await onUpdateGroup(group.id, { status: nextStatus })
+    } finally {
+      setUpdatingStatusById((prev) => ({ ...prev, [group.id]: false }))
+    }
+  }
 
   const columns: DataTableColumn<GroupItem>[] = [
     {
@@ -77,11 +90,22 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     {
       id: 'status',
       header: 'Trạng thái',
-      cell: (group) => (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${getStatusVariant(group.status || '')?.cssClass}`}>
-          {getStatusVariant(group.status || '')?.label}
-        </span>
-      ),
+      cell: (group) => {
+        const isActive = (group.status || '').trim().toLowerCase() === 'active'
+        const isUpdating = Boolean(updatingStatusById[group.id])
+
+        return (
+          <Switch
+            className="scale-90"
+            checked={isActive}
+            disabled={isUpdating}
+            onCheckedChange={(checked) => {
+              void handleToggleGroupStatus(group, checked)
+            }}
+            aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
+          />
+        )
+      },
     },
     {
       id: 'volume',
@@ -172,3 +196,4 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     />
   )
 }
+
