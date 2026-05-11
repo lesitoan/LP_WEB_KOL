@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { toast } from "@/hooks/useToast";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { useChangePasswordMutation } from "@/services/api/authApi";
+import { useGetKolCurrentTierQuery } from "@/services/api/tierApi";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
 import type { ChangePasswordFormValues } from "./components/changePasswordCard";
 import { AccountInfoCard } from "./components/accountInfoCard";
@@ -17,26 +18,30 @@ function formatDateTime(value?: string) {
 }
 
 export function SettingsScreen() {
-  const { profile, isCheckingSession } = useAuthSession();
+  const { profile, isCheckingSession, hasToken } = useAuthSession();
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+  const { data: currentTierData } = useGetKolCurrentTierQuery(undefined, { skip: !hasToken });
 
   const accountRows = useMemo(
     () => [
       { label: "Họ tên", value: profile?.name || "---" },
       { label: "Email", value: profile?.email || "---" },
       { label: "Vai trò", value: profile?.role || "---" },
-      { label: "Trạng thái", value: profile?.status || "---" },
+      // { label: "Trạng thái", value: profile?.status || "---" },
       { label: "Mã referral", value: profile?.referralCode || "---" },
-      { label: "Tier", value: profile?.tier || "---" },
+      {
+        label: "Tier",
+        value: currentTierData?.currentTier?.name || currentTierData?.matchedTier?.name || profile?.tier || "---",
+      },
       { label: "Mã KOL", value: profile?.kolCode || "---" },
       { label: "Tên hiển thị KOL", value: profile?.kolDisplayName || "---" },
       { label: "Telegram", value: profile?.telegramContact || "---" },
       { label: "Zalo", value: profile?.zaloContact || "---" },
-      { label: "Ngôn ngữ mặc định", value: profile?.defaultLanguage || "---" },
+      // { label: "Ngôn ngữ mặc định", value: profile?.defaultLanguage || "---" },
       { label: "Lần đăng nhập gần nhất", value: formatDateTime(profile?.lastLoginAt) },
       { label: "Ngày tạo tài khoản", value: formatDateTime(profile?.createdAt) },
     ],
-    [profile]
+    [currentTierData, profile]
   );
 
   const onSubmit = async (values: ChangePasswordFormValues) => {

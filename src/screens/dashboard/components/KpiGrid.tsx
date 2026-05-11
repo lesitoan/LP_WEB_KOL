@@ -22,8 +22,20 @@ function formatDelta(value: number, fallback: string) {
 export default function KpiGrid() {
   const router = useRouter();
 
-  const { data: memberStats, error: memberError } = useGetMemberOverviewStatsQuery();
-  const { data: cashbackSummary, error: cashbackError, isLoading: isCashbackLoading } = useGetCashbackGrowthSummaryQuery();
+  const { data: memberStats, error: memberError, refetch: refetchMemberStats } = useGetMemberOverviewStatsQuery();
+  const { data: cashbackSummary, error: cashbackError, isLoading: isCashbackLoading, refetch: refetchCashbackSummary } = useGetCashbackGrowthSummaryQuery();
+
+  useEffect(() => {
+    const onDashboardRefresh = () => {
+      refetchMemberStats();
+      refetchCashbackSummary();
+    };
+
+    window.addEventListener("dashboard:refresh-request", onDashboardRefresh);
+    return () => {
+      window.removeEventListener("dashboard:refresh-request", onDashboardRefresh);
+    };
+  }, [refetchCashbackSummary, refetchMemberStats]);
 
   useEffect(() => {
     const error = memberError ?? cashbackError;

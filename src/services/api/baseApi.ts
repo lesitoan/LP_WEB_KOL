@@ -29,6 +29,11 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   api,
   extraOptions,
 ) => {
+  const silentLogout = () => {
+    handleUnauthorizedSession()
+    return new Promise<never>(() => {})
+  }
+
   let result = await baseQuery(args, api, extraOptions)
 
   if (result.error?.status !== 401) {
@@ -43,15 +48,13 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   }
 
   if (url.includes('/kol/auth/refresh')) {
-    handleUnauthorizedSession()
-    return result
+    return silentLogout()
   }
 
   const refreshToken = getCookie('refreshToken')
 
   if (!refreshToken) {
-    handleUnauthorizedSession()
-    return result
+    return silentLogout()
   }
 
   const refreshResult = await baseQuery(
@@ -65,15 +68,13 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   )
 
   if (refreshResult.error) {
-    handleUnauthorizedSession()
-    return result
+     return silentLogout()
   }
 
   const payload = refreshResult.data as ApiResponse<LoginResult> | undefined
 
   if (!payload || payload.status !== 'success' || !payload.data) {
-    handleUnauthorizedSession()
-    return result
+    return silentLogout()
   }
 
   const currentSession = readAuthSession()
@@ -88,7 +89,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   result = await baseQuery(args, api, extraOptions)
 
   if (result.error?.status === 401) {
-    handleUnauthorizedSession()
+    return silentLogout()
   }
 
   return result

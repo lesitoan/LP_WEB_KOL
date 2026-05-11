@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -8,14 +8,18 @@ import { GroupFormDialog } from './groupFormDialog'
 interface AddGroupDialogProps {
   onAdd: (payload: CreateGroupBody) => Promise<void>
   defaultOpen?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function AddGroupDialog({ onAdd, defaultOpen = false }: AddGroupDialogProps) {
+export function AddGroupDialog({ onAdd, defaultOpen = false, open, onOpenChange }: AddGroupDialogProps) {
   return (
     <GroupFormDialog
       dialogTitle="Thêm nhóm mới"
       submitText="Tạo nhóm"
       defaultOpen={defaultOpen}
+      open={open}
+      onOpenChange={onOpenChange}
       trigger={(
         <Button>
           <Plus className="mr-2 h-4 w-4" />
@@ -37,4 +41,3 @@ export function AddGroupDialog({ onAdd, defaultOpen = false }: AddGroupDialogPro
     />
   )
 }
-

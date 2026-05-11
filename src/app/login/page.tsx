@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useDispatch } from 'react-redux'
 import { Eye, EyeOff } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -12,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { toast } from '@/hooks/useToast'
-import { extractApiErrorMessage } from '@/services/api/baseApi'
+import { api, extractApiErrorMessage } from '@/services/api/baseApi'
 import { useLoginMutation } from '@/services/api/authApi'
 import { writeAuthSession } from '@/lib/authSession'
 import { useAuthSession } from '@/hooks/useAuthSession'
@@ -30,6 +31,7 @@ export type LoginFormValues = z.infer<typeof schema>
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
+  const dispatch = useDispatch()
   const searchParams = useSearchParams()
   const [login, { isLoading }] = useLoginMutation()
   const { accessToken, hydrated } = useAuthSession()
@@ -48,6 +50,7 @@ function LoginForm() {
     try {
       const result = await login(values).unwrap()
       writeAuthSession(result)
+      dispatch(api.util.resetApiState())
       const redirect = searchParams.get('redirect') || '/dashboard'
       router.push(redirect)
     } catch (error) {

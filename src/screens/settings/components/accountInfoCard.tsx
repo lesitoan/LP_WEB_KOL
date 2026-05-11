@@ -22,9 +22,9 @@ export function AccountInfoCard({ rows, isLoading }: AccountInfoCardProps) {
           <UserRound className="h-5 w-5 text-brand" />
           Thông tin tài khoản
         </CardTitle>
-        <CardDescription className="text-muted-foreground">
+        {/* <CardDescription className="text-muted-foreground">
           Dữ liệu lấy từ API get me.
-        </CardDescription>
+        </CardDescription> */}
       </CardHeader>
       <CardContent>
         {isLoading ? (

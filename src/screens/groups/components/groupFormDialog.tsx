@@ -30,6 +30,8 @@ type GroupFormDialogProps = {
   initialValues: GroupFormValues
   onSubmitPayload: (payload: CreateGroupBody) => Promise<void>
   defaultOpen?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 export function GroupFormDialog({
@@ -39,10 +41,19 @@ export function GroupFormDialog({
   initialValues,
   onSubmitPayload,
   defaultOpen = false,
+  open: controlledOpen,
+  onOpenChange,
 }: GroupFormDialogProps) {
-  const [open, setOpen] = useState(defaultOpen)
+  const [internalOpen, setInternalOpen] = useState(defaultOpen)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const wasOpenRef = useRef(false) // Để khỏi quay về state cũ khi nhấn update
+  const open = controlledOpen ?? internalOpen
+  const setOpen = (nextOpen: boolean) => {
+    if (controlledOpen === undefined) {
+      setInternalOpen(nextOpen)
+    }
+    onOpenChange?.(nextOpen)
+  }
   const {
     control,
     register,
@@ -54,6 +65,12 @@ export function GroupFormDialog({
     defaultValues: initialValues,
     mode: 'onChange',
   })
+
+  useEffect(() => {
+    if (defaultOpen) {
+      setOpen(true)
+    }
+  }, [defaultOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (open && !wasOpenRef.current) {
