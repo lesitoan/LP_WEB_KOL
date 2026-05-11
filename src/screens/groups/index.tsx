@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { AddGroupDialog } from './components/addGroupDialog'
 import { GroupsListContainer } from './components/groupsListContainer'
-import type { CreateGroupBody, ListGroupsQuery, UpdateGroupBody } from '@/types/api'
+import type { CreateGroupBody, UpdateGroupBody } from '@/types/api'
 import {
   useCreateGroupMutation,
   useDeleteGroupMutation,
@@ -16,6 +17,7 @@ import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { useGroupsFiltersState } from './hooks/useGroupsFiltersState'
 
 export function GroupsScreen() {
+  const searchParams = useSearchParams()
   const { state, setSearchInput, setQuery, setViewMode } = useGroupsFiltersState()
 
   const { data, isFetching, error } = useGetGroupsQuery(state.query)
@@ -26,15 +28,13 @@ export function GroupsScreen() {
 
   const groups = data?.items ?? []
   const pagination = data?.pagination
-  const [shouldOpenCreateDialog, setShouldOpenCreateDialog] = useState(false)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('dialog') === 'create') {
-      setShouldOpenCreateDialog(true)
+    if (searchParams.get('openform') === 'true') {
+      setIsCreateDialogOpen(true)
     }
-  }, [])
+  }, [searchParams])
 
   useEffect(() => {
     if (error) {
@@ -46,10 +46,7 @@ export function GroupsScreen() {
     }
   }, [error])
 
-  const handleUpdateGroup = async (
-    groupId: string,
-    payload: UpdateGroupBody,
-  ) => {
+  const handleUpdateGroup = async (groupId: string, payload: UpdateGroupBody) => {
     try {
       await updateGroup({ groupId, data: payload }).unwrap()
       toast({
@@ -62,7 +59,6 @@ export function GroupsScreen() {
         title: 'Không cập nhật được group',
         description: extractApiErrorMessage(updateError, 'Đã có lỗi xảy ra'),
       })
-      // throw updateError
     }
   }
 
@@ -73,20 +69,21 @@ export function GroupsScreen() {
         title: 'Đã thêm nhóm mới',
         description: 'Tạo group thành công.',
       })
+      setIsCreateDialogOpen(false)
     } catch (createError) {
       toast({
         variant: 'destructive',
         title: 'Không tạo được group',
         description: extractApiErrorMessage(createError, 'Đã có lỗi xảy ra'),
       })
-      throw createError
+      // throw createError
     }
   }
 
   const handleDeleteGroup = async (groupId: string, title: string) => {
     const accepted = await showConfirm({
       title: 'Xác nhận xóa nhóm',
-      description: `Bạn có chắc chắn muốn xóa nhóm \"${title}\". Hành động này không thể hoàn tác.`,
+      description: `Bạn có chắc chắn muốn xóa nhóm "${title}". Hành động này không thể hoàn tác.`,
       confirmText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       destructive: true,
@@ -114,46 +111,14 @@ export function GroupsScreen() {
 
   return (
     <div className="space-y-6">
-      {/* Default Group Info */}
-      {/* <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Layers3 className="h-5 w-5" />
-            Giá trị mặc định
-          </CardTitle>
-          <CardDescription>Các giá trị mặc định áp dụng cho nhóm mới</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <div className="rounded-lg border border-border p-3">
-              <p className="text-sm text-muted-foreground">Ngưỡng volume</p>
-              <p className="text-lg font-semibold">Map tu API</p>
-            </div>
-            <div className="rounded-lg border border-border p-3">
-              <p className="text-sm text-muted-foreground">Số lần cảnh báo</p>
-              <p className="text-lg font-semibold">warningCountBeforeKick</p>
-            </div>
-            <div className="rounded-lg border border-border p-3">
-              <p className="text-sm text-muted-foreground">Thời gian ân hạn</p>
-              <p className="text-lg font-semibold text-muted-foreground">Chưa có API</p>
-            </div>
-            <div className="rounded-lg border border-border p-3">
-              <p className="text-sm text-muted-foreground">Auto-kick</p>
-              <p className="text-lg font-semibold text-success">autoKickEnabled</p>
-            </div>
-            <div className="rounded-lg border border-border p-3">
-              <p className="text-sm text-muted-foreground">Cho phép rejoin</p>
-              <p className="text-lg font-semibold text-success">rejoinEnabled</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card> */}
-
-      {/* Groups List */}
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-lg font-semibold">Danh sách nhóm</h2>
-          <AddGroupDialog onAdd={handleAddGroup} defaultOpen={shouldOpenCreateDialog} />
+          <AddGroupDialog
+            onAdd={handleAddGroup}
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          />
         </div>
         <GroupsListContainer
           groups={groups}
@@ -176,4 +141,3 @@ export function GroupsScreen() {
 }
 
 export default GroupsScreen
-

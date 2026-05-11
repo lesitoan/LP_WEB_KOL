@@ -1,13 +1,26 @@
 ﻿"use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGetKolCurrentTierQuery, useGetKolTiersQuery } from "@/services/api/tierApi";
 import { TierProgressCardSkeleton } from "@/components/skeletons/TierProgressCardSkeleton";
 
 export default function TierProgressCard() {
   const router = useRouter();
-  const { data, isLoading } = useGetKolCurrentTierQuery();
-  const { data: tiers = [], isLoading: isTiersLoading } = useGetKolTiersQuery();
+  const { data, isLoading, refetch: refetchCurrentTier } = useGetKolCurrentTierQuery();
+  const { data: tiers = [], isLoading: isTiersLoading, refetch: refetchTiers } = useGetKolTiersQuery();
+
+  useEffect(() => {
+    const onDashboardRefresh = () => {
+      refetchCurrentTier();
+      refetchTiers();
+    };
+
+    window.addEventListener("dashboard:refresh-request", onDashboardRefresh);
+    return () => {
+      window.removeEventListener("dashboard:refresh-request", onDashboardRefresh);
+    };
+  }, [refetchCurrentTier, refetchTiers]);
 
   if (isLoading || isTiersLoading) {
     return <TierProgressCardSkeleton />;

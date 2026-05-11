@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useGetCashbackCommissionChartQuery } from "@/services/api/cashbackApi";
 import { VolumeMembersChartSkeleton } from "@/components/skeletons/VolumeMembersChartSkeleton";
@@ -22,7 +22,18 @@ const PERIODS: Array<{ value: 7 | 30 | 90; label: string }> = [
 
 export default function VolumeMembersChart() {
   const [period, setPeriod] = useState<7 | 30 | 90>(30);
-  const { data = [], isLoading, isFetching } = useGetCashbackCommissionChartQuery(period);
+  const { data = [], isLoading, isFetching, refetch } = useGetCashbackCommissionChartQuery(period);
+
+  useEffect(() => {
+    const onDashboardRefresh = () => {
+      refetch();
+    };
+
+    window.addEventListener("dashboard:refresh-request", onDashboardRefresh);
+    return () => {
+      window.removeEventListener("dashboard:refresh-request", onDashboardRefresh);
+    };
+  }, [refetch]);
 
   return (
     <div className="bg-surface-1 border border-border rounded-[14px] p-4 sm:p-5">
