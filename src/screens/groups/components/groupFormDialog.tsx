@@ -112,7 +112,7 @@ export function GroupFormDialog({
         autoKickEnabled: form.autoKickEnabled,
         rejoinEnabled: form.rejoinEnabled,
         warningCountBeforeKick: form.warningCountBeforeKick[0],
-        gracePeriodDays: form.gracePeriodDays[0],
+        gracePeriodHours: form.gracePeriodDays[0] * 24,
       })
       setOpen(false)
     } finally {

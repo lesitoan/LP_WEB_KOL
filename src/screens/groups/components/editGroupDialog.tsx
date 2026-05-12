@@ -11,6 +11,10 @@ interface EditGroupDialogProps {
 }
 
 export function EditGroupDialog({ group, onSave }: EditGroupDialogProps) {
+  const gracePeriodDays = typeof group.gracePeriodHours === 'number'
+    ? Math.max(1, Math.round(group.gracePeriodHours / 24))
+    : (group.gracePeriodDays ?? 7)
+
   const initialValues = {
     title: group.title ?? '',
     telegramGroupId: group.telegramGroupId ?? '',
@@ -18,7 +22,7 @@ export function EditGroupDialog({ group, onSave }: EditGroupDialogProps) {
     minVolumeRequired: group.minVolumeRequired ?? '0',
     maxVolumeRequired: group.maxVolumeRequired ?? '0',
     warningCountBeforeKick: [group.warningCountBeforeKick ?? 2],
-    gracePeriodDays: [group.gracePeriodDays ?? 7],
+    gracePeriodDays: [gracePeriodDays],
     autoKickEnabled: group.autoKickEnabled,
     rejoinEnabled: group.rejoinEnabled,
   }

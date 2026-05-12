@@ -63,6 +63,19 @@ function formatVolumeRange(group: GroupItem) {
   return `${group.minVolumeRequired} - ${group.maxVolumeRequired}`
 }
 
+function formatGracePeriodInDays(group: GroupItem) {
+  const rawHours =
+    typeof group.gracePeriodHours === 'number'
+      ? group.gracePeriodHours
+      : typeof group.gracePeriodDays === 'number'
+        ? group.gracePeriodDays * 24
+        : 24 * 7
+
+  const days = rawHours / 24
+  const formattedDays = Number.isInteger(days) ? String(days) : days.toFixed(1).replace(/\.0$/, '')
+  return `${formattedDays} ngày`
+}
+
 export function GroupsTableView({ groups, isFetching = false, pagination, onUpdateGroup, onToggleGroupStatus, onDeleteGroup }: GroupsTableViewProps) {
   const router = useRouter()
   const [updatingStatusById, setUpdatingStatusById] = useState<Record<string, boolean>>({})
@@ -122,7 +135,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     {
       id: 'grace',
       header: 'Ân hạn',
-      cell: (group) => `${group.gracePeriodDays ?? 7} ngày`,
+      cell: (group) => formatGracePeriodInDays(group),
     },
     {
       id: 'autoKick',
