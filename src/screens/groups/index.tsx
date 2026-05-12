@@ -109,6 +109,24 @@ export function GroupsScreen() {
     }
   }
 
+  const handleToggleGroupStatus = async (groupId: string, title: string, nextStatus: 'ACTIVE' | 'INACTIVE') => {
+    const isActivating = nextStatus === 'ACTIVE'
+    const accepted = await showConfirm({
+      title: isActivating ? 'Xác nhận bật nhóm' : 'Xác nhận tắt nhóm',
+      description: isActivating
+        ? `Bạn có chắc chắn muốn bật nhóm "${title}" không?`
+        : `Bạn có chắc chắn muốn tắt nhóm "${title}" không?`,
+      confirmText: 'Đồng ý',
+      cancelText: 'Hủy bỏ',
+    })
+
+    if (!accepted) {
+      return
+    }
+
+    await handleUpdateGroup(groupId, { status: nextStatus })
+  }
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -132,6 +150,7 @@ export function GroupsScreen() {
           onQueryChange={setQuery}
           onViewModeChange={setViewMode}
           onUpdateGroup={handleUpdateGroup}
+          onToggleGroupStatus={handleToggleGroupStatus}
           onDeleteGroup={handleDeleteGroup}
         />
       </div>

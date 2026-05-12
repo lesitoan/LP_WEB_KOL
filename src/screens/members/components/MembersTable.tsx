@@ -265,28 +265,28 @@ export default function MembersTable() {
       header: "UID",
       cell: (member) => <span className="font-geist-mono">{member.lpexUid || "—"}</span>,
     },
-    {
-      id: "country",
-      header: "Country",
-      cell: (member) => {
-        const code = (member.countryCode || "").trim().toUpperCase();
-        if (!code) return <span>—</span>;
+    // {
+    //   id: "country",
+    //   header: "Country",
+    //   cell: (member) => {
+    //     const code = (member.countryCode || "").trim().toUpperCase();
+    //     if (!code) return <span>—</span>;
 
-        const countryName = countries.getName(code, "en") || code;
+    //     const countryName = countries.getName(code, "en") || code;
 
-        return (
-          <span className="inline-flex items-center gap-1.5">
-            <span>{countryName} ({code})</span>
-            <ReactCountryFlag
-              countryCode={code}
-              svg
-              style={{ width: "1em", height: "1em" }}
-              aria-label={countryName}
-            />
-          </span>
-        );
-      },
-    },
+    //     return (
+    //       <span className="inline-flex items-center gap-1.5">
+    //         <span>{countryName} ({code})</span>
+    //         <ReactCountryFlag
+    //           countryCode={code}
+    //           svg
+    //           style={{ width: "1em", height: "1em" }}
+    //           aria-label={countryName}
+    //         />
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       id: "groups",
       header: "Groups",

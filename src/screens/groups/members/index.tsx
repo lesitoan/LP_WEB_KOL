@@ -315,27 +315,27 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
         </span>
       ),
     },
-    {
-      id: 'country',
-      header: 'Quốc gia',
-      cell: (member) => {
-        const code = (member.countryCode || '').trim().toUpperCase()
-        if (!code) return '—'
+    // {
+    //   id: 'country',
+    //   header: 'Quốc gia',
+    //   cell: (member) => {
+    //     const code = (member.countryCode || '').trim().toUpperCase()
+    //     if (!code) return '—'
 
-        const countryName = countries.getName(code, 'en') || code
-        return (
-          <span className="inline-flex items-center gap-1.5">
-            <span>{countryName} ({code})</span>
-            <ReactCountryFlag
-              countryCode={code}
-              svg
-              style={{ width: '1em', height: '1em' }}
-              aria-label={countryName}
-            />
-          </span>
-        )
-      },
-    },
+    //     const countryName = countries.getName(code, 'en') || code
+    //     return (
+    //       <span className="inline-flex items-center gap-1.5">
+    //         <span>{countryName} ({code})</span>
+    //         <ReactCountryFlag
+    //           countryCode={code}
+    //           svg
+    //           style={{ width: '1em', height: '1em' }}
+    //           aria-label={countryName}
+    //         />
+    //       </span>
+    //     )
+    //   },
+    // },
     {
       id: 'registeredAt',
       header: 'Ngày đăng ký',

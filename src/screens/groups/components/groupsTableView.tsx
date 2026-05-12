@@ -16,6 +16,7 @@ type GroupsTableViewProps = {
   isFetching?: boolean
   pagination: DataTablePagination
   onUpdateGroup: (groupId: string, payload: UpdateGroupBody) => Promise<void>
+  onToggleGroupStatus: (groupId: string, title: string, nextStatus: 'ACTIVE' | 'INACTIVE') => Promise<void>
   onDeleteGroup: (groupId: string, title: string) => Promise<void>
 }
 
@@ -62,7 +63,7 @@ function formatVolumeRange(group: GroupItem) {
   return `${group.minVolumeRequired} - ${group.maxVolumeRequired}`
 }
 
-export function GroupsTableView({ groups, isFetching = false, pagination, onUpdateGroup, onDeleteGroup }: GroupsTableViewProps) {
+export function GroupsTableView({ groups, isFetching = false, pagination, onUpdateGroup, onToggleGroupStatus, onDeleteGroup }: GroupsTableViewProps) {
   const router = useRouter()
   const [updatingStatusById, setUpdatingStatusById] = useState<Record<string, boolean>>({})
 
@@ -70,7 +71,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     const nextStatus = checked ? 'ACTIVE' : 'INACTIVE'
     setUpdatingStatusById((prev) => ({ ...prev, [group.id]: true }))
     try {
-      await onUpdateGroup(group.id, { status: nextStatus })
+      await onToggleGroupStatus(group.id, group.title, nextStatus)
     } finally {
       setUpdatingStatusById((prev) => ({ ...prev, [group.id]: false }))
     }
