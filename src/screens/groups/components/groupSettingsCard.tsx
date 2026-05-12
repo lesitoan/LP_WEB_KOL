@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronDown, ChevronUp, Gift, Trash2, Users } from 'lucide-react'
+import { ChevronDown, ChevronUp, Gift, Power, Trash2, Users } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -22,16 +22,19 @@ import { GroupSummaryDialog } from './groupSummaryDialog'
 interface GroupSettingsCardProps {
   group: GroupItem
   onUpdateGroup: (groupId: string, payload: UpdateGroupBody) => Promise<void>
+  onToggleGroupStatus: (groupId: string, title: string, nextStatus: 'ACTIVE' | 'INACTIVE') => Promise<void>
   onDeleteGroup: (groupId: string, title: string) => Promise<void>
 }
 
 export function GroupSettingsCard({
   group,
   onUpdateGroup,
+  onToggleGroupStatus,
   onDeleteGroup,
 }: GroupSettingsCardProps) {
   const router = useRouter()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
   const volumeLabel = `${group.minVolumeRequired} - ${group.maxVolumeRequired} USD`
   const status = (group.status || '').toLowerCase()
   const titleFull = (group.title || '').trim()
@@ -44,11 +47,31 @@ export function GroupSettingsCard({
   }
 
   const getStatusVariant = () => {
-    if (status === 'active') return 'bg-emerald-100 text-emerald-700 border-emerald-200'
-    if (status === 'inactive') return 'bg-slate-100 text-slate-700 border-slate-200'
-    if (status === 'paused') return 'bg-amber-100 text-amber-700 border-amber-200'
-    if (status === 'blocked') return 'bg-rose-100 text-rose-700 border-rose-200'
-    return 'bg-blue-100 text-blue-700 border-blue-200'
+    if (status === 'active') return 'border-emerald-700 bg-emerald-200 text-emerald-950'
+    if (status === 'inactive') return 'border-[#8f8f8f] bg-[#a3a3a3] text-[#262626] opacity-70'
+    if (status === 'paused') return 'border-amber-300 bg-amber-100 text-amber-800'
+    if (status === 'blocked') return 'border-violet-300 bg-violet-100 text-violet-800'
+    return 'border-sky-300 bg-sky-100 text-sky-800'
+  }
+
+  const getStatusLabel = () => {
+    if (status === 'active') return 'Đang hoạt động'
+    if (status === 'inactive') return 'Không hoạt động'
+    if (status === 'paused') return 'Tạm dừng'
+    if (status === 'blocked') return 'Đã chặn'
+    return group.status || 'Không xác định'
+  }
+
+  const isActive = status === 'active'
+
+  const handleToggleStatus = async () => {
+    const nextStatus = isActive ? 'INACTIVE' : 'ACTIVE'
+    setIsUpdatingStatus(true)
+    try {
+      await onToggleGroupStatus(group.id, group.title, nextStatus)
+    } finally {
+      setIsUpdatingStatus(false)
+    }
   }
 
   return (
@@ -102,6 +125,23 @@ export function GroupSettingsCard({
             <TooltipContent>Quản lý benefit</TooltipContent>
           </Tooltip>
           <EditGroupDialog group={group} onSave={onUpdateGroup} />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${isActive ? 'text-emerald-500 hover:text-emerald-400' : 'text-rose-500 hover:text-rose-400'}`}
+                onClick={() => {
+                  void handleToggleStatus()
+                }}
+                disabled={isUpdatingStatus}
+              >
+                <Power className="h-4 w-4" />
+                <span className="sr-only">{isActive ? 'Tắt nhóm' : 'Bật nhóm'}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{isActive ? 'Tắt nhóm' : 'Bật nhóm'}</TooltipContent>
+          </Tooltip>
           <Button
             variant="ghost"
             size="icon"
@@ -139,8 +179,8 @@ export function GroupSettingsCard({
               <FieldLabel className="text-sm font-medium">Trạng thái nhóm</FieldLabel>
               <FieldDescription>Màu được map theo trạng thái hiện tại</FieldDescription>
             </div>
-            <Badge variant="outline" className={getStatusVariant()}>
-              {group.status}
+            <Badge variant="outline" className={`font-semibold ${getStatusVariant()}`}>
+              {getStatusLabel()}
             </Badge>
           </Field>
 

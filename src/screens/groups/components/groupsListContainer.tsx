@@ -19,6 +19,7 @@ type GroupsListContainerProps = {
   onQueryChange: (next: ListGroupsQuery) => void;
   onViewModeChange: (mode: GroupsViewMode) => void;
   onUpdateGroup: (groupId: string, payload: UpdateGroupBody) => Promise<void>;
+  onToggleGroupStatus: (groupId: string, title: string, nextStatus: 'ACTIVE' | 'INACTIVE') => Promise<void>;
   onDeleteGroup: (groupId: string, title: string) => Promise<void>;
 }
 
@@ -34,6 +35,7 @@ export function GroupsListContainer({
   onQueryChange,
   onViewModeChange,
   onUpdateGroup,
+  onToggleGroupStatus,
   onDeleteGroup,
 }: GroupsListContainerProps) {
   const startIndex = totalItems === 0 ? 0 : (query.page - 1) * query.limit + 1
@@ -110,6 +112,7 @@ export function GroupsListContainer({
               limitOptions: [10, 20, 50, 100],
             }}
             onUpdateGroup={onUpdateGroup}
+            onToggleGroupStatus={onToggleGroupStatus}
             onDeleteGroup={onDeleteGroup}
           />
         ) : (
@@ -117,6 +120,7 @@ export function GroupsListContainer({
             <GroupsItemView
               groups={groups}
               onUpdateGroup={onUpdateGroup}
+              onToggleGroupStatus={onToggleGroupStatus}
               onDeleteGroup={onDeleteGroup}
             />
             <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface-1/60 p-3 sm:flex-row sm:items-center sm:justify-between">
