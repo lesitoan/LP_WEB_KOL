@@ -108,6 +108,38 @@
   background: hsl(var(--surface-4));
 }
 
+.data-table-scroll-viewport {
+  -ms-overflow-style: none;
+}
+
+.data-table-scroll-viewport::-webkit-scrollbar {
+  width: 0;
+  height: 8px;
+}
+
+.data-table-scroll-viewport::-webkit-scrollbar:vertical {
+  width: 0;
+  display: none;
+}
+
+.data-table-scroll-viewport::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+.data-table-scroll-viewport::-webkit-scrollbar-track:horizontal {
+  background: hsl(var(--surface-2));
+  border-radius: 9999px;
+}
+
+.data-table-scroll-viewport::-webkit-scrollbar-thumb:horizontal {
+  background: hsl(var(--brand) / 0.7);
+  border-radius: 9999px;
+}
+
+.data-table-scroll-viewport::-webkit-scrollbar-thumb:horizontal:hover {
+  background: hsl(var(--brand));
+}
+
 /* Slider styling */
 input[type="range"].cashback-slider {
   -webkit-appearance: none;
