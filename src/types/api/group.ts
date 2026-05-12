@@ -10,6 +10,7 @@ export interface GroupItem {
   autoKickEnabled: boolean
   rejoinEnabled: boolean
   warningCountBeforeKick: number
+  gracePeriodHours?: number | null
   gracePeriodDays: number | null
   announcementEnabled: boolean
   status: string
@@ -27,7 +28,7 @@ export interface UpdateGroupBody {
   autoKickEnabled?: boolean
   rejoinEnabled?: boolean
   warningCountBeforeKick?: number
-  gracePeriodDays?: number
+  gracePeriodHours?: number
   announcementEnabled?: boolean
   status?: string
 }
@@ -42,7 +43,7 @@ export interface CreateGroupBody {
   autoKickEnabled?: boolean
   rejoinEnabled?: boolean
   warningCountBeforeKick?: number
-  gracePeriodDays?: number
+  gracePeriodHours?: number
   announcementEnabled?: boolean
   status?: string
 }
