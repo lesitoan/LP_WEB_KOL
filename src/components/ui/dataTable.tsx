@@ -23,6 +23,9 @@ export type DataTablePagination = {
   summaryText?: string
 }
 
+const TABLE_SCROLL_VIEWPORT_CLASS =
+  "data-table-scroll-viewport max-h-[max(260px,calc(100dvh-325px))] overflow-auto pb-1"
+
 type DataTableProps<T> = {
   columns: DataTableColumn<T>[]
   data: T[]
@@ -62,16 +65,14 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   return (
     <div className={className ?? "bg-surface-1 border border-border rounded-[14px] overflow-hidden"}>
-      <div
-        className="overflow-x-auto overflow-y-hidden pb-1 [scrollbar-width:thin] [scrollbar-color:rgba(245,158,11,0.55)_rgba(255,255,255,0.06)] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[rgba(255,255,255,0.06)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[rgba(245,158,11,0.55)] [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(245,158,11,0.75)]"
-      >
+      <div className={TABLE_SCROLL_VIEWPORT_CLASS}>
         <table className="w-full border-collapse min-w-[980px]">
           <thead>
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.id}
-                  className={`text-left p-3 px-5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-surface-2 border-b border-border whitespace-nowrap ${
+                  className={`sticky top-0 z-10 text-left p-3 px-5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-surface-2 border-b border-border whitespace-nowrap ${
                     column.headerClassName ?? ""
                   }`}
                 >
