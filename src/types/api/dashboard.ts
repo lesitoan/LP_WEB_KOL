@@ -61,6 +61,15 @@ export interface CashbackMonthInfo {
   month: number // 1-12
 }
 
+export interface CommissionGrowthSummary {
+  totalCommissionUsd: number
+  currentMonthCommissionUsd: number
+  previousMonthCommissionUsd: number
+  commissionGrowthPercentage: number
+  currentMonth: CashbackMonthInfo
+  previousMonth: CashbackMonthInfo
+}
+
 export interface CashbackGrowthSummary {
   totalCommissionUsd: number
   totalCashbackPaidUsd: number

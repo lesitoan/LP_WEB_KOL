@@ -8,6 +8,7 @@ import { extractApiErrorMessage } from "@/services/api/baseApi";
 import { DashboardKpiGridSkeleton } from "@/components/skeletons/DashboardKpiGridSkeleton";
 import {
   useGetCashbackGrowthSummaryQuery,
+  useGetCommissionGrowthSummaryQuery,
   useGetMemberOverviewStatsQuery,
 } from "@/services/api/dashboardApi";
 
@@ -24,21 +25,28 @@ export default function KpiGrid() {
 
   const { data: memberStats, error: memberError, refetch: refetchMemberStats } = useGetMemberOverviewStatsQuery();
   const { data: cashbackSummary, error: cashbackError, isLoading: isCashbackLoading, refetch: refetchCashbackSummary } = useGetCashbackGrowthSummaryQuery();
+  const {
+    data: commissionSummary,
+    error: commissionError,
+    isLoading: isCommissionLoading,
+    refetch: refetchCommissionSummary,
+  } = useGetCommissionGrowthSummaryQuery();
 
   useEffect(() => {
     const onDashboardRefresh = () => {
       refetchMemberStats();
       refetchCashbackSummary();
+      refetchCommissionSummary();
     };
 
     window.addEventListener("dashboard:refresh-request", onDashboardRefresh);
     return () => {
       window.removeEventListener("dashboard:refresh-request", onDashboardRefresh);
     };
-  }, [refetchCashbackSummary, refetchMemberStats]);
+  }, [refetchCashbackSummary, refetchCommissionSummary, refetchMemberStats]);
 
   useEffect(() => {
-    const error = memberError ?? cashbackError;
+    const error = memberError ?? cashbackError ?? commissionError;
     if (!error) return;
 
     toast({
@@ -46,7 +54,7 @@ export default function KpiGrid() {
       title: "Không tải được thống kê dashboard",
       description: extractApiErrorMessage(error, "Đã có lỗi xảy ra"),
     });
-  }, [cashbackError, memberError]);
+  }, [cashbackError, commissionError, memberError]);
 
   const kpis = useMemo(
     () => [
@@ -61,8 +69,10 @@ export default function KpiGrid() {
       },
       {
         label: "Tổng Hoa hồng",
-        value: cashbackSummary ? formatCurrency(cashbackSummary.totalCommissionUsd) : formatCurrency(0),
-        delta: "▲ +8.2% so với tháng trước",
+        value: commissionSummary ? formatCurrency(commissionSummary.totalCommissionUsd) : formatCurrency(0),
+        delta: commissionSummary
+          ? formatDelta(commissionSummary.commissionGrowthPercentage, "—")
+          : "—",
         up: true,
         href: "/cashback?tab=summary",
       },
@@ -83,10 +93,10 @@ export default function KpiGrid() {
         href: "/analytics",
       },
     ],
-    [cashbackSummary, memberStats]
+    [cashbackSummary, commissionSummary, memberStats]
   );
 
-  const showSkeleton = !memberStats || !cashbackSummary || isCashbackLoading;
+  const showSkeleton = !memberStats || !cashbackSummary || !commissionSummary || isCashbackLoading || isCommissionLoading;
 
   if (showSkeleton) return <DashboardKpiGridSkeleton />;
 

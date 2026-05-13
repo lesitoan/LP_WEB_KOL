@@ -3,6 +3,7 @@ import type {
   ApiResponse,
   CashbackGrowthSummary,
   ChartPoint,
+  CommissionGrowthSummary,
   DashboardStats,
   MemberMonthlyJoinsData,
   MemberOverviewStats,
@@ -75,6 +76,23 @@ export const dashboardApi = api.injectEndpoints({
       providesTags: ['Dashboard'],
     }),
 
+    // 4. Commission monthly growth summary
+    getCommissionGrowthSummary: builder.query<CommissionGrowthSummary, void>({
+      query: () => ({
+        url: apiV1Path('/kol/cashback/summary/commission-growth'),
+        method: 'GET',
+      }),
+      transformResponse: (payload: ApiResponse<CommissionGrowthSummary>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(
+            extractApiErrorMessage(payload, 'Không thể tải thống kê hoa hồng'),
+          )
+        }
+        return payload.data
+      },
+      providesTags: ['Dashboard'],
+    }),
+
     getReferralChart: builder.query<ChartPoint[], number>({
       query: (months) => ({
         url: apiV1Path(`/kol/members/statistics/monthly-joins?months=${months}`),
@@ -125,6 +143,7 @@ export const {
   useGetDashboardStatsQuery,
   useGetMemberOverviewStatsQuery,
   useGetCashbackGrowthSummaryQuery,
+  useGetCommissionGrowthSummaryQuery,
   useGetReferralChartQuery,
   useGetRecentReferralsQuery,
 } = dashboardApi

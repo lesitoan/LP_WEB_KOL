@@ -27,9 +27,7 @@ type GroupsFiltersProps = {
 
 const STATUS_FILTER_OPTIONS = [
   { value: 'active', label: 'Hoạt động' },
-  { value: 'disabled', label: 'Không hoạt động' },
-  { value: 'paused', label: 'Tạm dừng' },
-  { value: 'blocked', label: 'Bị chặn' },
+  { value: 'inactive', label: 'Không hoạt động' }
 ]
 
 export function GroupsFilters({
