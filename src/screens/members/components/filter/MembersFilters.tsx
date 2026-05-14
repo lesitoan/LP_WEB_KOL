@@ -64,11 +64,11 @@ export default function MembersFilters({
           placeholder: 'Tìm theo username, UID',
           widthClassName: 'flex-1 min-w-[260px] max-w-[420px]',
         },
-        {
-          key: 'countryCode',
-          placeholder: 'Country code (VN, SG, ...)',
-          widthClassName: 'min-w-[180px] w-[220px]',
-        },
+        // {
+        //   key: 'countryCode',
+        //   placeholder: 'Country code (VN, SG, ...)',
+        //   widthClassName: 'min-w-[180px] w-[220px]',
+        // },
       ]}
       textValues={{
         search: searchInput,

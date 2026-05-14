@@ -132,11 +132,11 @@ export const groupsApi = api.injectEndpoints({
         }
 
         if (query.telegramStatus) {
-          params.set('telegramStatus', query.telegramStatus)
+          params.set('telegramStatus', query.telegramStatus.toLowerCase())
         }
 
         if (query.lpexUserStatus) {
-          params.set('lpexUserStatus', query.lpexUserStatus)
+          params.set('lpexUserStatus', query.lpexUserStatus.toLowerCase())
         }
 
         return {

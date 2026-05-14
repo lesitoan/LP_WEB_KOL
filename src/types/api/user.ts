@@ -18,4 +18,5 @@ export interface UserProfile {
   telegramContact?: string
   zaloContact?: string
   defaultLanguage?: string
+  telegramUsername?: string
 }

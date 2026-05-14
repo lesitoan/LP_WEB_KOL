@@ -14,6 +14,7 @@ export interface MemberItem {
   usdVolume: string
   createdAt: string
   updatedAt: string
+  eligibilityStatus?: string
   eligibleGroups?: {
     accessId: string
     groupId: string
@@ -40,6 +41,8 @@ export interface ListMembersQuery {
   limit: number
   search?: string
   countryCode?: string
+  telegramStatus?: string
+  lpexUserStatus?: string
   groupId?: string
   eligibilityStatus?: string
   membershipState?: string

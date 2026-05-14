@@ -5,7 +5,18 @@ import { api } from './baseApi'
 export const membersApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMembers: builder.query<MembersData, ListMembersQuery>({
-      query: ({ page, limit, search, countryCode, groupId, eligibilityStatus, membershipState, includeGroups }) => {
+      query: ({
+        page,
+        limit,
+        search,
+        countryCode,
+        telegramStatus,
+        lpexUserStatus,
+        groupId,
+        eligibilityStatus,
+        membershipState,
+        includeGroups,
+      }) => {
         const params = new URLSearchParams({
           page: String(page),
           limit: String(limit),
@@ -17,6 +28,14 @@ export const membersApi = api.injectEndpoints({
 
         if (countryCode) {
           params.set('countryCode', countryCode)
+        }
+
+        if (telegramStatus) {
+          params.set('telegramStatus', telegramStatus.toLowerCase())
+        }
+
+        if (lpexUserStatus) {
+          params.set('lpexUserStatus', lpexUserStatus.toLowerCase())
         }
 
         if (groupId) {

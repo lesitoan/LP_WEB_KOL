@@ -2,17 +2,16 @@
 
 import { useEffect, useMemo } from "react";
 import { ArrowDown } from "lucide-react";
-import ReactCountryFlag from "react-country-flag";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import type { ActiveFilterChip, SelectFilterConfig } from "@/components/filters/TableFilterBar";
 import { toast } from "@/hooks/useToast";
-import { useUrlFilterState } from "@/hooks/useUrlFilterState";
 import { useGetMembersQuery } from "@/services/api/membersApi";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
-import type { ListMembersQuery, MemberItem } from "@/types/api";
+import type { MemberItem } from "@/types/api";
 import MembersFilters from "./filter/MembersFilters";
+import { useMembersFilters } from "../hooks/useMembersFilters";
 
 function fullName(member: MemberItem) {
   return `${member.telegramFirstName ?? ""} ${member.telegramLastName ?? ""}`.trim() || member.telegramUsername;
@@ -50,18 +49,11 @@ function formatUsdVolume(value: string) {
 function statusClass(status: string) {
   switch (status.toLowerCase()) {
     case "active":
-    case "verified":
       return "bg-success/[0.12] text-success border border-success/20";
-    case "disabled":
-    case "pending":
-      return "bg-warning/[0.12] text-warning border border-warning/20";
-    case "banned":
-    case "blocked":
-      return "bg-destructive/[0.12] text-destructive border border-destructive/20";
-    case "unknown":
+    case "inactive":
       return "bg-muted/[0.12] text-muted-foreground border border-muted/20";
     default:
-      return "bg-info/[0.12] text-info border border-info/20";
+      return "bg-warning/[0.12] text-warning border border-warning/20";
   }
 }
 
@@ -69,50 +61,31 @@ function formatLpexUserStatusValue(status: string) {
   switch (status.toLowerCase()) {
     case "active":
       return "Hoạt động";
-    case "disabled":
-      return "Vô hiệu hoá";
-    case "banned":
-      return "Đã cấm";
-    case "unknown":
-      return "Không rõ";
+    case "inactive":
+      return "Không hoạt động";
     default:
-      return status.charAt(0).toUpperCase() + status.slice(1);
+      return "Không xác định";
   }
 }
 
 function formatTelegramMembershipState(status: string | null | undefined) {
   const normalizedStatus = normalizeStatus(status);
-  const option = MEMBERSHIP_STATE_OPTIONS.find((item) => item.value === normalizedStatus);
-  return option?.label ?? normalizedStatus;
+  const option = TELEGRAM_STATUS.find((item) => item.value === normalizedStatus);
+  return option?.label ?? "Không xác định";
 }
 
 function normalizeStatus(value: string | null | undefined) {
   return (value ?? "UNKNOWN").trim().toUpperCase();
 }
 
-function statusTone(status: string): "warning" | "info" | "danger" | "neutral" {
-  if (status.includes("KICK") || status.includes("BLOCK")) {
-    return "danger";
-  }
-
-  if (status.includes("PENDING") || status.includes("WAIT") || status.includes("VERIFY")) {
-    return "warning";
-  }
-
-  if (status.includes("LEFT")) {
-    return "neutral";
-  }
-
-  return "info";
-}
-
-
-const MEMBERSHIP_STATE_OPTIONS = [
-  { value: "UNKNOWN", label: "Không xác định" },
+const TELEGRAM_STATUS = [
   { value: "ACTIVE", label: "Đang tham gia" },
-  { value: "LEFT", label: "Đã rời nhóm" },
-  { value: "KICKED", label: "Đã bị kick" },
-  { value: "BANNED", label: "Đã bị cấm" },
+  { value: "INACTIVE", label: "Đã rời" },
+];
+
+const LPEX_USER_STATUS = [
+  { value: "ACTIVE", label: "Hoạt động" },
+  { value: "INACTIVE", label: "Không hoạt động" },
 ];
 
 // const ELIGIBILITY_OPTIONS = [
@@ -127,39 +100,25 @@ const MEMBERSHIP_STATE_OPTIONS = [
 
 export default function MembersTable() {
   countries.registerLocale(enLocale)
-  const { values, draftValues, setFilter, setMany, clearFilter } = useUrlFilterState({
-    initialValues: {
-      page: "1",
-      limit: "20",
-      search: "",
-      countryCode: "",
-      groupId: "",
-      membershipState: "",
-      eligibilityStatus: "",
-      includeGroups: "",
-    },
-    debounceKeys: ["search", "countryCode"],
-    debounceMs: 500,
+  const {
+    page,
+    limit,
+    searchInput,
+    countryCodeInput,
+    telegramStatusFilter,
+    lpexUserStatusFilter,
+    query,
+    setPage,
+    setLimit,
+    setSearchInput,
+    setCountryCodeInput,
+    setTelegramStatusFilter,
+    setLpexUserStatusFilter,
+  } = useMembersFilters();
+
+  const { data, isLoading, isFetching, error } = useGetMembersQuery(query, {
+    refetchOnMountOrArgChange: true,
   });
-
-  const page = Math.max(1, Number(values.page || "1") || 1);
-  const limit = Math.min(100, Math.max(10, Number(values.limit || "20") || 20));
-
-  const query: ListMembersQuery = useMemo(
-    () => ({
-      page,
-      limit,
-      search: values.search.trim() || undefined,
-      countryCode: values.countryCode.trim().toUpperCase() || undefined,
-      groupId: values.groupId || undefined,
-      membershipState: values.membershipState || undefined,
-      eligibilityStatus: values.eligibilityStatus || undefined,
-      includeGroups: true,
-    }),
-    [limit, page, values.countryCode, values.eligibilityStatus, values.groupId, values.membershipState, values.search],
-  );
-
-  const { data, isLoading, isFetching, error } = useGetMembersQuery(query);
 
   useEffect(() => {
     if (!error) return;
@@ -178,40 +137,24 @@ export default function MembersTable() {
 
   useEffect(() => {
     if (page > totalPages) {
-      setFilter("page", String(totalPages), { immediate: true });
+      setPage(totalPages);
     }
-  }, [page, setFilter, totalPages]);
+  }, [page, setPage, totalPages]);
 
   const startIndex = totalItems === 0 ? 0 : (page - 1) * limit + 1;
   const endIndex = totalItems === 0 ? 0 : Math.min(page * limit, totalItems);
 
-  const statusBadges = useMemo(() => {
-    const counter = new Map<string, number>();
-
-    for (const member of members) {
-      const lpexStatus = normalizeStatus(member.lpexUserStatus);
-      if (lpexStatus !== "ACTIVE") {
-        counter.set(lpexStatus, (counter.get(lpexStatus) ?? 0) + 1);
-      }
-    }
-
-    return Array.from(counter.entries())
-      .map(([status, count]) => ({
-        key: status,
-        label: formatLpexUserStatusValue(status),
-        count,
-        tone: statusTone(status),
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 4);
-  }, [members]);
-
   const selectFilters: SelectFilterConfig[] = useMemo(
     () => [
       {
-        key: "membershipState",
+        key: "telegramStatus",
         label: "Trạng thái telegram",
-        options: MEMBERSHIP_STATE_OPTIONS,
+        options: TELEGRAM_STATUS,
+      },
+      {
+        key: "lpexUserStatus",
+        label: "Trạng thái LPEX",
+        options: LPEX_USER_STATUS,
       },
       // {
       //   key: "eligibilityStatus",
@@ -226,7 +169,8 @@ export default function MembersTable() {
     const chips: ActiveFilterChip[] = [];
 
     for (const filter of selectFilters) {
-      const selectedValue = values[filter.key as keyof typeof values];
+      const selectedValue =
+        filter.key === "telegramStatus" ? telegramStatusFilter : lpexUserStatusFilter;
       if (!selectedValue) continue;
 
       const selectedOption = filter.options.find((option) => option.value === selectedValue);
@@ -240,7 +184,7 @@ export default function MembersTable() {
     }
 
     return chips;
-  }, [selectFilters, values]);
+  }, [lpexUserStatusFilter, selectFilters, telegramStatusFilter]);
 
   const columns: DataTableColumn<MemberItem>[] = [
     {
@@ -326,7 +270,7 @@ export default function MembersTable() {
     },
     {
       id: "status",
-      header: "Trạng thái",
+      header: "Trạng thái LPEX",
       cell: (member) => (
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusClass(
@@ -359,26 +303,38 @@ export default function MembersTable() {
 
   return (
     <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">
-      <MembersFilters
-        searchInput={draftValues.search}
-        countryCodeInput={draftValues.countryCode}
+        <MembersFilters
+        searchInput={searchInput}
+        countryCodeInput={countryCodeInput}
         isFetching={isFetching}
         selectFilters={selectFilters}
         activeFilterChips={activeFilterChips}
         onSearchInputChange={(value) => {
-          setMany({ search: value, page: "1" });
+          setSearchInput(value);
         }}
         onCountryCodeInputChange={(value) => {
-          setMany({ countryCode: value, page: "1" });
+          setCountryCodeInput(value);
         }}
         onSelectFilter={(key, value) => {
-          setMany({ [key]: value, page: "1" }, { immediate: true });
+          if (key === "telegramStatus") {
+            setTelegramStatusFilter(value);
+            return;
+          }
+
+          if (key === "lpexUserStatus") {
+            setLpexUserStatusFilter(value);
+          }
         }}
         onRemoveChip={(key) => {
-          clearFilter(key as keyof typeof values, { immediate: true });
-          setFilter("page", "1", { immediate: true });
+          if (key === "telegramStatus") {
+            setTelegramStatusFilter("");
+            return;
+          }
+
+          if (key === "lpexUserStatus") {
+            setLpexUserStatusFilter("");
+          }
         }}
-        statusBadges={statusBadges}
       />
 
       <div className="rounded-b-[14px] overflow-hidden">
@@ -395,9 +351,9 @@ export default function MembersTable() {
             totalPages,
             totalItems,
             limit,
-            onPageChange: (nextPage) => setFilter("page", String(nextPage), { immediate: true }),
+            onPageChange: (nextPage) => setPage(nextPage),
             onLimitChange: (nextLimit) => {
-              setMany({ limit: String(nextLimit), page: "1" }, { immediate: true });
+              setLimit(nextLimit);
             },
             limitOptions: [10, 20, 50],
             isDisabled: isFetching,

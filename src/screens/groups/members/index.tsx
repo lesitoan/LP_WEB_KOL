@@ -3,7 +3,6 @@
 import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowDown, ArrowLeft } from 'lucide-react'
-import ReactCountryFlag from 'react-country-flag'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import TableFilterBar, {
@@ -66,35 +65,43 @@ function normalizeStatus(value: string | null | undefined) {
 }
 
 function formatLpexStatusLabel(status: string | null | undefined) {
-  switch (normalizeStatus(status)) {
-    case 'ACTIVE':
-    case 'VERIFIED':
+  switch (normalizeStatus(status).toLowerCase()) {
+    case 'active':
       return 'Hoạt động'
-    case 'DISABLED':
-      return 'Vô hiệu hoá'
-    case 'BANNED':
-      return 'Đã cấm'
-    case 'BLOCKED':
-      return 'Đã chặn'
-    case 'PENDING':
-      return 'Đang chờ'
-    case 'UNKNOWN':
-      return 'Không rõ'
+    case 'inactive':
+      return 'Không hoạt động'
     default:
-      return status || 'Không rõ'
+      return 'Không xác định'
   }
 }
 
 function formatTelegramStatusLabel(status: string | null | undefined) {
-  switch (normalizeStatus(status)) {
-    case 'ACTIVE':
+  switch (normalizeStatus(status).toLowerCase()) {
+    case 'active':
       return 'Đang tham gia'
-    case 'LEFT':
+    case 'inactive':
       return 'Đã rời nhóm'
+    default:
+      return 'Không xác định'
+  }
+}
+
+function formatEligibilityStatusLabel(status: string | null | undefined) {
+  switch (normalizeStatus(status)) {
+    case 'ELIGIBLE':
+      return 'Đủ điều kiện'
+    case 'WARNING':
+      return 'Cảnh báo'
+    case 'FINAL_WARNING':
+      return 'Cảnh báo cuối'
     case 'KICKED':
-      return 'Đã bị kick'
-    case 'BANNED':
-      return 'Đã bị cấm'
+      return 'Đã kick'
+    case 'BLOCKED_REJOIN':
+      return 'Chặn vào lại'
+    case 'PENDING_VERIFICATION':
+      return 'Chờ xác minh'
+    case 'MANUAL_HOLD':
+      return 'Tạm giữ thủ công'
     case 'UNKNOWN':
       return 'Không xác định'
     default:
@@ -106,34 +113,21 @@ function getTelegramStatusClass(status: string | null | undefined) {
   switch (normalizeStatus(status).toLowerCase()) {
     case 'active':
       return 'bg-success/[0.12] text-success border border-success/20'
-    case 'left':
+    case 'inactive':
       return 'bg-muted text-muted-foreground border border-border'
-    case 'kicked':
-    case 'banned':
-      return 'bg-destructive/[0.12] text-destructive border border-destructive/20'
-    case 'unknown':
-      return 'bg-muted text-muted-foreground border-border'
     default:
-      return 'bg-info/[0.12] text-info border border-info/20'
+      return 'bg-warning/[0.12] text-warning border border-warning/20'
   }
 }
 
 function getLpexStatusClass(status: string | null | undefined) {
   switch (normalizeStatus(status).toLowerCase()) {
     case 'active':
-    case 'verified':
       return 'bg-success/[0.12] text-success border border-success/20'
-    case 'pending':
-      return 'bg-warning/[0.12] text-warning border border-warning/20'
-    case 'blocked':
-    case 'banned':
-      return 'bg-destructive/[0.12] text-destructive border border-destructive/20'
-    case 'disabled':
-      return 'bg-muted/[0.12] text-muted-foreground border border-muted/20'
-    case 'unknown':
+    case 'inactive':
       return 'bg-muted/[0.12] text-muted-foreground border border-muted/20'
     default:
-      return 'bg-info/[0.12] text-info border border-info/20'
+      return 'bg-warning/[0.12] text-warning border border-warning/20'
   }
 }
 
@@ -187,9 +181,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
         label: 'Trạng thái telegram',
         options: [
           { value: 'active', label: 'Đang tham gia' },
-          { value: 'left', label: 'Đã rời nhóm' },
-          { value: 'kicked', label: 'Đã bị kick' },
-          { value: 'banned', label: 'Đã bị cấm' },
+          { value: 'inactive', label: 'Đã rời nhóm' },
         ],
       },
       {
@@ -197,11 +189,11 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
         label: 'Trạng thái LPEX',
         options: [
           { value: 'active', label: 'Hoạt động' },
-          { value: 'verified', label: 'Hoạt động' },
-          { value: 'pending', label: 'Đang chờ' },
-          { value: 'blocked', label: 'Đã chặn' },
-          { value: 'disabled', label: 'Vô hiệu hoá' },
-          { value: 'banned', label: 'Đã cấm' },
+          { value: 'inactive', label: 'Không hoạt động' },
+          // { value: 'pending', label: 'Đang chờ' },
+          // { value: 'blocked', label: 'Đã chặn' },
+          // { value: 'disabled', label: 'Vô hiệu hoá' },
+          // { value: 'banned', label: 'Đã cấm' },
         ],
       },
     ],
@@ -239,40 +231,6 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
 
     return chips
   }, [countryFilter, lpexStatusFilter, selectFilters, telegramStatusFilter])
-
-  const statusBadges = useMemo(() => {
-    const counter = new Map<string, number>()
-
-    for (const member of members) {
-      const lpex = (member.lpexUserStatus || 'unknown').trim().toLowerCase()
-      if (lpex && lpex !== 'verified' && lpex !== 'active') {
-        counter.set(lpex, (counter.get(lpex) ?? 0) + 1)
-      }
-
-      const telegram = (member.telegramStatus || 'unknown').trim().toLowerCase()
-      if (telegram && telegram !== 'active') {
-        counter.set(telegram, (counter.get(telegram) ?? 0) + 1)
-      }
-    }
-
-    return Array.from(counter.entries())
-      .map(([status, count]) => ({
-        key: status,
-        label:
-          status === 'pending' || status === 'blocked' || status === 'disabled'
-            ? formatLpexStatusLabel(status)
-            : formatTelegramStatusLabel(status),
-        count,
-        tone:
-          status === 'blocked' || status === 'banned' || status === 'kicked'
-            ? ('danger' as const)
-            : status === 'pending'
-              ? ('warning' as const)
-              : ('neutral' as const),
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 4)
-  }, [members])
 
   const columns: DataTableColumn<MemberItem>[] = [
     {
@@ -312,6 +270,15 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       cell: (member) => (
         <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${getTelegramStatusClass(member.telegramStatus)}`}>
           {formatTelegramStatusLabel(member.telegramStatus)}
+        </span>
+      ),
+    },
+    {
+      id: 'eligibilityStatus',
+      header: 'Trạng thái thành viên',
+      cell: (member) => (
+        <span className="inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium bg-info/[0.12] text-info border border-info/20">
+          {formatEligibilityStatusLabel(member.eligibilityStatus)}
         </span>
       ),
     },
@@ -372,11 +339,11 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
               placeholder: 'Tìm theo UID, username, tên thành viên...',
               widthClassName: 'flex-1 min-w-[260px] max-w-[520px]',
             },
-            {
-              key: 'countryCode',
-              placeholder: 'Quốc gia (VD: VN, SG, US...)',
-              widthClassName: 'w-full sm:w-[220px]',
-            },
+            // {
+            //   key: 'countryCode',
+            //   placeholder: 'Quốc gia (VD: VN, SG, US...)',
+            //   widthClassName: 'w-full sm:w-[220px]',
+            // },
           ]}
           textValues={{
             search: searchName,
@@ -384,7 +351,6 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
           }}
           selectFilters={selectFilters}
           activeFilterChips={activeFilterChips}
-          statusBadges={statusBadges}
           disabled={isFetching}
           onTextChange={(key, value) => {
             if (key === 'countryCode') {

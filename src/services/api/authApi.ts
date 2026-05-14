@@ -30,6 +30,7 @@ type CurrentUserApiData = {
     telegramContact?: string | null
     zaloContact?: string | null
     defaultLanguage?: string | null
+    telegramUsername?: string | null
   }
 }
 
@@ -94,6 +95,7 @@ export const authApi = api.injectEndpoints({
           telegramContact: payload.data.kol?.telegramContact || undefined,
           zaloContact: payload.data.kol?.zaloContact || undefined,
           defaultLanguage: payload.data.kol?.defaultLanguage || undefined,
+          telegramUsername: payload.data.kol?.telegramUsername || undefined,
         }
       },
       providesTags: ['Auth'],
