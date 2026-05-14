@@ -203,6 +203,8 @@ export default function MembersHeader() {
       limit: Math.min(100, Math.max(1, Number(searchParams.get("limit") || "20") || 20)),
       search: searchParams.get("search")?.trim() || undefined,
       countryCode: searchParams.get("countryCode")?.trim().toUpperCase() || undefined,
+      telegramStatus: searchParams.get("telegramStatus")?.trim() || undefined,
+      lpexUserStatus: searchParams.get("lpexUserStatus")?.trim() || undefined,
       groupId: searchParams.get("groupId")?.trim() || undefined,
       eligibilityStatus: searchParams.get("eligibilityStatus")?.trim().toUpperCase() || undefined,
       membershipState: searchParams.get("membershipState")?.trim().toUpperCase() || undefined,

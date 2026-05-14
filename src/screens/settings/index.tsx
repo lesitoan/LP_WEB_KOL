@@ -35,7 +35,7 @@ export function SettingsScreen() {
       },
       { label: "Mã KOL", value: profile?.kolCode || "---" },
       { label: "Tên hiển thị KOL", value: profile?.kolDisplayName || "---" },
-      { label: "Telegram", value: profile?.telegramContact || "---" },
+      { label: "Telegram", value: profile?.telegramUsername || "---" },
       { label: "Zalo", value: profile?.zaloContact || "---" },
       // { label: "Ngôn ngữ mặc định", value: profile?.defaultLanguage || "---" },
       { label: "Lần đăng nhập gần nhất", value: formatDateTime(profile?.lastLoginAt) },
