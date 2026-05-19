@@ -23,6 +23,8 @@ export type GroupFormValues = {
   rejoinEnabled: boolean
 }
 
+const volumeWithMaxTwoDecimalsRegex = /^\d+(?:\.\d{1,2})?$/
+
 type GroupFormDialogProps = {
   dialogTitle: string
   submitText: string
@@ -124,7 +126,7 @@ export function GroupFormDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-2xl lg:max-w-4xl xl:max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden p-0">
-        <form onSubmit={handleSubmit(onSubmit)} className="flex max-h-[92vh] flex-col">
+        <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex max-h-[92vh] flex-col">
           <DialogHeader className="px-4 sm:px-5 pt-5">
             <DialogTitle>{dialogTitle}</DialogTitle>
           </DialogHeader>
@@ -209,13 +211,15 @@ export function GroupFormDialog({
                 <Field orientation="vertical">
                   <FieldLabel>{`Ngưỡng volume tối đa (USD)`}</FieldLabel>
                   <Input
-                    type="number"
+                    type="text"
                     min={minVolume ? Number(minVolume) : 0}
-                    step="1"
-                    inputMode="numeric"
+                    inputMode="decimal"
                     {...register('maxVolumeRequired', {
                       required: 'Ngưỡng volume tối đa là bắt buộc.',
                       validate: (value) => {
+                        if (!volumeWithMaxTwoDecimalsRegex.test(value)) {
+                          return 'Ngưỡng volume tối đa chỉ được có tối đa 2 chữ số thập phân.'
+                        }
                         const parsed = Number(value)
                         const minValue = Number(watch('minVolumeRequired'))
                         if (value === '' || Number.isNaN(parsed)) return 'Ngưỡng volume tối đa không hợp lệ.'

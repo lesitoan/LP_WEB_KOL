@@ -87,7 +87,7 @@ export default function KpiGrid() {
       },
       {
         label: "Tỷ lệ chuyển đổi",
-        value: formatPercentage(57.1),
+        value: formatPercentage(0),
         delta: "▼ -2.3% so với tháng trước",
         up: false,
         href: "/analytics",
