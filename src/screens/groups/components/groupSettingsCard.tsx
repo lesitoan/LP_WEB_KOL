@@ -174,6 +174,13 @@ export function GroupSettingsCard({
             <span className="text-lg font-semibold text-foreground">{volumeLabel}</span>
           </Field>
 
+          <Field orientation="horizontal" className="items-center justify-between">
+            <FieldLabel className="text-sm font-medium text-muted-foreground">
+              Số lượng thành viên
+            </FieldLabel>
+            <span className="text-sm font-medium text-foreground text-right">{group.memberCount ?? 0}</span>
+          </Field>
+
           <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-border p-4">
             <div className="space-y-0.5">
               <FieldLabel className="text-sm font-medium">Trạng thái nhóm</FieldLabel>

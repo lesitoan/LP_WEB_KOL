@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useMemo } from "react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
@@ -108,8 +108,11 @@ export default function MembersTable() {
     telegramStatusFilter,
     lpexUserStatusFilter,
     query,
+    sortBy,
+    sortOrder,
     setPage,
     setLimit,
+    setSort,
     setSearchInput,
     setCountryCodeInput,
     setTelegramStatusFilter,
@@ -186,10 +189,36 @@ export default function MembersTable() {
     return chips;
   }, [lpexUserStatusFilter, selectFilters, telegramStatusFilter]);
 
+  const renderSortableHeader = (
+    title: string,
+    field: "telegramUsername" | "usdVolume" | "createdAt",
+  ) => {
+    const isActive = sortBy === field;
+
+    return (
+      <button
+        type="button"
+        className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+        onClick={() => setSort(field, isActive && sortOrder === "asc" ? "desc" : "asc")}
+      >
+        <span>{title}</span>
+        {isActive ? (
+          sortOrder === "asc" ? (
+            <ArrowUp className="w-3 h-3 shrink-0" aria-hidden="true" />
+          ) : (
+            <ArrowDown className="w-3 h-3 shrink-0" aria-hidden="true" />
+          )
+        ) : (
+          <ArrowUpDown className="w-3 h-3 shrink-0 opacity-70" aria-hidden="true" />
+        )}
+      </button>
+    );
+  };
+
   const columns: DataTableColumn<MemberItem>[] = [
     {
       id: "member",
-      header: "Member",
+      header: renderSortableHeader("Member", "telegramUsername"),
       cell: (member) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#E8B84D] to-[#A86B3F] grid place-items-center text-xs font-semibold text-foreground shrink-0">
@@ -259,12 +288,7 @@ export default function MembersTable() {
     },
     {
       id: "volume",
-      header: (
-        <span className="inline-flex items-center gap-1">
-          <span>Volume 30D</span>
-          <ArrowDown className="w-3 h-3 shrink-0" aria-hidden="true" />
-        </span>
-      ),
+      header: renderSortableHeader("Volume 30D", "usdVolume"),
       cellClassName: "font-geist-mono font-medium",
       cell: (member) => formatUsdVolume(member.usdVolume),
     },
@@ -296,7 +320,7 @@ export default function MembersTable() {
     },
     {
       id: "registeredAt",
-      header: "Ngày đăng ký",
+      header: renderSortableHeader("Ngày đăng ký", "createdAt"),
       cell: (member) => formatDate(member.registeredAtLpex || member.createdAt),
     },
   ];

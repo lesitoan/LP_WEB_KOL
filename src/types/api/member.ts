@@ -39,6 +39,8 @@ export interface MembersPagination {
 export interface ListMembersQuery {
   page: number
   limit: number
+  sortBy?: "telegramUsername" | "usdVolume" | "createdAt"
+  sortOrder?: "asc" | "desc"
   search?: string
   countryCode?: string
   telegramStatus?: string

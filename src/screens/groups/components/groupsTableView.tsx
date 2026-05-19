@@ -128,6 +128,11 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
       cell: (group) => formatVolumeRange(group),
     },
     {
+      id: 'memberCount',
+      header: 'Số lượng TV',
+      cell: (group) => group.memberCount ?? 0,
+    },
+    {
       id: 'warning',
       header: 'Cảnh báo',
       cell: (group) => `${group.warningCountBeforeKick} lần`,

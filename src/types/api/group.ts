@@ -14,6 +14,7 @@ export interface GroupItem {
   gracePeriodDays: number | null
   announcementEnabled: boolean
   status: string
+  memberCount?: number
   createdAt: string
   updatedAt: string
 }
