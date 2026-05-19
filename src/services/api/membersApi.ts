@@ -8,6 +8,8 @@ export const membersApi = api.injectEndpoints({
       query: ({
         page,
         limit,
+        sortBy,
+        sortOrder,
         search,
         countryCode,
         telegramStatus,
@@ -21,6 +23,14 @@ export const membersApi = api.injectEndpoints({
           page: String(page),
           limit: String(limit),
         })
+
+        if (sortBy) {
+          params.set('sortBy', sortBy)
+        }
+
+        if (sortOrder) {
+          params.set('sortOrder', sortOrder)
+        }
 
         if (search) {
           params.set('search', search)
