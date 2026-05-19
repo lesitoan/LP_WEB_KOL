@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { AddGroupDialog } from './components/addGroupDialog'
 import { GroupsListContainer } from './components/groupsListContainer'
-import type { CreateGroupBody, UpdateGroupBody } from '@/types/api'
+import type { CreateGroupBody, GroupStatusUpdateValue, UpdateGroupBody } from '@/types/api'
 import {
   useCreateGroupMutation,
   useDeleteGroupMutation,
   useGetGroupsQuery,
   useUpdateGroupMutation,
+  useUpdateGroupStatusMutation,
 } from '@/services/api/groupsApi'
 import { toast } from '@/hooks/useToast'
 import { usePopup } from '@/hooks/usePopup'
@@ -22,6 +23,7 @@ export function GroupsScreen() {
 
   const { data, isFetching, error } = useGetGroupsQuery(state.query)
   const [updateGroup] = useUpdateGroupMutation()
+  const [updateGroupStatus] = useUpdateGroupStatusMutation()
   const [createGroup] = useCreateGroupMutation()
   const [deleteGroup] = useDeleteGroupMutation()
   const { showConfirm, showAlert, Popup } = usePopup()
@@ -109,7 +111,7 @@ export function GroupsScreen() {
     }
   }
 
-  const handleToggleGroupStatus = async (groupId: string, title: string, nextStatus: 'ACTIVE' | 'INACTIVE') => {
+  const handleToggleGroupStatus = async (groupId: string, title: string, nextStatus: GroupStatusUpdateValue) => {
     const isActivating = nextStatus === 'ACTIVE'
     const accepted = await showConfirm({
       title: isActivating ? 'Xác nhận bật nhóm' : 'Xác nhận tắt nhóm',
@@ -124,7 +126,19 @@ export function GroupsScreen() {
       return
     }
 
-    await handleUpdateGroup(groupId, { status: nextStatus })
+    try {
+      await updateGroupStatus({ groupId, data: { status: nextStatus } }).unwrap()
+      toast({
+        title: 'Cập nhật trạng thái thành công',
+        description: `Nhóm "${title}" đã được chuyển sang ${nextStatus === 'ACTIVE' ? 'hoạt động' : 'không hoạt động'}.`,
+      })
+    } catch (updateError) {
+      toast({
+        variant: 'destructive',
+        title: 'Không cập nhật được trạng thái group',
+        description: extractApiErrorMessage(updateError, 'Đã có lỗi xảy ra'),
+      })
+    }
   }
 
   return (

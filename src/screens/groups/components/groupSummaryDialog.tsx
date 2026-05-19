@@ -36,6 +36,24 @@ const accessSummaryLabels: Record<string, string> = {
   manualHoldCount: 'Tạm giữ thủ công',
 }
 
+function formatGroupStatus(status: string) {
+  const normalized = (status || '').trim().toUpperCase()
+  if (normalized === 'ACTIVE') return 'Đang hoạt động'
+  if (normalized === 'INACTIVE') return 'Đã tắt'
+  return status || '---'
+}
+
+function groupStatusClass(status: string) {
+  const normalized = (status || '').trim().toUpperCase()
+  if (normalized === 'ACTIVE') {
+    return 'bg-success/[0.12] text-success border border-success/20'
+  }
+  if (normalized === 'INACTIVE') {
+    return 'bg-muted text-muted-foreground border border-border'
+  }
+  return 'bg-info/[0.12] text-info border border-info/20'
+}
+
 export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
   const [open, setOpen] = useState(false)
 
@@ -88,7 +106,16 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
                   <h4 className="text-sm font-semibold text-muted-foreground">Thông tin nhóm</h4>
                   <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
                     <p className="min-w-0 break-all"><span className="text-muted-foreground">Tên nhóm:</span> {data.group.title}</p>
-                    <p><span className="text-muted-foreground">Trạng thái:</span> {data.group.status}</p>
+                    <p className="flex items-center gap-2">
+                      <span className="text-muted-foreground">Trạng thái:</span>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-[3px] text-[11.5px] font-medium ${groupStatusClass(
+                          data.group.status,
+                        )}`}
+                      >
+                        {formatGroupStatus(data.group.status)}
+                      </span>
+                    </p>
                     <p><span className="text-muted-foreground">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${data.group.minVolumeRequired.toLocaleString()} USD` : '---'}</p>
                     <p><span className="text-muted-foreground">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${data.group.maxVolumeRequired.toLocaleString()} USD` : '---'}</p>
                   </div>

@@ -3,8 +3,6 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Copy, Facebook, Send, Twitter, X } from "lucide-react";
-import countries from "i18n-iso-countries";
-import enLocale from "i18n-iso-countries/langs/en.json";
 import * as XLSX from "xlsx";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/useToast";
@@ -12,8 +10,6 @@ import { extractApiErrorMessage } from "@/services/api/baseApi";
 import { useGetCurrentUserQuery } from "@/services/api/authApi";
 import { useLazyGetMembersQuery } from "@/services/api/membersApi";
 import type { ListMembersQuery, MemberItem } from "@/types/api";
-
-countries.registerLocale(enLocale);
 
 function fullName(member: MemberItem) {
   return `${member.telegramFirstName ?? ""} ${member.telegramLastName ?? ""}`.trim() || member.telegramUsername || "";
@@ -32,13 +28,6 @@ function formatLpexUserStatusValue(status: string) {
     default:
       return status || "Không rõ";
   }
-}
-
-function formatCountry(member: MemberItem) {
-  const code = (member.countryCode || "").trim().toUpperCase();
-  if (!code) return "—";
-  const countryName = countries.getName(code, "en");
-  return countryName ? `${countryName} (${code})` : code;
 }
 
 function formatRegisteredDate(member: MemberItem) {
@@ -73,7 +62,6 @@ function toWorkbook(members: MemberItem[]) {
     "Telegram username": member.telegramUsername ? `@${member.telegramUsername}` : "—",
     "Telegram ID": member.telegramUserId ?? "—",
     UID: member.lpexUid ?? "—",
-    "Quốc gia": formatCountry(member),
     "Volume 30D": formatVolume(member.usdVolume),
     "Trạng thái": formatLpexUserStatusValue(member.lpexUserStatus || "unknown"),
     "Ngày đăng ký": formatRegisteredDate(member),
@@ -88,7 +76,6 @@ function toWorkbook(members: MemberItem[]) {
     "Telegram username": "",
     "Telegram ID": "",
     UID: "",
-    "Quốc gia": "",
     "Volume 30D": "",
     "Trạng thái": "",
     "Ngày đăng ký": "",

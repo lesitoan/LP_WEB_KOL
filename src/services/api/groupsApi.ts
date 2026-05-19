@@ -12,6 +12,7 @@ import type {
   MembersData,
   UpdateGroupBenefitBody,
   UpdateGroupBody,
+  UpdateGroupStatusBody,
 } from '@/types/api'
 import { api } from './baseApi'
 
@@ -95,6 +96,21 @@ export const groupsApi = api.injectEndpoints({
       transformResponse: (payload: GroupApiEnvelope) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
           throw new Error(payload?.externalMessage || 'Không thể cập nhật group')
+        }
+        return payload.data
+      },
+      invalidatesTags: ['Groups'],
+    }),
+
+    updateGroupStatus: builder.mutation<GroupItem, { groupId: string; data: UpdateGroupStatusBody }>({
+      query: ({ groupId, data }) => ({
+        url: apiV1Path(`/kol/groups/${groupId}/status`),
+        method: 'PATCH',
+        body: data,
+      }),
+      transformResponse: (payload: GroupApiEnvelope) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(payload?.externalMessage || 'Không thể cập nhật trạng thái group')
         }
         return payload.data
       },
@@ -252,6 +268,7 @@ export const {
   useUpdateGroupTitleMutation,
   useGetGroupDetailQuery,
   useUpdateGroupMutation,
+  useUpdateGroupStatusMutation,
   useCreateGroupMutation,
   useGetGroupMembersQuery,
   useGetGroupAccessSummaryQuery,
