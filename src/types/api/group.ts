@@ -64,6 +64,8 @@ export interface ListGroupsQuery {
 export interface ListGroupMembersQuery {
   page: number
   limit: number
+  sortBy?: "telegramUsername" | "usdVolume" | "createdAt"
+  sortOrder?: "asc" | "desc"
   search?: string
   countryCode?: string
   telegramStatus?: string

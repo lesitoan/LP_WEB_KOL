@@ -139,6 +139,14 @@ export const groupsApi = api.injectEndpoints({
           limit: String(query.limit),
         })
 
+        if (query.sortBy) {
+          params.set('sortBy', query.sortBy)
+        }
+
+        if (query.sortOrder) {
+          params.set('sortOrder', query.sortOrder)
+        }
+
         if (query.search) {
           params.set('search', query.search)
         }

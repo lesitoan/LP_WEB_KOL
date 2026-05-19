@@ -9,6 +9,8 @@ type GroupMembersFiltersViewMode = 'list'
 const INITIAL_QUERY: ListGroupMembersQuery = {
   page: 1,
   limit: 20,
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
   search: undefined,
   countryCode: undefined,
   telegramStatus: undefined,
@@ -28,11 +30,21 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
   const countryCode = searchParams.get('countryCode')?.trim().toUpperCase() || ''
   const telegramStatus = searchParams.get('telegramStatus')?.trim().toLowerCase() || ''
   const lpexUserStatus = searchParams.get('lpexUserStatus')?.trim().toLowerCase() || ''
+  const sortByRaw = searchParams.get('sortBy')?.trim()
+  const sortOrderRaw = searchParams.get('sortOrder')?.trim()
+
+  const sortBy: 'telegramUsername' | 'usdVolume' | 'createdAt' =
+    sortByRaw === 'telegramUsername' || sortByRaw === 'usdVolume' || sortByRaw === 'createdAt'
+      ? sortByRaw
+      : 'createdAt'
+  const sortOrder: 'asc' | 'desc' = sortOrderRaw === 'asc' || sortOrderRaw === 'desc' ? sortOrderRaw : 'desc'
 
   return {
     query: {
       page: Number.isInteger(page) && page > 0 ? page : 1,
       limit: Number.isInteger(limit) && limit > 0 ? limit : 20,
+      sortBy,
+      sortOrder,
       search: search || undefined,
       countryCode: countryCode || undefined,
       telegramStatus: telegramStatus || undefined,
@@ -55,6 +67,14 @@ function serializeToSearchParams(state: {
 
   if (state.query.search) {
     params.set('search', state.query.search)
+  }
+
+  if (state.query.sortBy) {
+    params.set('sortBy', state.query.sortBy)
+  }
+
+  if (state.query.sortOrder) {
+    params.set('sortOrder', state.query.sortOrder)
   }
 
   if (state.query.countryCode) {
@@ -103,6 +123,8 @@ export function useGroupMembersFilters() {
       countryFilter: state.query.countryCode ?? 'all',
       telegramStatusFilter: state.query.telegramStatus ?? 'all',
       lpexStatusFilter: state.query.lpexUserStatus ?? 'all',
+      sortBy: state.query.sortBy ?? 'createdAt',
+      sortOrder: state.query.sortOrder ?? 'desc',
       query: state.query,
     }),
     [state.query, state.searchInput],
@@ -130,6 +152,13 @@ export function useGroupMembersFilters() {
         ...state.query,
         page: 1,
         lpexUserStatus: lpexStatusFilter === 'all' ? undefined : lpexStatusFilter,
+      }),
+    setSort: (sortBy: 'telegramUsername' | 'usdVolume' | 'createdAt', sortOrder: 'asc' | 'desc') =>
+      setQuery({
+        ...state.query,
+        page: 1,
+        sortBy,
+        sortOrder,
       }),
   }
 }
