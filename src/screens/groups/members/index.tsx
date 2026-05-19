@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowDown, ArrowLeft } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowUp, ArrowUpDown } from 'lucide-react'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import TableFilterBar, {
@@ -141,6 +141,8 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     countryFilter,
     telegramStatusFilter,
     lpexStatusFilter,
+    sortBy,
+    sortOrder,
     query,
     setPage,
     setLimit,
@@ -148,6 +150,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     setCountryFilter,
     setTelegramStatusFilter,
     setLpexStatusFilter,
+    setSort,
   } = useGroupMembersFilters()
 
   const { data, isLoading, isFetching, error } = useGetGroupMembersQuery(
@@ -232,10 +235,36 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     return chips
   }, [countryFilter, lpexStatusFilter, selectFilters, telegramStatusFilter])
 
+  const renderSortableHeader = (
+    title: string,
+    field: 'telegramUsername' | 'usdVolume' | 'createdAt',
+  ) => {
+    const isActive = sortBy === field
+
+    return (
+      <button
+        type="button"
+        className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+        onClick={() => setSort(field, isActive && sortOrder === 'asc' ? 'desc' : 'asc')}
+      >
+        <span>{title}</span>
+        {isActive ? (
+          sortOrder === 'asc' ? (
+            <ArrowUp className="w-3 h-3 shrink-0" aria-hidden="true" />
+          ) : (
+            <ArrowDown className="w-3 h-3 shrink-0" aria-hidden="true" />
+          )
+        ) : (
+          <ArrowUpDown className="w-3 h-3 shrink-0 opacity-70" aria-hidden="true" />
+        )}
+      </button>
+    )
+  }
+
   const columns: DataTableColumn<MemberItem>[] = [
     {
       id: 'member',
-      header: 'Thành viên',
+      header: renderSortableHeader('Thành viên', 'telegramUsername'),
       cell: (member) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#E8B84D] to-[#A86B3F] grid place-items-center text-xs font-semibold text-foreground shrink-0">
@@ -305,17 +334,12 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     // },
     {
       id: 'registeredAt',
-      header: 'Ngày đăng ký',
+      header: renderSortableHeader('Ngày đăng ký', 'createdAt'),
       cell: (member) => formatDate(member.registeredAtLpex || member.createdAt),
     },
     {
       id: 'volume',
-      header: (
-        <span className="inline-flex items-center gap-1">
-          <span>Volume (USD)</span>
-          <ArrowDown className="w-3 h-3 shrink-0" aria-hidden="true" />
-        </span>
-      ),
+      header: renderSortableHeader('Volume (USD)', 'usdVolume'),
       cellClassName: 'font-geist-mono font-medium',
       cell: (member) => formatUsdVolume(member.usdVolume),
     },
