@@ -125,6 +125,16 @@ export function extractApiErrorMessage(error: unknown, fallback: string) {
       message?: string
     }
 
+    const rawMessage = `${candidate.error || ''} ${candidate.message || ''}`.toLowerCase()
+
+    if (candidate.status === 'FETCH_ERROR' || rawMessage.includes('failed to fetch')) {
+      return 'Có lỗi xảy ra khi kết nối tới máy chủ. Vui lòng thử lại.'
+    }
+
+    if (candidate.status === 'TIMEOUT_ERROR') {
+      return 'Kết nối tới máy chủ bị quá thời gian. Vui lòng thử lại.'
+    }
+
     return (
       candidate.data?.externalMessage ||
       candidate.data?.internalMessage ||
