@@ -30,7 +30,12 @@ export interface UpdateGroupBody {
   warningCountBeforeKick?: number
   gracePeriodHours?: number
   announcementEnabled?: boolean
-  status?: string
+}
+
+export type GroupStatusUpdateValue = 'ACTIVE' | 'INACTIVE'
+
+export interface UpdateGroupStatusBody {
+  status: GroupStatusUpdateValue
 }
 
 export interface CreateGroupBody {
