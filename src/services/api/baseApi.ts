@@ -1,8 +1,16 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query'
-import { handleUnauthorizedSession, readAuthSession, writeAuthSession } from '@/lib/authSession'
+import {
+  handleUnauthorizedAdminSession,
+  handleUnauthorizedSession,
+  readAdminAuthSession,
+  readAuthSession,
+  writeAdminAuthSession,
+  writeAuthSession,
+} from '@/lib/authSession'
 import type { ApiResponse } from '@/types/api'
 import type { LoginResult } from '@/types/api'
+import type { AdminLoginResult } from '@/types/admin/auth'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || ''
 
@@ -95,9 +103,97 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   return result
 }
 
+const adminBaseQuery = fetchBaseQuery({
+  baseUrl: API_BASE,
+  prepareHeaders: (headers) => {
+    const token = getCookie('adminAccessToken')
+    headers.set('Content-Type', 'application/json')
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
+    return headers
+  },
+})
+
+const adminBaseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+  args,
+  api,
+  extraOptions,
+) => {
+  const silentLogout = () => {
+    handleUnauthorizedAdminSession()
+    return new Promise<never>(() => {})
+  }
+
+  let result = await adminBaseQuery(args, api, extraOptions)
+
+  if (result.error?.status !== 401) {
+    return result
+  }
+
+  const url = typeof args === 'string' ? args : args.url || ''
+
+  if (url.includes('/admin/auth/login')) {
+    return result
+  }
+
+  if (url.includes('/admin/auth/refresh')) {
+    return silentLogout()
+  }
+
+  const refreshToken = getCookie('adminRefreshToken')
+
+  if (!refreshToken) {
+    return silentLogout()
+  }
+
+  const refreshResult = await adminBaseQuery(
+    {
+      url: '/api/v1/admin/auth/refresh',
+      method: 'POST',
+      body: { refreshToken },
+    },
+    api,
+    extraOptions,
+  )
+
+  if (refreshResult.error) {
+    return silentLogout()
+  }
+
+  const payload = refreshResult.data as ApiResponse<AdminLoginResult> | undefined
+
+  if (!payload || payload.status !== 'success' || !payload.data) {
+    return silentLogout()
+  }
+
+  const currentSession = readAdminAuthSession()
+
+  writeAdminAuthSession({
+    accessToken: payload.data.accessToken,
+    refreshToken: payload.data.refreshToken,
+    user: currentSession.user,
+  })
+
+  result = await adminBaseQuery(args, api, extraOptions)
+
+  if (result.error?.status === 401) {
+    return silentLogout()
+  }
+
+  return result
+}
+
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['Auth', 'Members', 'Groups', 'Dashboard', 'Referrals', 'Partner', 'Cashback', 'Benefits'],
+  endpoints: () => ({}),
+})
+
+export const adminApi = createApi({
+  reducerPath: 'adminApi',
+  baseQuery: adminBaseQueryWithReauth,
   tagTypes: ['Auth', 'Members', 'Groups', 'Dashboard', 'Referrals', 'Partner', 'Cashback', 'Benefits'],
   endpoints: () => ({}),
 })
