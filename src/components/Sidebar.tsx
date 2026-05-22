@@ -16,18 +16,18 @@ const navSections = [
       { id: 'groups', label: 'Groups', icon: 'layers' },
     ],
   },
-  {
-    label: 'Doanh thu',
-    items: [
-      { id: 'cashback', label: 'Cashback', icon: 'dollar' },
-      { id: 'campaign', label: 'Chiến dịch', icon: 'trophy' },
-    ],
-  },
+  // {
+  //   label: 'Doanh thu',
+  //   items: [
+  //     { id: 'cashback', label: 'Cashback', icon: 'dollar' },
+  //     { id: 'campaign', label: 'Chiến dịch', icon: 'trophy' },
+  //   ],
+  // },
   {
     label: 'Phát triển',
     items: [
       { id: 'tier', label: 'Tier & Tín hiệu', icon: 'star' },
-      { id: 'analytics', label: 'Phân tích', icon: 'chart' },
+      // { id: 'analytics', label: 'Phân tích', icon: 'chart' },
     ],
   },
   {
