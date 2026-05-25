@@ -1,4 +1,3 @@
-import { type ReactNode } from 'react'
 import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import type { AdminDashboardKolItem } from '@/types/admin/dashboard'
@@ -16,7 +15,6 @@ type DashboardKolTableProps = {
   limitOptions: number[]
   onPageChange: (nextPage: number) => void
   onLimitChange: (nextLimit: number) => void
-  filtersSlot: ReactNode
 }
 
 export default function DashboardKolTable({
@@ -31,15 +29,12 @@ export default function DashboardKolTable({
   limitOptions,
   onPageChange,
   onLimitChange,
-  filtersSlot,
 }: DashboardKolTableProps) {
   return (
     <Card className="self-start overflow-hidden">
       <CardHeader className="pb-0">
         <CardTitle className="text-base">Danh sách KOL theo dashboard</CardTitle>
       </CardHeader>
-
-      {filtersSlot}
 
       <DataTable
         columns={columns}

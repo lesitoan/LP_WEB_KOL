@@ -5,18 +5,14 @@ import { type DataTableColumn } from '@/components/ui/dataTable'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { useGetAdminDashboardOverviewQuery, useGetAdminRecentActivitiesQuery } from '@/services/api/admin/dashboardApi'
 import { useUrlFilterState } from '@/hooks/useUrlFilterState'
-import type { AdminDashboardKolItem, AdminKolStatus } from '@/types/admin/dashboard'
+import type { AdminDashboardKolItem } from '@/types/admin/dashboard'
 import { adminKolStatusLabel, kolStatusClassName, toCompactNumber, toCurrencyUsd, toDateTimeVi } from './mappers'
-import { buildActiveFilterChips, buildStatusBadges, statusOptions } from './components/dashboardKolFilter'
-import DashboardKolFilters from './components/DashboardKolFilters'
 import DashboardKolTable from './components/DashboardKolTable'
 import DashboardRecentActivities from './components/DashboardRecentActivities'
 
 const limitOptions = [10, 20, 50]
 
 type DashboardFilters = {
-  search: string
-  status: string
   page: string
   limit: string
 }
@@ -28,34 +24,23 @@ const parsePositiveInt = (value: string, fallback: number) => {
 }
 
 export default function AdminDashboardScreen() {
-  const { values, draftValues, setFilter, clearFilter } = useUrlFilterState<DashboardFilters>({
+  const { values, setFilter } = useUrlFilterState<DashboardFilters>({
     initialValues: {
-      search: '',
-      status: 'all',
       page: '1',
       limit: '20',
     },
-    debounceKeys: ['search'],
-    debounceMs: 400,
   })
 
   const page = parsePositiveInt(values.page, 1)
   const limit = parsePositiveInt(values.limit, 20)
-  const status = values.status !== 'all' ? (values.status as AdminKolStatus) : undefined
 
   const overviewQuery = useGetAdminDashboardOverviewQuery({
     page,
     limit,
-    search: values.search || undefined,
-    status,
     memberLimit: 5,
   })
 
   const activitiesQuery = useGetAdminRecentActivitiesQuery({ limit: 8 })
-
-  const activeFilterChips = useMemo(() => buildActiveFilterChips(values.status), [values.status])
-
-  const statusBadges = useMemo(() => buildStatusBadges(overviewQuery.data?.items ?? []), [overviewQuery.data?.items])
 
   const columns = useMemo<DataTableColumn<AdminDashboardKolItem>[]>(
     () => [
@@ -166,27 +151,6 @@ export default function AdminDashboardScreen() {
             setFilter('limit', String(nextLimit), { immediate: true })
             setFilter('page', '1', { immediate: true })
           }}
-          filtersSlot={
-            <DashboardKolFilters
-              draftSearch={draftValues.search}
-              statusOptions={statusOptions}
-              activeFilterChips={activeFilterChips}
-              statusBadges={statusBadges}
-              isDisabled={overviewQuery.isFetching}
-              onSearchChange={(value) => {
-                setFilter('search', value)
-                setFilter('page', '1', { immediate: true })
-              }}
-              onStatusChange={(value) => {
-                setFilter('status', value, { immediate: true })
-                setFilter('page', '1', { immediate: true })
-              }}
-              onRemoveChip={(key) => {
-                clearFilter(key as keyof DashboardFilters, { immediate: true })
-                setFilter('page', '1', { immediate: true })
-              }}
-            />
-          }
         />
 
         <DashboardRecentActivities
