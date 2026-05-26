@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Slider } from '@/components/ui/slider'
 import {
   Select,
   SelectContent,
@@ -13,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useGetKolTiersQuery } from '@/services/api/tierApi'
 import type {
   AdminKolItem,
   AdminKolStatus,
@@ -109,6 +111,7 @@ const getStatusAction = (
 }
 
 const editableStatusOptions = adminKolStatusOptions.filter((option) => option.value !== 'PENDING')
+const NO_TIER_VALUE = '__none__'
 
 function RequiredMark() {
   return <span className="text-destructive">*</span>
@@ -131,6 +134,7 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     setValue,
@@ -141,6 +145,8 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
     mode: 'onChange',
   })
 
+  const { data: tiers = [], isFetching: isFetchingTiers } = useGetKolTiersQuery(undefined, { skip: !open })
+
   useEffect(() => {
     if (open && !wasOpenRef.current) {
       reset(formValuesFromKol(kol))
@@ -149,6 +155,8 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
   }, [kol, open, reset])
 
   const currentStatus = watch('status')
+  const currentTierId = watch('currentTierId')
+  const selectedTier = tiers.find((tier) => tier.id === currentTierId)
 
   const onSubmit = async (form: AdminKolFormValues) => {
     const commissionRate = Number(form.currentCommissionRate || 0)
@@ -178,7 +186,6 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
             lpexRefCode: optionalTrim(form.lpexRefCode),
             telegramUsername: optionalTrim(normalizeTelegramUsername(form.telegramUsername)),
             zaloContact: optionalTrim(form.zaloContact),
-            defaultLanguage: optionalTrim(form.defaultLanguage),
             currentTierId: optionalTrim(form.currentTierId),
             currentCommissionRate: Number.isFinite(commissionRate) ? commissionRate : undefined,
             onboardedAt: toIsoDate(form.onboardedAt),
@@ -348,19 +355,38 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
 
                   <Field orientation="vertical">
                     <FieldLabel>Hoa hồng (%)</FieldLabel>
-                    <Input
-                      type="number"
-                      min={0}
-                      max={999.99}
-                      step="0.01"
-                      {...register('currentCommissionRate', {
+                    <Controller
+                      control={control}
+                      name="currentCommissionRate"
+                      rules={{
                         validate: (value) => {
                           const parsed = Number(value)
                           if (!Number.isFinite(parsed)) return 'Hoa hồng không hợp lệ.'
-                          if (parsed < 0 || parsed > 999.99) return 'Hoa hồng phải từ 0 đến 999.99.'
+                          if (parsed < 0 || parsed > 100) return 'Hoa hồng phải từ 0 đến 100.'
                           return true
                         },
-                      })}
+                      }}
+                      render={({ field }) => {
+                        const currentValue = Number(field.value || 0)
+                        const safeValue = Number.isFinite(currentValue) ? Math.min(Math.max(currentValue, 0), 100) : 0
+
+                        return (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                              <span>0%</span>
+                              <span className="font-medium text-foreground">{safeValue}%</span>
+                              <span>100%</span>
+                            </div>
+                            <Slider
+                              value={[safeValue]}
+                              min={0}
+                              max={100}
+                              step={0.01}
+                              onValueChange={(value) => field.onChange(String(value[0] ?? 0))}
+                            />
+                          </div>
+                        )
+                      }}
                     />
                     {errors.currentCommissionRate ? <FieldDescription className="text-destructive">{errors.currentCommissionRate.message}</FieldDescription> : null}
                   </Field>
@@ -371,13 +397,31 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
                 <FormSection title="Thông tin bổ sung">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <Field orientation="vertical">
-                      <FieldLabel>Ngôn ngữ mặc định</FieldLabel>
-                      <Input placeholder="vi" {...register('defaultLanguage')} />
-                    </Field>
-
-                    <Field orientation="vertical">
                       <FieldLabel>Bậc hiện tại</FieldLabel>
-                      <Input placeholder="UUID bậc hiện tại" {...register('currentTierId')} />
+                      <Select
+                        value={currentTierId || NO_TIER_VALUE}
+                        onValueChange={(value) => setValue('currentTierId', value === NO_TIER_VALUE ? '' : value, { shouldDirty: true })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={isFetchingTiers ? 'Đang tải danh sách bậc...' : 'Chọn bậc'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={NO_TIER_VALUE}>Chưa chọn bậc</SelectItem>
+                          {currentTierId && !selectedTier ? (
+                            <SelectItem value={currentTierId}>Bậc hiện tại ({currentTierId})</SelectItem>
+                          ) : null}
+                          {tiers.map((tier) => (
+                            <SelectItem key={tier.id} value={tier.id}>
+                              {tier.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {/* <FieldDescription>
+                        {selectedTier
+                          ? `Volume thành viên: ${selectedTier.minActiveMembers}${selectedTier.maxActiveMembers === null ? '+' : `-${selectedTier.maxActiveMembers}`}.`
+                          : 'Danh sách bậc được lấy từ API /kol/tiers.'}
+                      </FieldDescription> */}
                     </Field>
 
                     <Field orientation="vertical">
