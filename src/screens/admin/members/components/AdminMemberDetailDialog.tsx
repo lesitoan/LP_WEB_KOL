@@ -50,11 +50,21 @@ function DetailRow({ label, value }: { label: string; value?: string | number | 
   )
 }
 
+function DetailRowSkeleton() {
+  return (
+    <div className="space-y-2 rounded-md border border-border bg-surface-2/40 px-3 py-2">
+      <div className="h-3 w-24 animate-pulse rounded bg-surface-3" />
+      <div className="h-4 w-32 animate-pulse rounded bg-surface-3" />
+    </div>
+  )
+}
+
 export function AdminMemberDetailDialog({ member }: AdminMemberDetailDialogProps) {
   const [open, setOpen] = useState(false)
   const detailQuery = useGetAdminMemberDetailQuery({ memberId: member.id }, { skip: !open })
   const detail = detailQuery.data ?? member
   const name = fullName(detail.telegramFirstName, detail.telegramLastName, detail.telegramUsername)
+  const showSkeleton = detailQuery.isFetching && !detailQuery.data
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -90,35 +100,33 @@ export function AdminMemberDetailDialog({ member }: AdminMemberDetailDialogProps
               </div>
             ) : null}
 
-            {detailQuery.isFetching ? (
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                {Array.from({ length: 12 }).map((_, index) => (
-                  <div key={index} className="h-[72px] animate-pulse rounded-md bg-surface-2" />
-                ))}
-              </div>
-            ) : null}
-
             <section className="grid gap-3 sm:grid-cols-2">
-              <DetailRow
-                label="Trạng thái LPEX"
-                value={<StatusBadge status={detail.lpexUserStatus} label={formatLpexStatus(detail.lpexUserStatus)} />}
-              />
-              <DetailRow label="Ngày đăng ký LPEX" value={formatDateTime(detail.registeredAtLpex)} />
-              <DetailRow label="Tên Telegram" value={detail.telegramUsername} />
-              <DetailRow label="Tên" value={detail.telegramFirstName} />
-              <DetailRow label="Họ" value={detail.telegramLastName} />
-              <DetailRow
-                label="Trạng thái Telegram"
-                value={<StatusBadge status={detail.telegramStatus} label={formatTelegramStatus(detail.telegramStatus)} />}
-              />
-              <DetailRow label="Tổng volume" value={formatUsd(detail.usdVolume)} />
-              <DetailRow label="Mã KOL giới thiệu" value={detail.referrerKol?.code ?? detail.referrerKolCode} />
-              <DetailRow label="Tên KOL giới thiệu" value={detail.referrerKol?.displayName} />
-              <DetailRow
-                label="Trạng thái KOL giới thiệu"
-                value={<StatusBadge status={detail.referrerKol?.status} label={formatKolStatus(detail.referrerKol?.status)} />}
-              />
-              <DetailRow label="Ngày tạo" value={formatDateTime(detail.createdAt)} />
+              {showSkeleton ? (
+                Array.from({ length: 11 }).map((_, index) => <DetailRowSkeleton key={index} />)
+              ) : (
+                <>
+                  <DetailRow
+                    label="Trạng thái LPEX"
+                    value={<StatusBadge status={detail.lpexUserStatus} label={formatLpexStatus(detail.lpexUserStatus)} />}
+                  />
+                  <DetailRow label="Ngày đăng ký LPEX" value={formatDateTime(detail.registeredAtLpex)} />
+                  <DetailRow label="Tên Telegram" value={detail.telegramUsername} />
+                  <DetailRow label="Tên" value={detail.telegramFirstName} />
+                  <DetailRow label="Họ" value={detail.telegramLastName} />
+                  <DetailRow
+                    label="Trạng thái Telegram"
+                    value={<StatusBadge status={detail.telegramStatus} label={formatTelegramStatus(detail.telegramStatus)} />}
+                  />
+                  <DetailRow label="Tổng volume" value={formatUsd(detail.usdVolume)} />
+                  <DetailRow label="Mã KOL giới thiệu" value={detail.referrerKol?.code ?? detail.referrerKolCode} />
+                  <DetailRow label="Tên KOL giới thiệu" value={detail.referrerKol?.displayName} />
+                  <DetailRow
+                    label="Trạng thái KOL giới thiệu"
+                    value={<StatusBadge status={detail.referrerKol?.status} label={formatKolStatus(detail.referrerKol?.status)} />}
+                  />
+                  <DetailRow label="Ngày tạo" value={formatDateTime(detail.createdAt)} />
+                </>
+              )}
             </section>
           </div>
         </div>

@@ -16,10 +16,32 @@ type AdminMemberMetricsDialogProps = {
 
 function MetricRow({ label, value }: { label: string; value?: string | number | null }) {
   return (
-    <div className="space-y-1 rounded-md border border-border bg-surface-2/40 p-3">
+    <div className="space-y-1 rounded-md border border-border bg-surface-2/40 px-3 py-2">
       <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="break-words text-sm text-foreground">{value ?? '---'}</p>
+      <p className="break-words text-sm font-medium text-foreground">{value ?? '---'}</p>
     </div>
+  )
+}
+
+function MetricRowSkeleton() {
+  return (
+    <div className="space-y-2 rounded-md border border-border bg-surface-2/40 px-3 py-2">
+      <div className="h-3 w-28 animate-pulse rounded bg-surface-3" />
+      <div className="h-4 w-20 animate-pulse rounded bg-surface-3" />
+    </div>
+  )
+}
+
+function MetricSectionSkeleton({ rows }: { rows: number }) {
+  return (
+    <section className="space-y-3">
+      <div className="h-4 w-32 animate-pulse rounded bg-surface-3" />
+      <div className="grid gap-3 sm:grid-cols-2">
+        {Array.from({ length: rows }).map((_, index) => (
+          <MetricRowSkeleton key={index} />
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -55,9 +77,7 @@ export function AdminMemberMetricsDialog({ member }: AdminMemberMetricsDialogPro
           <div className="space-y-5">
             <div>
               <p className="text-lg font-semibold">{name}</p>
-              <p className="text-sm text-muted-foreground">
-                @{sourceMember.telegramUsername || '---'} · LPEX UID {sourceMember.lpexUid}
-              </p>
+              <p className="text-sm text-muted-foreground">@{sourceMember.telegramUsername || '---'}</p>
             </div>
 
             {metricsQuery.error ? (
@@ -66,65 +86,63 @@ export function AdminMemberMetricsDialog({ member }: AdminMemberMetricsDialogPro
               </div>
             ) : null}
 
-            {metricsQuery.isFetching ? (
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                {Array.from({ length: 12 }).map((_, index) => (
-                  <div key={index} className="h-[72px] animate-pulse rounded-md bg-surface-2" />
-                ))}
-              </div>
+            {metricsQuery.isFetching && !metrics ? (
+              <>
+                <MetricSectionSkeleton rows={8} />
+                <MetricSectionSkeleton rows={4} />
+                <MetricSectionSkeleton rows={4} />
+              </>
             ) : null}
 
             {metrics ? (
               <>
                 <section className="space-y-3">
-                  <h3 className="text-sm font-semibold">Tổng quan payout</h3>
-                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                    <MetricRow label="Current USD volume" value={formatUsd(metrics.currentUsdVolume)} />
-                    <MetricRow label="Total tracked payouts" value={metrics.totalTrackedPayouts} />
-                    <MetricRow label="Paid payouts" value={metrics.paidPayouts} />
-                    <MetricRow label="Pending payouts" value={metrics.pendingPayouts} />
-                    <MetricRow label="Failed payouts" value={metrics.failedPayouts} />
-                    <MetricRow label="Skipped min amount" value={metrics.skippedMinAmountPayouts} />
-                    <MetricRow label="Ready to claim" value={metrics.readyToClaimPayouts} />
-                    <MetricRow label="Average cashback rate" value={`${metrics.averageCashbackRatePct}%`} />
+                  <h3 className="text-sm font-semibold">Tổng quan chi trả</h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <MetricRow label="Volume USD hiện tại" value={formatUsd(metrics.currentUsdVolume)} />
+                    <MetricRow label="Tổng lượt chi trả đã theo dõi" value={metrics.totalTrackedPayouts} />
+                    <MetricRow label="Đã thanh toán" value={metrics.paidPayouts} />
+                    <MetricRow label="Đang chờ chi trả" value={metrics.pendingPayouts} />
+                    <MetricRow label="Chi trả thất bại" value={metrics.failedPayouts} />
+                    <MetricRow label="Bỏ qua do chưa đạt tối thiểu" value={metrics.skippedMinAmountPayouts} />
+                    <MetricRow label="Sẵn sàng nhận" value={metrics.readyToClaimPayouts} />
+                    <MetricRow label="Tỷ lệ cashback trung bình" value={`${metrics.averageCashbackRatePct}%`} />
                   </div>
                 </section>
 
                 <section className="space-y-3">
                   <h3 className="text-sm font-semibold">Tổng tiền</h3>
-                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                    <MetricRow label="Total volume" value={formatUsd(metrics.totalVolumeUsd)} />
-                    <MetricRow label="Total gross fee" value={formatUsd(metrics.totalGrossFeeUsd)} />
-                    <MetricRow label="Total KOL commission" value={formatUsd(metrics.totalKolCommissionUsd)} />
-                    <MetricRow label="Total cashback" value={formatUsd(metrics.totalCashbackAmountUsd)} />
-                    <MetricRow label="Last payout at" value={formatDateTime(metrics.lastPayoutAt)} />
-                    <MetricRow label="Last notified at" value={formatDateTime(metrics.lastNotifiedAt)} />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <MetricRow label="Tổng volume" value={formatUsd(metrics.totalVolumeUsd)} />
+                    <MetricRow label="Tổng phí gross" value={formatUsd(metrics.totalGrossFeeUsd)} />
+                    <MetricRow label="Tổng hoa hồng KOL" value={formatUsd(metrics.totalKolCommissionUsd)} />
+                    <MetricRow label="Tổng cashback" value={formatUsd(metrics.totalCashbackAmountUsd)} />
                   </div>
                 </section>
 
                 <section className="space-y-3">
-                  <h3 className="text-sm font-semibold">Latest payout</h3>
+                  <h3 className="text-sm font-semibold">Lần chi trả gần nhất</h3>
                   {latestPayout ? (
-                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                      <MetricRow label="Payout id" value={latestPayout.id} />
-                      <MetricRow label="Status" value={latestPayout.payoutStatus} />
-                      <MetricRow label="Cashback rate" value={`${latestPayout.cashbackRatePct}%`} />
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <MetricRow label="ID chi trả" value={latestPayout.id} />
+                      <MetricRow label="Trạng thái" value={latestPayout.payoutStatus} />
+                      <MetricRow label="Tỷ lệ cashback" value={`${latestPayout.cashbackRatePct}%`} />
                       <MetricRow label="Volume" value={formatUsd(latestPayout.volumeUsd)} />
-                      <MetricRow label="Gross fee" value={formatUsd(latestPayout.grossFeeUsd)} />
-                      <MetricRow label="KOL commission" value={formatUsd(latestPayout.kolCommissionUsd)} />
-                      <MetricRow label="Cashback amount" value={formatUsd(latestPayout.cashbackAmountUsd)} />
-                      <MetricRow label="Created at" value={formatDateTime(latestPayout.createdAt)} />
-                      <MetricRow label="Notified at" value={formatDateTime(latestPayout.notifiedAt)} />
-                      <MetricRow label="Group" value={latestPayout.telegramGroup?.title} />
-                      <MetricRow label="Telegram group id" value={latestPayout.telegramGroup?.telegramGroupId} />
-                      <MetricRow label="Cycle id" value={latestPayout.cashbackCycle?.id} />
-                      <MetricRow label="Cycle type" value={latestPayout.cashbackCycle?.cycleType} />
-                      <MetricRow label="Cycle status" value={latestPayout.cashbackCycle?.status} />
-                      <MetricRow label="Period start" value={formatDateTime(latestPayout.cashbackCycle?.periodStart)} />
-                      <MetricRow label="Period end" value={formatDateTime(latestPayout.cashbackCycle?.periodEnd)} />
+                      <MetricRow label="Phí gross" value={formatUsd(latestPayout.grossFeeUsd)} />
+                      <MetricRow label="Hoa hồng KOL" value={formatUsd(latestPayout.kolCommissionUsd)} />
+                      <MetricRow label="Số tiền cashback" value={formatUsd(latestPayout.cashbackAmountUsd)} />
+                      <MetricRow label="Ngày tạo" value={formatDateTime(latestPayout.createdAt)} />
+                      <MetricRow label="Ngày thông báo" value={formatDateTime(latestPayout.notifiedAt)} />
+                      <MetricRow label="Nhóm" value={latestPayout.telegramGroup?.title} />
+                      <MetricRow label="ID nhóm Telegram" value={latestPayout.telegramGroup?.telegramGroupId} />
+                      <MetricRow label="ID chu kỳ" value={latestPayout.cashbackCycle?.id} />
+                      <MetricRow label="Loại chu kỳ" value={latestPayout.cashbackCycle?.cycleType} />
+                      <MetricRow label="Trạng thái chu kỳ" value={latestPayout.cashbackCycle?.status} />
+                      <MetricRow label="Bắt đầu kỳ" value={formatDateTime(latestPayout.cashbackCycle?.periodStart)} />
+                      <MetricRow label="Kết thúc kỳ" value={formatDateTime(latestPayout.cashbackCycle?.periodEnd)} />
                     </div>
                   ) : (
-                    <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">Chưa có payout gần nhất.</p>
+                    <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">Chưa có lần chi trả gần nhất.</p>
                   )}
                 </section>
               </>
