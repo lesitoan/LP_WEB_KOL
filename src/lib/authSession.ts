@@ -1,4 +1,5 @@
 import type { UserProfile } from '@/types/api'
+import type { AdminProfile } from '@/types/admin/auth'
 
 export type AuthSession = {
   accessToken: string | null
@@ -6,7 +7,19 @@ export type AuthSession = {
   user: UserProfile | null
 }
 
+export type AdminAuthSession = {
+  accessToken: string | null
+  refreshToken: string | null
+  user: AdminProfile | null
+}
+
 const emptySession: AuthSession = {
+  accessToken: null,
+  refreshToken: null,
+  user: null,
+}
+
+const emptyAdminSession: AdminAuthSession = {
   accessToken: null,
   refreshToken: null,
   user: null,
@@ -35,6 +48,23 @@ export function readAuthSession(): AuthSession {
   }
 }
 
+export function readAdminAuthSession(): AdminAuthSession {
+  if (typeof document === 'undefined') {
+    return emptyAdminSession
+  }
+
+  const accessToken = getCookie('adminAccessToken')
+  const refreshToken = getCookie('adminRefreshToken')
+  const userRaw = typeof window !== 'undefined' ? localStorage.getItem('adminUser') : null
+  const user = userRaw ? (JSON.parse(userRaw) as AdminProfile) : null
+
+  return {
+    accessToken,
+    refreshToken,
+    user,
+  }
+}
+
 export function writeAuthSession(session: AuthSession) {
   if (typeof document === 'undefined') return
 
@@ -53,6 +83,24 @@ export function writeAuthSession(session: AuthSession) {
   }
 }
 
+export function writeAdminAuthSession(session: AdminAuthSession) {
+  if (typeof document === 'undefined') return
+
+  if (typeof window !== 'undefined') {
+    if (session.user) {
+      localStorage.setItem('adminUser', JSON.stringify(session.user))
+    } else {
+      localStorage.removeItem('adminUser')
+    }
+  }
+
+  const cookieBase = 'path=/'
+  document.cookie = `adminAccessToken=${encodeURIComponent(session.accessToken ?? '')}; ${cookieBase}`
+  if (session.refreshToken) {
+    document.cookie = `adminRefreshToken=${encodeURIComponent(session.refreshToken)}; ${cookieBase}`
+  }
+}
+
 export function clearAuthSession() {
   if (typeof document === 'undefined') return
 
@@ -66,7 +114,21 @@ export function clearAuthSession() {
   document.cookie = 'refreshToken=; Max-Age=0; path=/'
 }
 
+export function clearAdminAuthSession() {
+  if (typeof document === 'undefined') return
+
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('adminUser')
+    localStorage.removeItem('adminAccessToken')
+    localStorage.removeItem('adminRefreshToken')
+  }
+
+  document.cookie = 'adminAccessToken=; Max-Age=0; path=/'
+  document.cookie = 'adminRefreshToken=; Max-Age=0; path=/'
+}
+
 let unauthorizedRedirectTriggered = false
+let unauthorizedAdminRedirectTriggered = false
 
 export function handleUnauthorizedSession() {
   if (typeof window === 'undefined') return
@@ -77,4 +139,15 @@ export function handleUnauthorizedSession() {
 
   unauthorizedRedirectTriggered = true
   window.location.replace('/login')
+}
+
+export function handleUnauthorizedAdminSession() {
+  if (typeof window === 'undefined') return
+
+  clearAdminAuthSession()
+
+  if (unauthorizedAdminRedirectTriggered) return
+
+  unauthorizedAdminRedirectTriggered = true
+  window.location.replace('/admin/login')
 }

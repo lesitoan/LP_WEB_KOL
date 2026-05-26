@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/login']
+const KOL_PUBLIC_PATHS = ['/login']
+const ADMIN_PUBLIC_PATHS = ['/admin/login']
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Skip static files and API
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -16,10 +16,29 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const accessToken = req.cookies.get('accessToken')?.value
-  const isPublic = PUBLIC_PATHS.includes(pathname)
+  const isAdminRoute = pathname.startsWith('/admin')
 
-  if (!accessToken && !isPublic) {
+  if (isAdminRoute) {
+    const adminAccessToken = req.cookies.get('adminAccessToken')?.value
+    const isAdminPublic = ADMIN_PUBLIC_PATHS.includes(pathname)
+
+    if (!adminAccessToken && !isAdminPublic) {
+      const loginUrl = new URL('/admin/login', req.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    if (adminAccessToken && pathname === '/admin/login') {
+      return NextResponse.redirect(new URL('/admin/dashboard', req.url))
+    }
+
+    return NextResponse.next()
+  }
+
+  const accessToken = req.cookies.get('accessToken')?.value
+  const isKolPublic = KOL_PUBLIC_PATHS.includes(pathname)
+
+  if (!accessToken && !isKolPublic) {
     const loginUrl = new URL('/login', req.url)
     loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)
