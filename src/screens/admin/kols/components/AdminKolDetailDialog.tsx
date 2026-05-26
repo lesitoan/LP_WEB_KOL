@@ -5,6 +5,7 @@ import { Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useGetKolTiersQuery } from '@/services/api/tierApi'
 import { useGetAdminKolDetailQuery } from '@/services/api/admin/kolsApi'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { adminKolStatusLabel, kolStatusClassName, toDateTimeVi } from '../mappers'
@@ -25,6 +26,12 @@ function DetailRow({ label, value }: { label: string; value?: string | number | 
 export function AdminKolDetailDialog({ kolId }: AdminKolDetailDialogProps) {
   const [open, setOpen] = useState(false)
   const { data, isFetching, error, refetch } = useGetAdminKolDetailQuery({ kolId }, { skip: !open })
+  const { data: tiers = [] } = useGetKolTiersQuery(undefined, { skip: !open })
+  const currentTier = data?.currentTierId
+    ? tiers.find((tier) => tier.id === data.currentTierId)
+    : undefined
+  const currentTierLabel = currentTier
+    ? currentTier.name : data?.currentTierId
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -74,18 +81,15 @@ export function AdminKolDetailDialog({ kolId }: AdminKolDetailDialogProps) {
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
-                <DetailRow label="ID" value={data.id} />
-                <DetailRow label="Owner user id" value={data.ownerUserId} />
-                <DetailRow label="Slug" value={data.slug} />
-                <DetailRow label="LPEX ref code" value={data.lpexRefCode} />
-                <DetailRow label="Zalo contact" value={data.zaloContact} />
+                <DetailRow label="Đường dẫn slug" value={data.slug} />
+                <DetailRow label="Mã giới thiệu LPEX" value={data.lpexRefCode} />
+                <DetailRow label="Liên hệ Zalo" value={data.zaloContact} />
                 <DetailRow label="Ngôn ngữ" value={data.defaultLanguage} />
-                <DetailRow label="Tier hiện tại" value={data.currentTierId} />
-                <DetailRow label="Commission rate" value={`${data.currentCommissionRate}%`} />
-                <DetailRow label="Onboarded at" value={toDateTimeVi(data.onboardedAt)} />
-                <DetailRow label="Approved at" value={toDateTimeVi(data.approvedAt)} />
-                <DetailRow label="Created at" value={toDateTimeVi(data.createdAt)} />
-                <DetailRow label="Updated at" value={toDateTimeVi(data.updatedAt)} />
+                <DetailRow label="Bậc hiện tại" value={currentTierLabel} />
+                <DetailRow label="Hoa hồng" value={`${data.currentCommissionRate}%`} />
+                <DetailRow label="Ngày onboard" value={toDateTimeVi(data.onboardedAt)} />
+                <DetailRow label="Ngày duyệt" value={toDateTimeVi(data.approvedAt)} />
+                <DetailRow label="Ngày tạo" value={toDateTimeVi(data.createdAt)} />
               </div>
             </div>
           ) : null}
