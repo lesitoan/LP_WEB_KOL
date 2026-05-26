@@ -68,11 +68,11 @@ export function AdminKolsTable({
       cellClassName: 'font-geist-mono',
       cell: (kol) => `${kol.currentCommissionRate ?? 0}%`,
     },
-    {
-      id: 'language',
-      header: 'Ngôn ngữ',
-      cell: (kol) => kol.defaultLanguage || '---',
-    },
+    // {
+    //   id: 'language',
+    //   header: 'Ngôn ngữ',
+    //   cell: (kol) => kol.defaultLanguage || '---',
+    // },
     {
       id: 'updatedAt',
       header: 'Cập nhật',

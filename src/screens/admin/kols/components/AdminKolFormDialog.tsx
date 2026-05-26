@@ -110,6 +110,19 @@ const getStatusAction = (
 
 const editableStatusOptions = adminKolStatusOptions.filter((option) => option.value !== 'PENDING')
 
+function RequiredMark() {
+  return <span className="text-destructive">*</span>
+}
+
+function FormSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="space-y-3 border-t border-border pt-4 first:border-t-0 first:pt-0">
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      {children}
+    </section>
+  )
+}
+
 export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: AdminKolFormDialogProps) {
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -146,7 +159,6 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
         await onSubmitPayload({
           code: form.code.trim(),
           displayName: form.displayName.trim(),
-          slug: optionalTrim(form.slug),
           ownerEmail: form.ownerEmail.trim().toLowerCase(),
           ownerPassword: form.ownerPassword,
           ownerFullName: optionalTrim(form.ownerFullName),
@@ -154,11 +166,7 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
           lpexRefCode: form.lpexRefCode.trim(),
           telegramUsername: normalizeTelegramUsername(form.telegramUsername),
           zaloContact: optionalTrim(form.zaloContact),
-          defaultLanguage: optionalTrim(form.defaultLanguage),
-          currentTierId: optionalTrim(form.currentTierId),
           currentCommissionRate: Number.isFinite(commissionRate) ? commissionRate : 0,
-          onboardedAt: toIsoDate(form.onboardedAt),
-          approvedAt: toIsoDate(form.approvedAt),
         })
       } else {
         await onSubmitPayload(
@@ -195,171 +203,195 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-5 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <FieldGroup className="gap-4">
-              <div className="grid gap-4 lg:grid-cols-3">
-                <Field orientation="vertical">
-                  <FieldLabel>Mã KOL</FieldLabel>
-                  <Input
-                    placeholder="KOL_ABC"
-                    {...register('code', {
-                      required: 'Mã KOL không được để trống.',
-                      maxLength: { value: 50, message: 'Mã KOL tối đa 50 ký tự.' },
-                    })}
-                  />
-                  {errors.code ? <FieldDescription className="text-destructive">{errors.code.message}</FieldDescription> : null}
-                </Field>
+            <FieldGroup className="gap-6">
+              <FormSection title="Thông tin KOL">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <Field orientation="vertical">
+                    <FieldLabel>
+                      Mã KOL <RequiredMark />
+                    </FieldLabel>
+                    <Input
+                      placeholder="KOL_ABC"
+                      {...register('code', {
+                        required: 'Mã KOL không được để trống.',
+                        maxLength: { value: 50, message: 'Mã KOL tối đa 50 ký tự.' },
+                      })}
+                    />
+                    {errors.code ? <FieldDescription className="text-destructive">{errors.code.message}</FieldDescription> : null}
+                  </Field>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Tên hiển thị</FieldLabel>
-                  <Input
-                    placeholder="KOL ABC"
-                    {...register('displayName', {
-                      required: 'Tên KOL không được để trống.',
-                      maxLength: { value: 255, message: 'Tên KOL tối đa 255 ký tự.' },
-                    })}
-                  />
-                  {errors.displayName ? <FieldDescription className="text-destructive">{errors.displayName.message}</FieldDescription> : null}
-                </Field>
+                  <Field orientation="vertical">
+                    <FieldLabel>
+                      Tên hiển thị <RequiredMark />
+                    </FieldLabel>
+                    <Input
+                      placeholder="KOL ABC"
+                      {...register('displayName', {
+                        required: 'Tên KOL không được để trống.',
+                        maxLength: { value: 255, message: 'Tên KOL tối đa 255 ký tự.' },
+                      })}
+                    />
+                    {errors.displayName ? <FieldDescription className="text-destructive">{errors.displayName.message}</FieldDescription> : null}
+                  </Field>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Slug</FieldLabel>
-                  <Input placeholder="kol-abc" {...register('slug')} />
-                </Field>
-              </div>
+                  <Field orientation="vertical">
+                    <FieldLabel>
+                      Mã giới thiệu LPEX <RequiredMark />
+                    </FieldLabel>
+                    <Input
+                      placeholder="REF123"
+                      {...register('lpexRefCode', {
+                        required: 'Mã giới thiệu LPEX không được để trống.',
+                        maxLength: { value: 100, message: 'Mã giới thiệu LPEX tối đa 100 ký tự.' },
+                      })}
+                    />
+                    {errors.lpexRefCode ? <FieldDescription className="text-destructive">{errors.lpexRefCode.message}</FieldDescription> : null}
+                  </Field>
 
-              <div className="grid gap-4 lg:grid-cols-3">
-                <Field orientation="vertical">
-                  <FieldLabel>Ref code LPEX</FieldLabel>
-                  <Input
-                    placeholder="REF123"
-                    {...register('lpexRefCode', {
-                      required: 'Ref code không được để trống.',
-                      maxLength: { value: 100, message: 'Ref code tối đa 100 ký tự.' },
-                    })}
-                  />
-                  {errors.lpexRefCode ? <FieldDescription className="text-destructive">{errors.lpexRefCode.message}</FieldDescription> : null}
-                </Field>
+                  <Field orientation="vertical">
+                    <FieldLabel>
+                      Tên Telegram <RequiredMark />
+                    </FieldLabel>
+                    <Input
+                      placeholder="@kolabc"
+                      {...register('telegramUsername', {
+                        required: 'Tên Telegram không được để trống.',
+                        maxLength: { value: 100, message: 'Tên Telegram tối đa 100 ký tự.' },
+                      })}
+                    />
+                    {errors.telegramUsername ? <FieldDescription className="text-destructive">{errors.telegramUsername.message}</FieldDescription> : null}
+                  </Field>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Telegram username</FieldLabel>
-                  <Input
-                    placeholder="@kolabc"
-                    {...register('telegramUsername', {
-                      required: 'Telegram username không được để trống.',
-                      maxLength: { value: 100, message: 'Telegram username tối đa 100 ký tự.' },
-                    })}
-                  />
-                  {errors.telegramUsername ? <FieldDescription className="text-destructive">{errors.telegramUsername.message}</FieldDescription> : null}
-                </Field>
+                  <Field orientation="vertical">
+                    <FieldLabel>Trạng thái</FieldLabel>
+                    <Select value={currentStatus} onValueChange={(value) => setValue('status', value as AdminKolStatus)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(isCreate ? adminKolStatusOptions : editableStatusOptions).map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {adminKolStatusLabel[option.value]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {!isCreate && getStatusAction(kol?.status, currentStatus) ? (
+                      <FieldDescription>Trạng thái sẽ được cập nhật bằng API hành động riêng khi lưu.</FieldDescription>
+                    ) : null}
+                  </Field>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Trạng thái</FieldLabel>
-                  <Select value={currentStatus} onValueChange={(value) => setValue('status', value as AdminKolStatus)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(isCreate ? adminKolStatusOptions : editableStatusOptions).map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {adminKolStatusLabel[option.value]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {!isCreate && getStatusAction(kol?.status, currentStatus) ? (
-                    <FieldDescription>Trạng thái sẽ được cập nhật bằng API hành động riêng khi lưu.</FieldDescription>
+                  {!isCreate ? (
+                    <Field orientation="vertical">
+                      <FieldLabel>Đường dẫn slug</FieldLabel>
+                      <Input placeholder="kol-abc" {...register('slug')} />
+                    </Field>
                   ) : null}
-                </Field>
-              </div>
+                </div>
+              </FormSection>
 
               {isCreate ? (
-                <div className="grid gap-4 lg:grid-cols-3">
-                  <Field orientation="vertical">
-                    <FieldLabel>Email owner</FieldLabel>
-                    <Input
-                      type="email"
-                      placeholder="owner@example.com"
-                      {...register('ownerEmail', {
-                        required: 'Email owner không được để trống.',
-                        pattern: { value: /^\S+@\S+\.\S+$/, message: 'Email owner không hợp lệ.' },
-                      })}
-                    />
-                    {errors.ownerEmail ? <FieldDescription className="text-destructive">{errors.ownerEmail.message}</FieldDescription> : null}
-                  </Field>
+                <FormSection title="Tài khoản chủ sở hữu">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <Field orientation="vertical">
+                      <FieldLabel>
+                        Email chủ sở hữu <RequiredMark />
+                      </FieldLabel>
+                      <Input
+                        type="email"
+                        placeholder="owner@example.com"
+                        {...register('ownerEmail', {
+                          required: 'Email chủ sở hữu không được để trống.',
+                          pattern: { value: /^\S+@\S+\.\S+$/, message: 'Email chủ sở hữu không hợp lệ.' },
+                        })}
+                      />
+                      {errors.ownerEmail ? <FieldDescription className="text-destructive">{errors.ownerEmail.message}</FieldDescription> : null}
+                    </Field>
 
-                  <Field orientation="vertical">
-                    <FieldLabel>Mật khẩu owner</FieldLabel>
-                    <Input
-                      type="password"
-                      placeholder="Tối thiểu 8 ký tự"
-                      {...register('ownerPassword', {
-                        required: 'Mật khẩu owner không được để trống.',
-                        minLength: { value: 8, message: 'Mật khẩu tối thiểu 8 ký tự.' },
-                        maxLength: { value: 72, message: 'Mật khẩu tối đa 72 ký tự.' },
-                      })}
-                    />
-                    {errors.ownerPassword ? <FieldDescription className="text-destructive">{errors.ownerPassword.message}</FieldDescription> : null}
-                  </Field>
+                    <Field orientation="vertical">
+                      <FieldLabel>
+                        Mật khẩu chủ sở hữu <RequiredMark />
+                      </FieldLabel>
+                      <Input
+                        type="password"
+                        placeholder="Tối thiểu 8 ký tự"
+                        {...register('ownerPassword', {
+                          required: 'Mật khẩu chủ sở hữu không được để trống.',
+                          minLength: { value: 8, message: 'Mật khẩu tối thiểu 8 ký tự.' },
+                          maxLength: { value: 72, message: 'Mật khẩu tối đa 72 ký tự.' },
+                        })}
+                      />
+                      {errors.ownerPassword ? <FieldDescription className="text-destructive">{errors.ownerPassword.message}</FieldDescription> : null}
+                    </Field>
 
-                  <Field orientation="vertical">
-                    <FieldLabel>Tên owner</FieldLabel>
-                    <Input placeholder="Owner Name" {...register('ownerFullName')} />
-                  </Field>
-                </div>
+                    <Field orientation="vertical">
+                      <FieldLabel>Tên chủ sở hữu</FieldLabel>
+                      <Input placeholder="Nguyễn Văn A" {...register('ownerFullName')} />
+                    </Field>
+                  </div>
+                </FormSection>
               ) : (
-                <Field orientation="vertical">
-                  <FieldLabel>Owner user id</FieldLabel>
-                  <Input placeholder="UUID owner mới" {...register('ownerUserId')} />
-                </Field>
+                <FormSection title="Tài khoản chủ sở hữu">
+                  <Field orientation="vertical">
+                    <FieldLabel>ID tài khoản chủ sở hữu</FieldLabel>
+                    <Input placeholder="UUID tài khoản chủ sở hữu" {...register('ownerUserId')} />
+                  </Field>
+                </FormSection>
               )}
 
-              <div className="grid gap-4 lg:grid-cols-3">
-                <Field orientation="vertical">
-                  <FieldLabel>Zalo contact</FieldLabel>
-                  <Input placeholder="Số điện thoại hoặc link Zalo" {...register('zaloContact')} />
-                </Field>
+              <FormSection title="Liên hệ và hoa hồng">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <Field orientation="vertical">
+                    <FieldLabel>Liên hệ Zalo</FieldLabel>
+                    <Input placeholder="Số điện thoại hoặc link Zalo" {...register('zaloContact')} />
+                  </Field>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Ngôn ngữ mặc định</FieldLabel>
-                  <Input placeholder="vi" {...register('defaultLanguage')} />
-                </Field>
+                  <Field orientation="vertical">
+                    <FieldLabel>Hoa hồng (%)</FieldLabel>
+                    <Input
+                      type="number"
+                      min={0}
+                      max={999.99}
+                      step="0.01"
+                      {...register('currentCommissionRate', {
+                        validate: (value) => {
+                          const parsed = Number(value)
+                          if (!Number.isFinite(parsed)) return 'Hoa hồng không hợp lệ.'
+                          if (parsed < 0 || parsed > 999.99) return 'Hoa hồng phải từ 0 đến 999.99.'
+                          return true
+                        },
+                      })}
+                    />
+                    {errors.currentCommissionRate ? <FieldDescription className="text-destructive">{errors.currentCommissionRate.message}</FieldDescription> : null}
+                  </Field>
+                </div>
+              </FormSection>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Tier hiện tại</FieldLabel>
-                  <Input placeholder="UUID tier" {...register('currentTierId')} />
-                </Field>
-              </div>
+              {!isCreate ? (
+                <FormSection title="Thông tin bổ sung">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <Field orientation="vertical">
+                      <FieldLabel>Ngôn ngữ mặc định</FieldLabel>
+                      <Input placeholder="vi" {...register('defaultLanguage')} />
+                    </Field>
 
-              <div className="grid gap-4 lg:grid-cols-3">
-                <Field orientation="vertical">
-                  <FieldLabel>Commission rate (%)</FieldLabel>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={999.99}
-                    step="0.01"
-                    {...register('currentCommissionRate', {
-                      validate: (value) => {
-                        const parsed = Number(value)
-                        if (!Number.isFinite(parsed)) return 'Commission rate không hợp lệ.'
-                        if (parsed < 0 || parsed > 999.99) return 'Commission rate phải từ 0 đến 999.99.'
-                        return true
-                      },
-                    })}
-                  />
-                  {errors.currentCommissionRate ? <FieldDescription className="text-destructive">{errors.currentCommissionRate.message}</FieldDescription> : null}
-                </Field>
+                    <Field orientation="vertical">
+                      <FieldLabel>Bậc hiện tại</FieldLabel>
+                      <Input placeholder="UUID bậc hiện tại" {...register('currentTierId')} />
+                    </Field>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Ngày onboard</FieldLabel>
-                  <Input type="date" {...register('onboardedAt')} />
-                </Field>
+                    <Field orientation="vertical">
+                      <FieldLabel>Ngày onboard</FieldLabel>
+                      <Input type="date" {...register('onboardedAt')} />
+                    </Field>
 
-                <Field orientation="vertical">
-                  <FieldLabel>Ngày duyệt</FieldLabel>
-                  <Input type="date" {...register('approvedAt')} />
-                </Field>
-              </div>
+                    <Field orientation="vertical">
+                      <FieldLabel>Ngày duyệt</FieldLabel>
+                      <Input type="date" {...register('approvedAt')} />
+                    </Field>
+                  </div>
+                </FormSection>
+              ) : null}
             </FieldGroup>
           </div>
 
