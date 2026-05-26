@@ -16,7 +16,7 @@ const navSections = [
       { id: 'dashboard', label: 'Tổng quan', icon: 'home' },
       { id: 'members', label: 'Thành viên', icon: 'users' },
       { id: 'kols', label: 'KOLs', icon: 'star' },
-      { id: 'activities', label: 'Hoạt động', icon: 'chart' },
+      // { id: 'activities', label: 'Hoạt động', icon: 'chart' },
     ],
   },
   {

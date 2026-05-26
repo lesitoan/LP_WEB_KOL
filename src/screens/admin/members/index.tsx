@@ -38,20 +38,20 @@ export default function AdminMembersScreen() {
     : 'Không có thành viên phù hợp.'
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <section className="space-y-1">
+    <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <section className="min-w-0 space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">Quản lý thành viên</h1>
           <p className="text-sm text-muted-foreground">
             Theo dõi thành viên, KOL giới thiệu, nhóm đủ điều kiện và chỉ số cashback.
           </p>
         </section>
 
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw className="h-4 w-4" />
             Làm mới
-          </Button>
+          </Button> */}
           <AdminMemberLookupDialog />
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function AdminMembersScreen() {
         </div>
       ) : null}
 
-      <Card className="overflow-visible">
+      <Card className="min-w-0 overflow-visible">
         <AdminMembersFilters
           query={state.query}
           searchInput={state.searchInput}
@@ -75,7 +75,7 @@ export default function AdminMembersScreen() {
           onSearchInputChange={setSearchInput}
           onQueryChange={setQuery}
         />
-        <div className="rounded-b-[14px] overflow-hidden">
+        <div className="min-w-0 max-w-full rounded-b-[14px] overflow-hidden">
           <AdminMembersTable
             members={members}
             isFetching={isFetching}

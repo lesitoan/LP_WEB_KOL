@@ -13,7 +13,7 @@ export default function AdminAppLayout({ children }: AdminAppLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-dvh bg-surface-0">
+    <div className="h-dvh overflow-hidden bg-surface-0">
       <div className="max-md:hidden fixed left-0 top-0 z-30 h-dvh w-[232px]">
         <AdminSidebar />
       </div>
@@ -32,9 +32,9 @@ export default function AdminAppLayout({ children }: AdminAppLayoutProps) {
         </>
       ) : null}
 
-      <main className="flex min-h-dvh flex-col overflow-hidden md:pl-[232px]">
+      <main className="fixed inset-y-0 left-0 right-0 flex min-w-0 flex-col overflow-hidden md:left-[232px]">
         <AdminTopbar onMenuClick={() => setIsSidebarOpen(true)} />
-        <div className="flex-1 overflow-y-auto p-8 max-sm:p-4 bg-surface-0 custom-scrollbar">
+        <div className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-8 max-sm:p-4 bg-surface-0 custom-scrollbar">
           {children}
         </div>
       </main>

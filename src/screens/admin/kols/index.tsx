@@ -163,18 +163,18 @@ export default function AdminKolsScreen() {
     : 'Không có KOL phù hợp.'
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <section className="space-y-1">
+    <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <section className="min-w-0 space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">Quản lý KOL</h1>
           <p className="text-sm text-muted-foreground">Tạo, cập nhật và theo dõi hồ sơ KOL trong hệ thống admin.</p>
         </section>
 
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw className="h-4 w-4" />
             Làm mới
-          </Button>
+          </Button> */}
           <AdminKolFormDialog
             mode="create"
             onSubmitPayload={handleCreateKol}
@@ -199,7 +199,7 @@ export default function AdminKolsScreen() {
         </div>
       ) : null}
 
-      <Card className="overflow-visible">
+      <Card className="min-w-0 overflow-visible">
         <AdminKolsFilters
           searchInput={state.searchInput}
           statusValue={state.query.status}
@@ -209,7 +209,7 @@ export default function AdminKolsScreen() {
           onStatusChange={(status) => setQuery({ ...state.query, page: 1, status })}
           onClearStatus={() => setQuery({ ...state.query, page: 1, status: undefined })}
         />
-        <div className="rounded-b-[14px] overflow-hidden">
+        <div className="min-w-0 max-w-full rounded-b-[14px] overflow-hidden">
           <AdminKolsTable
             kols={kols}
             isFetching={isFetching}

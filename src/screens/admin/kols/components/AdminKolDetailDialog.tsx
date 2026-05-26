@@ -45,7 +45,7 @@ export function AdminKolDetailDialog({ kolId }: AdminKolDetailDialogProps) {
           <DialogTitle>Chi tiết KOL</DialogTitle>
         </DialogHeader>
 
-        <div className="max-h-[76vh] overflow-y-auto px-5 py-5">
+        <div className="max-h-[76vh] overflow-y-auto px-5 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {isFetching ? (
             <div className="grid gap-3 md:grid-cols-2">
               {Array.from({ length: 8 }).map((_, index) => (

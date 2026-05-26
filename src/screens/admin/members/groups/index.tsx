@@ -111,10 +111,10 @@ export default function AdminMemberGroupsScreen() {
           </p>
         </section>
 
-        <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
+        {/* <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
           <RefreshCw className="h-4 w-4" />
           Làm mới
-        </Button>
+        </Button> */}
       </div>
 
       {errorMessage ? (
