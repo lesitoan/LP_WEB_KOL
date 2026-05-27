@@ -90,7 +90,7 @@ export function DataTable<T>({
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-sm text-muted-foreground border-b border-border">
+                <td colSpan={columns.length} className="p-24 text-center text-sm text-muted-foreground border-b border-border">
                   {emptyContent ?? "Không có dữ liệu"}
                 </td>
               </tr>
