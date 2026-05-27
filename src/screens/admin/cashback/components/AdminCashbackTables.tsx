@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { DataTable, type DataTableColumn, type DataTablePagination } from '@/components/ui/dataTable'
 import type { AdminCashbackConfig, AdminCashbackCycle, AdminCashbackPayout } from '@/types/admin/cashback'
@@ -20,7 +21,7 @@ import {
 type TableProps<TItem> = {
   items: TItem[]
   isFetching: boolean
-  emptyContent: string
+  emptyContent: ReactNode
   pagination: DataTablePagination
 }
 
