@@ -28,24 +28,24 @@ const optionLabel = (options: Array<{ value: string; label: string }>, value?: s
 function textFiltersByTab(tab: AdminCashbackTab): TextFilterConfig[] {
   if (tab === 'configs') {
     return [
-      { key: 'kolId', placeholder: 'KOL ID', widthClassName: 'min-w-[220px] w-[260px]' },
-      { key: 'telegramGroupId', placeholder: 'ID nhóm Telegram', widthClassName: 'min-w-[220px] w-[280px]' },
+      // { key: 'kolId', placeholder: 'KOL ID', widthClassName: 'min-w-[220px] w-[260px]' },
+      // { key: 'telegramGroupId', placeholder: 'ID nhóm Telegram', widthClassName: 'min-w-[220px] w-[280px]' },
     ]
   }
 
   if (tab === 'cycles') {
     return [
-      { key: 'kolId', placeholder: 'KOL ID', widthClassName: 'min-w-[220px] w-[260px]' },
-      { key: 'periodStartFrom', placeholder: 'Từ ngày ISO', widthClassName: 'min-w-[180px] w-[210px]' },
-      { key: 'periodEndTo', placeholder: 'Đến ngày ISO', widthClassName: 'min-w-[180px] w-[210px]' },
+      // { key: 'kolId', placeholder: 'KOL ID', widthClassName: 'min-w-[220px] w-[260px]' },
+      // { key: 'periodStartFrom', placeholder: 'Từ ngày ISO', widthClassName: 'min-w-[180px] w-[210px]' },
+      // { key: 'periodEndTo', placeholder: 'Đến ngày ISO', widthClassName: 'min-w-[180px] w-[210px]' },
     ]
   }
 
   return [
-    { key: 'kolId', placeholder: 'KOL ID', widthClassName: 'min-w-[220px] w-[260px]' },
-    { key: 'memberId', placeholder: 'ID thành viên', widthClassName: 'min-w-[220px] w-[260px]' },
-    { key: 'cycleId', placeholder: 'ID chu kỳ', widthClassName: 'min-w-[220px] w-[260px]' },
-    { key: 'telegramGroupId', placeholder: 'ID nhóm Telegram', widthClassName: 'min-w-[220px] w-[280px]' },
+    // { key: 'kolId', placeholder: 'KOL ID', widthClassName: 'min-w-[220px] w-[260px]' },
+    // { key: 'memberId', placeholder: 'ID thành viên', widthClassName: 'min-w-[220px] w-[260px]' },
+    // { key: 'cycleId', placeholder: 'ID chu kỳ', widthClassName: 'min-w-[220px] w-[260px]' },
+    // { key: 'telegramGroupId', placeholder: 'ID nhóm Telegram', widthClassName: 'min-w-[220px] w-[280px]' },
   ]
 }
 
