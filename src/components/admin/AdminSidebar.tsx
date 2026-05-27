@@ -16,6 +16,7 @@ const navSections = [
       { id: 'dashboard', label: 'Tổng quan', icon: 'home' },
       { id: 'members', label: 'Thành viên', icon: 'users' },
       { id: 'kols', label: 'KOLs', icon: 'star' },
+      { id: 'cashback', label: 'Cashback', icon: 'cashback' },
       // { id: 'activities', label: 'Hoạt động', icon: 'chart' },
     ],
   },
@@ -46,6 +47,11 @@ const icons: Record<string, JSX.Element> = {
       <path d="M3 12h4l3-9 4 18 3-9h4" />
     </svg>
   ),
+  cashback: (
+    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}>
+      <circle cx="12" cy="12" r="9" /><path d="M12 7v10" /><path d="M15 9.5A2.5 2.5 0 0 0 12 8a2.5 2.5 0 0 0-3 2.5c0 3 6 1.5 6 4.5a2.5 2.5 0 0 1-3 2.5 2.5 2.5 0 0 1-3-1.5" />
+    </svg>
+  ),
   settings: (
     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}>
       <circle cx="12" cy="12" r="3" />
@@ -58,6 +64,7 @@ const screenPaths: Record<string, string> = {
   dashboard: '/admin/dashboard',
   members: '/admin/members',
   kols: '/admin/kols',
+  cashback: '/admin/cashback',
   activities: '/admin/activities',
   settings: '/admin/settings',
 }
