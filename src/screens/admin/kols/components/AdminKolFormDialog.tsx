@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useGetKolTiersQuery } from '@/services/api/tierApi'
+import { useGetAdminTiersQuery } from '@/services/api/admin/tiersApi'
 import type {
   AdminKolItem,
   AdminKolStatus,
@@ -145,7 +145,7 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
     mode: 'onChange',
   })
 
-  const { data: tiers = [], isFetching: isFetchingTiers } = useGetKolTiersQuery(undefined, { skip: !open })
+  const { data: tiers = [], isFetching: isFetchingTiers } = useGetAdminTiersQuery(undefined, { skip: !open })
 
   useEffect(() => {
     if (open && !wasOpenRef.current) {
@@ -420,7 +420,7 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
                       {/* <FieldDescription>
                         {selectedTier
                           ? `Volume thành viên: ${selectedTier.minActiveMembers}${selectedTier.maxActiveMembers === null ? '+' : `-${selectedTier.maxActiveMembers}`}.`
-                          : 'Danh sách bậc được lấy từ API /kol/tiers.'}
+                          : 'Danh sách bậc được lấy từ API /admin/tiers.'}
                       </FieldDescription> */}
                     </Field>
 

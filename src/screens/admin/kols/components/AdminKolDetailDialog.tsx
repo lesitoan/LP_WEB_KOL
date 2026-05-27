@@ -5,7 +5,7 @@ import { Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { useGetKolTiersQuery } from '@/services/api/tierApi'
+import { useGetAdminTiersQuery } from '@/services/api/admin/tiersApi'
 import { useGetAdminKolDetailQuery } from '@/services/api/admin/kolsApi'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { adminKolStatusLabel, kolStatusClassName, toDateTimeVi } from '../mappers'
@@ -26,7 +26,7 @@ function DetailRow({ label, value }: { label: string; value?: string | number | 
 export function AdminKolDetailDialog({ kolId }: AdminKolDetailDialogProps) {
   const [open, setOpen] = useState(false)
   const { data, isFetching, error, refetch } = useGetAdminKolDetailQuery({ kolId }, { skip: !open })
-  const { data: tiers = [] } = useGetKolTiersQuery(undefined, { skip: !open })
+  const { data: tiers = [] } = useGetAdminTiersQuery(undefined, { skip: !open })
   const currentTier = data?.currentTierId
     ? tiers.find((tier) => tier.id === data.currentTierId)
     : undefined
