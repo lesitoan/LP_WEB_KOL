@@ -46,12 +46,12 @@ export default function AdminDashboardScreen() {
     () => [
       {
         id: 'code',
-        header: 'Mã KOL',
+        header: 'Mã Partner',
         cell: (row) => <span className="font-medium">{row.code}</span>,
       },
       {
         id: 'displayName',
-        header: 'Tên KOL',
+        header: 'Tên Partner',
         cell: (row) => (
           <div className="space-y-1 max-w-[250px]">
             <p className="font-medium truncate">{row.displayName}</p>
@@ -90,7 +90,7 @@ export default function AdminDashboardScreen() {
   )
 
   const tableErrorMessage = overviewQuery.error
-    ? extractApiErrorMessage(overviewQuery.error, 'Không thể tải danh sách KOL dashboard')
+    ? extractApiErrorMessage(overviewQuery.error, 'Không thể tải danh sách Partner dashboard')
     : null
 
   const activitiesErrorMessage = activitiesQuery.error
@@ -102,14 +102,14 @@ export default function AdminDashboardScreen() {
       <section className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Tổng quan quản trị</h1>
         <p className="text-sm text-muted-foreground">
-          Theo dõi hiệu suất KOL, thành viên và các hoạt động gần đây của hệ thống.
+          Theo dõi hiệu suất Partner, thành viên và các hoạt động gần đây của hệ thống.
         </p>
       </section>
 
       {/* <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Tổng số KOL</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Tổng số Partner</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold">{toCompactNumber(overviewQuery.data?.summary.totalKols ?? 0)}</p>
@@ -141,7 +141,7 @@ export default function AdminDashboardScreen() {
           data={overviewQuery.data?.items ?? []}
           isLoading={overviewQuery.isLoading || overviewQuery.isFetching}
           isFetching={overviewQuery.isFetching}
-          emptyContent={tableErrorMessage ? tableErrorMessage : 'Không có dữ liệu KOL phù hợp'}
+          emptyContent={tableErrorMessage ? tableErrorMessage : 'Không có dữ liệu Partner phù hợp'}
           page={page}
           limit={limit}
           totalItems={overviewQuery.data?.totalItems ?? 0}

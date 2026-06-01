@@ -33,7 +33,7 @@ export default function DashboardKolTable({
   return (
     <Card className="self-start overflow-hidden">
       <CardHeader className="pb-0">
-        <CardTitle className="text-base">Danh sách KOL theo dashboard</CardTitle>
+        <CardTitle className="text-base">Danh sách Partner theo dashboard</CardTitle>
       </CardHeader>
 
       <DataTable
@@ -52,7 +52,7 @@ export default function DashboardKolTable({
           onLimitChange,
           limitOptions,
           isDisabled: isFetching,
-          summaryText: `Tổng ${toCompactNumber(totalItems)} KOL`,
+          summaryText: `Tổng ${toCompactNumber(totalItems)} Partner`,
         }}
       />
     </Card>

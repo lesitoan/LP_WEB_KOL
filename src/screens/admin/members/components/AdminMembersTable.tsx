@@ -51,13 +51,13 @@ export function AdminMembersTable({ members, isFetching, emptyContent, paginatio
     },
     {
       id: 'lpexUid',
-      header: 'LPEX UID',
+      header: 'SCEX UID',
       cellClassName: 'font-geist-mono',
       cell: (member) => member.lpexUid,
     },
     {
       id: 'kol',
-      header: 'Referrer KOL',
+      header: 'Referrer Partner',
       cell: (member) => (
         <div className="space-y-1 max-w-[220px]">
           <p className="truncate">{member.referrerKol?.displayName ?? member.referrerKolCode ?? '---'}</p>
@@ -73,7 +73,7 @@ export function AdminMembersTable({ members, isFetching, emptyContent, paginatio
     },
     {
       id: 'lpexStatus',
-      header: 'LPEX',
+      header: 'SCEX',
       cell: (member) => (
         <span className={`inline-flex items-center rounded-full border px-2 py-[3px] text-[11.5px] font-medium ${statusClassName(member.lpexUserStatus)}`}>
           {formatLpexStatus(member.lpexUserStatus)}

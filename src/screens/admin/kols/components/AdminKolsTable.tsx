@@ -29,7 +29,7 @@ export function AdminKolsTable({
   const columns: DataTableColumn<AdminKolItem>[] = [
     {
       id: 'kol',
-      header: 'KOL',
+      header: 'Partner',
       cell: (kol) => (
         <div className="space-y-1 max-w-[240px]">
           <p className="font-medium truncate">{kol.displayName}</p>
@@ -96,10 +96,10 @@ export function AdminKolsTable({
                   <TooltipTrigger asChild>
                     <Button type="button" variant="ghost" size="icon" className="h-8 w-8">
                       <Edit className="h-4 w-4" />
-                      <span className="sr-only">Cập nhật KOL</span>
+                      <span className="sr-only">Cập nhật Partner</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Cập nhật KOL</TooltipContent>
+                  <TooltipContent>Cập nhật Partner</TooltipContent>
                 </Tooltip>
               </span>
             }
@@ -114,10 +114,10 @@ export function AdminKolsTable({
                 onClick={() => onDeleteKol(kol.id, kol.displayName || kol.code)}
               >
                 <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Xóa KOL</span>
+                <span className="sr-only">Xóa Partner</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Xóa KOL</TooltipContent>
+            <TooltipContent>Xóa Partner</TooltipContent>
           </Tooltip>
         </div>
       ),

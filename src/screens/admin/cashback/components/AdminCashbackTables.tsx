@@ -29,7 +29,7 @@ export function AdminCashbackConfigsTable({ items, isFetching, emptyContent, pag
   const columns: DataTableColumn<AdminCashbackConfig>[] = [
     {
       id: 'kol',
-      header: 'KOL',
+      header: 'Partner',
       cell: (config) => (
         <div className="max-w-[220px] space-y-1">
           <p className="truncate font-medium">{config.kol?.displayName ?? config.kolId}</p>
@@ -86,7 +86,7 @@ export function AdminCashbackCyclesTable({ items, isFetching, emptyContent, pagi
   const columns: DataTableColumn<AdminCashbackCycle>[] = [
     {
       id: 'kol',
-      header: 'KOL',
+      header: 'Partner',
       cell: (cycle) => (
         <div className="max-w-[220px] space-y-1">
           <p className="truncate font-medium">{cycle.kol?.displayName ?? cycle.kolId}</p>
@@ -153,7 +153,7 @@ export function AdminCashbackPayoutsTable({ items, isFetching, emptyContent, pag
     },
     {
       id: 'kol',
-      header: 'KOL',
+      header: 'Partner',
       cell: (payout) => (
         <div className="max-w-[200px] space-y-1">
           <p className="truncate">{payout.kol?.displayName ?? payout.kolId}</p>

@@ -47,7 +47,7 @@ export const adminKolsApi = adminApi.injectEndpoints({
       },
       transformResponse: (payload: AdminKolsEnvelope) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
-          throw new Error(pickApiMessage(payload || {}, 'Không thể tải danh sách KOL'))
+          throw new Error(pickApiMessage(payload || {}, 'Không thể tải danh sách Partner'))
         }
 
         return {
@@ -65,7 +65,7 @@ export const adminKolsApi = adminApi.injectEndpoints({
       }),
       transformResponse: (payload: AdminKolEnvelope) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
-          throw new Error(pickApiMessage(payload || {}, 'Không thể tải thông tin KOL'))
+          throw new Error(pickApiMessage(payload || {}, 'Không thể tải thông tin Partner'))
         }
 
         return normalizeKol(payload.data)
@@ -81,7 +81,7 @@ export const adminKolsApi = adminApi.injectEndpoints({
       }),
       transformResponse: (payload: AdminKolEnvelope) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
-          throw new Error(pickApiMessage(payload || {}, 'Không thể tạo KOL'))
+          throw new Error(pickApiMessage(payload || {}, 'Không thể tạo Partner'))
         }
 
         return normalizeKol(payload.data)
@@ -97,7 +97,7 @@ export const adminKolsApi = adminApi.injectEndpoints({
       }),
       transformResponse: (payload: AdminKolEnvelope) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
-          throw new Error(pickApiMessage(payload || {}, 'Không thể cập nhật KOL'))
+          throw new Error(pickApiMessage(payload || {}, 'Không thể cập nhật Partner'))
         }
 
         return normalizeKol(payload.data)
@@ -112,7 +112,7 @@ export const adminKolsApi = adminApi.injectEndpoints({
       }),
       transformResponse: (payload: AdminKolEnvelope) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
-          throw new Error(pickApiMessage(payload || {}, 'Không thể cập nhật trạng thái KOL'))
+          throw new Error(pickApiMessage(payload || {}, 'Không thể cập nhật trạng thái Partner'))
         }
 
         return normalizeKol(payload.data)
@@ -127,7 +127,7 @@ export const adminKolsApi = adminApi.injectEndpoints({
       }),
       transformResponse: (payload: DeleteAdminKolEnvelope) => {
         if (!payload || payload.status !== 'success') {
-          throw new Error(pickApiMessage(payload || {}, 'Không thể xóa KOL'))
+          throw new Error(pickApiMessage(payload || {}, 'Không thể xóa Partner'))
         }
       },
       invalidatesTags: ['Kols', 'Dashboard'],

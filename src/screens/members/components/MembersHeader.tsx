@@ -270,7 +270,7 @@ export default function MembersHeader() {
       toast({
         variant: "destructive",
         title: "Không tìm thấy mã mời",
-        description: "Không thể tạo link mời vì thiếu kol.code",
+        description: "Không thể tạo link mời vì thiếu partner.code",
       });
       return;
     }

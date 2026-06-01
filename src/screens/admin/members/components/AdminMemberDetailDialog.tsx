@@ -106,10 +106,10 @@ export function AdminMemberDetailDialog({ member }: AdminMemberDetailDialogProps
               ) : (
                 <>
                   <DetailRow
-                    label="Trạng thái LPEX"
+                    label="Trạng thái SCEX"
                     value={<StatusBadge status={detail.lpexUserStatus} label={formatLpexStatus(detail.lpexUserStatus)} />}
                   />
-                  <DetailRow label="Ngày đăng ký LPEX" value={formatDateTime(detail.registeredAtLpex)} />
+                  <DetailRow label="Ngày đăng ký SCEX" value={formatDateTime(detail.registeredAtLpex)} />
                   <DetailRow label="Tên Telegram" value={detail.telegramUsername} />
                   <DetailRow label="Tên" value={detail.telegramFirstName} />
                   <DetailRow label="Họ" value={detail.telegramLastName} />
@@ -118,10 +118,10 @@ export function AdminMemberDetailDialog({ member }: AdminMemberDetailDialogProps
                     value={<StatusBadge status={detail.telegramStatus} label={formatTelegramStatus(detail.telegramStatus)} />}
                   />
                   <DetailRow label="Tổng volume" value={formatUsd(detail.usdVolume)} />
-                  <DetailRow label="Mã KOL giới thiệu" value={detail.referrerKol?.code ?? detail.referrerKolCode} />
-                  <DetailRow label="Tên KOL giới thiệu" value={detail.referrerKol?.displayName} />
+                  <DetailRow label="Mã Partner giới thiệu" value={detail.referrerKol?.code ?? detail.referrerKolCode} />
+                  <DetailRow label="Tên Partner giới thiệu" value={detail.referrerKol?.displayName} />
                   <DetailRow
-                    label="Trạng thái KOL giới thiệu"
+                    label="Trạng thái Partner giới thiệu"
                     value={<StatusBadge status={detail.referrerKol?.status} label={formatKolStatus(detail.referrerKol?.status)} />}
                   />
                   <DetailRow label="Ngày tạo" value={formatDateTime(detail.createdAt)} />

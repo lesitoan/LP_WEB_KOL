@@ -189,7 +189,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       },
       {
         key: 'lpexUserStatus',
-        label: 'Trạng thái LPEX',
+        label: 'Trạng thái SCEX',
         options: [
           { value: 'active', label: 'Hoạt động' },
           { value: 'inactive', label: 'Không hoạt động' },
@@ -286,7 +286,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     },
     {
       id: 'lpexStatus',
-      header: 'Trạng thái LPEX',
+      header: 'Trạng thái SCEX',
       cell: (member) => (
         <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${getLpexStatusClass(member.lpexUserStatus)}`}>
           {formatLpexStatusLabel(member.lpexUserStatus)}

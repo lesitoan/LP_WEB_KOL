@@ -15,7 +15,7 @@ const navSections = [
     items: [
       { id: 'dashboard', label: 'Tổng quan', icon: 'home' },
       { id: 'members', label: 'Thành viên', icon: 'users' },
-      { id: 'kols', label: 'KOLs', icon: 'star' },
+      { id: 'kols', label: 'Partners', icon: 'star' },
       { id: 'cashback', label: 'Cashback', icon: 'cashback' },
       // { id: 'activities', label: 'Hoạt động', icon: 'chart' },
     ],
@@ -87,7 +87,7 @@ export default function AdminSidebar({ onItemClick }: SidebarProps) {
         </div>
         <div>
           <div className="text-sm font-semibold tracking-tight">Admin Portal</div>
-          <div className="text-[10px] text-muted-foreground font-normal tracking-widest uppercase">by GFI x LPex</div>
+          <div className="text-[10px] text-muted-foreground font-normal tracking-widest uppercase">by GFI x SCEX</div>
         </div>
       </div>
 

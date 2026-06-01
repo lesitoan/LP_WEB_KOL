@@ -66,7 +66,7 @@ function titleByKind(kind: DetailKind) {
 function ConfigDetail({ config }: { config: AdminCashbackConfig }) {
   return (
     <section className="grid gap-3 sm:grid-cols-2">
-      <DetailRow label="KOL" value={config.kol ? `${config.kol.displayName} (${config.kol.code})` : config.kolId} />
+      <DetailRow label="Partner" value={config.kol ? `${config.kol.displayName} (${config.kol.code})` : config.kolId} />
       <DetailRow label="Nhóm Telegram" value={config.telegramGroup?.title ?? config.telegramGroupId} />
       <DetailRow label="ID nhóm Telegram" value={config.telegramGroup?.telegramGroupId} />
       <DetailRow label="Tỷ lệ cashback" value={formatPercent(config.cashbackRatePct)} />
@@ -85,7 +85,7 @@ function ConfigDetail({ config }: { config: AdminCashbackConfig }) {
 function CycleDetail({ cycle }: { cycle: AdminCashbackCycle }) {
   return (
     <section className="grid gap-3 sm:grid-cols-2">
-      <DetailRow label="KOL" value={cycle.kol ? `${cycle.kol.displayName} (${cycle.kol.code})` : cycle.kolId} />
+      <DetailRow label="Partners" value={cycle.kol ? `${cycle.kol.displayName} (${cycle.kol.code})` : cycle.kolId} />
       <DetailRow label="Loại chu kỳ" value={formatDistributionCycle(cycle.cycleType)} />
       <DetailRow label="Trạng thái" value={<StatusBadge status={cycle.status} label={formatCycleStatus(cycle.status)} />} />
       <DetailRow label="Bắt đầu kỳ" value={formatDateTime(cycle.periodStart)} />
@@ -102,14 +102,14 @@ function CycleDetail({ cycle }: { cycle: AdminCashbackCycle }) {
 function PayoutDetail({ payout }: { payout: AdminCashbackPayout }) {
   return (
     <section className="grid gap-3 sm:grid-cols-2">
-      <DetailRow label="KOL" value={payout.kol ? `${payout.kol.displayName} (${payout.kol.code})` : payout.kolId} />
+      <DetailRow label="Partner" value={payout.kol ? `${payout.kol.displayName} (${payout.kol.code})` : payout.kolId} />
       <DetailRow label="Thành viên" value={memberName(payout.member)} />
-      <DetailRow label="LPEX UID" value={payout.member?.lpexUid} />
+      <DetailRow label="SCEX UID" value={payout.member?.lpexUid} />
       <DetailRow label="Nhóm Telegram" value={payout.telegramGroup?.title ?? payout.telegramGroupId} />
       <DetailRow label="Trạng thái chi trả" value={<StatusBadge status={payout.payoutStatus} label={formatPayoutStatus(payout.payoutStatus)} />} />
       <DetailRow label="Khối lượng" value={formatUsd(payout.volumeUsd)} />
       <DetailRow label="Phí gộp" value={formatUsd(payout.grossFeeUsd)} />
-      <DetailRow label="Hoa hồng KOL" value={formatUsd(payout.kolCommissionUsd)} />
+      <DetailRow label="Hoa hồng Partner" value={formatUsd(payout.kolCommissionUsd)} />
       <DetailRow label="Cashback" value={formatUsd(payout.cashbackAmountUsd)} />
       <DetailRow label="Tỷ lệ cashback" value={formatPercent(payout.cashbackRatePct ?? payout.appliedConfig?.cashbackRatePct)} />
       <DetailRow label="Chu kỳ" value={payout.cashbackCycle ? `${formatDistributionCycle(payout.cashbackCycle.cycleType)} - ${formatCycleStatus(payout.cashbackCycle.status)}` : payout.cashbackCycleId} />

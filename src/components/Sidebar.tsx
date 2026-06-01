@@ -165,7 +165,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
         </div>
         <div>
           <div className="text-sm font-semibold tracking-tight">Manager</div>
-          <div className="text-[10px] text-muted-foreground font-normal tracking-widest uppercase">by GFI x LPex</div>
+          <div className="text-[10px] text-muted-foreground font-normal tracking-widest uppercase">by GFI x SCEX</div>
         </div>
       </div>
 

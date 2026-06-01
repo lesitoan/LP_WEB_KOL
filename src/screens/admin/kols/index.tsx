@@ -40,7 +40,7 @@ export default function AdminKolsScreen() {
     if (error) {
       toast({
         variant: 'destructive',
-        title: 'Không tải được danh sách KOL',
+        title: 'Không tải được danh sách Partner',
         description: extractApiErrorMessage(error, 'Đã có lỗi xảy ra khi gọi API /admin/kols'),
       })
     }
@@ -50,13 +50,13 @@ export default function AdminKolsScreen() {
     try {
       await createKol(payload as CreateAdminKolBody).unwrap()
       toast({
-        title: 'Đã tạo KOL',
-        description: 'KOL mới và tài khoản owner đã được tạo.',
+        title: 'Đã tạo Partner',
+        description: 'Partner mới và tài khoản owner đã được tạo.',
       })
     } catch (createError) {
       toast({
         variant: 'destructive',
-        title: 'Không tạo được KOL',
+        title: 'Không tạo được Partner',
         description: extractApiErrorMessage(createError, 'Đã có lỗi xảy ra'),
       })
       throw createError
@@ -65,24 +65,24 @@ export default function AdminKolsScreen() {
 
   const statusActionToastText: Record<AdminKolStatusAction, { success: string; error: string; description: string }> = {
     approve: {
-      success: 'Duyệt KOL thành công',
-      error: 'Không duyệt được KOL',
-      description: 'Trạng thái KOL đã được chuyển sang đang hoạt động.',
+      success: 'Duyệt Partner thành công',
+      error: 'Không duyệt được Partner',
+      description: 'Trạng thái Partner đã được chuyển sang đang hoạt động.',
     },
     reject: {
-      success: 'Từ chối KOL thành công',
-      error: 'Không từ chối được KOL',
-      description: 'Trạng thái KOL đã được chuyển sang đã từ chối.',
+      success: 'Từ chối Partner thành công',
+      error: 'Không từ chối được Partner',
+      description: 'Trạng thái Partner đã được chuyển sang đã từ chối.',
     },
     pause: {
-      success: 'Tạm dừng KOL thành công',
-      error: 'Không tạm dừng được KOL',
-      description: 'Trạng thái KOL đã được chuyển sang tạm dừng.',
+      success: 'Tạm dừng Partner thành công',
+      error: 'Không tạm dừng được Partner',
+      description: 'Trạng thái Partner đã được chuyển sang tạm dừng.',
     },
     resume: {
-      success: 'Kích hoạt lại KOL thành công',
-      error: 'Không kích hoạt lại được KOL',
-      description: 'Trạng thái KOL đã được chuyển sang đang hoạt động.',
+      success: 'Kích hoạt lại Partner thành công',
+      error: 'Không kích hoạt lại được Partner',
+      description: 'Trạng thái Partner đã được chuyển sang đang hoạt động.',
     },
   }
 
@@ -96,12 +96,12 @@ export default function AdminKolsScreen() {
       await updateKol({ kolId, data: payload }).unwrap()
       toast({
         title: 'Cập nhật thành công',
-        description: 'Thông tin KOL đã được cập nhật.',
+        description: 'Thông tin Partner đã được cập nhật.',
       })
     } catch (updateError) {
       toast({
         variant: 'destructive',
-        title: 'Không cập nhật được KOL',
+        title: 'Không cập nhật được Partner',
         description: extractApiErrorMessage(updateError, 'Đã có lỗi xảy ra'),
       })
       hasFailed = true
@@ -127,14 +127,14 @@ export default function AdminKolsScreen() {
     }
 
     if (hasFailed) {
-      throw new Error('Không thể hoàn tất cập nhật KOL')
+      throw new Error('Không thể hoàn tất cập nhật Partner')
     }
   }
 
   const handleDeleteKol = async (kolId: string, label: string) => {
     const accepted = await showConfirm({
-      title: 'Xác nhận xóa KOL',
-      description: `Bạn có chắc chắn muốn xóa KOL "${label}" không? Hành động này không thể hoàn tác.`,
+      title: 'Xác nhận xóa Partner',
+      description: `Bạn có chắc chắn muốn xóa Partner "${label}" không? Hành động này không thể hoàn tác.`,
       confirmText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       destructive: true,
@@ -145,29 +145,29 @@ export default function AdminKolsScreen() {
     try {
       await deleteKol({ kolId }).unwrap()
       await showAlert({
-        title: 'Đã xóa KOL',
-        description: 'KOL đã được xóa thành công.',
+        title: 'Đã xóa Partner',
+        description: 'Partner đã được xóa thành công.',
         confirmText: 'OK',
       })
     } catch (deleteError) {
       toast({
         variant: 'destructive',
-        title: 'Không xóa được KOL',
+        title: 'Không xóa được Partner',
         description: extractApiErrorMessage(deleteError, 'Đã có lỗi xảy ra'),
       })
     }
   }
 
   const emptyContent = error
-    ? extractApiErrorMessage(error, 'Không thể tải danh sách KOL')
-    : 'Không có KOL phù hợp.'
+    ? extractApiErrorMessage(error, 'Không thể tải danh sách Partner')
+    : 'Không có Partner nào phù hợp.'
 
   return (
     <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
       <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <section className="min-w-0 space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Quản lý KOL</h1>
-          <p className="text-sm text-muted-foreground">Tạo, cập nhật và theo dõi hồ sơ KOL trong hệ thống admin.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Quản lý Partner</h1>
+          <p className="text-sm text-muted-foreground">Tạo, cập nhật và theo dõi hồ sơ Partner trong hệ thống admin.</p>
         </section>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -181,7 +181,7 @@ export default function AdminKolsScreen() {
             trigger={
               <Button type="button">
                 <Plus className="h-4 w-4" />
-                Tạo KOL
+                Tạo Partner
               </Button>
             }
           />
@@ -191,7 +191,7 @@ export default function AdminKolsScreen() {
       {error ? (
         <div className="rounded-lg border border-destructive/30 bg-destructive/[0.08] p-4 text-sm text-destructive">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <span>{extractApiErrorMessage(error, 'Không thể tải danh sách KOL')}</span>
+            <span>{extractApiErrorMessage(error, 'Không thể tải danh sách Partner')}</span>
             <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
               Thử lại
             </Button>
@@ -222,8 +222,8 @@ export default function AdminKolsScreen() {
               isDisabled: isFetching,
               summaryText:
                 totalItems > 0
-                  ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems} KOL`
-                  : 'Chưa có dữ liệu KOL',
+                  ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems} Partner`
+                  : 'Chưa có dữ liệu Partner',
               onPageChange: (page) => setQuery({ ...state.query, page }),
               onLimitChange: (limit) => setQuery({ ...state.query, page: 1, limit }),
               limitOptions: [10, 20, 50, 100],

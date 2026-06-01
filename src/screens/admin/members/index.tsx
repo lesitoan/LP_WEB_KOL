@@ -43,7 +43,7 @@ export default function AdminMembersScreen() {
         <section className="min-w-0 space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">Quản lý thành viên</h1>
           <p className="text-sm text-muted-foreground">
-            Theo dõi thành viên, KOL giới thiệu, nhóm đủ điều kiện và chỉ số cashback.
+            Theo dõi thành viên, Partner giới thiệu, nhóm đủ điều kiện và chỉ số cashback.
           </p>
         </section>
 

@@ -18,7 +18,7 @@ export const adminActivityTypeLabel: Record<AdminActivityType, string> = {
   member_registrations_today: 'Thành viên mới hôm nay',
   member_low_volume_warning: 'Cảnh báo volume thấp',
   commission_cycle_summary: 'Tổng hợp hoa hồng chu kỳ',
-  kol_approved: 'KOL đã được phê duyệt',
+  kol_approved: 'Partner đã được phê duyệt',
   cashback_ready_to_claim: 'Cashback chờ nhận',
 }
 

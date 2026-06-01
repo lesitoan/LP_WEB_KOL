@@ -115,7 +115,7 @@ export function AdminMemberMetricsDialog({ member }: AdminMemberMetricsDialogPro
                   <div className="grid gap-3 sm:grid-cols-2">
                     <MetricRow label="Tổng volume" value={formatUsd(metrics.totalVolumeUsd)} />
                     <MetricRow label="Tổng phí gross" value={formatUsd(metrics.totalGrossFeeUsd)} />
-                    <MetricRow label="Tổng hoa hồng KOL" value={formatUsd(metrics.totalKolCommissionUsd)} />
+                    <MetricRow label="Tổng hoa hồng Partner" value={formatUsd(metrics.totalKolCommissionUsd)} />
                     <MetricRow label="Tổng cashback" value={formatUsd(metrics.totalCashbackAmountUsd)} />
                   </div>
                 </section>
@@ -129,7 +129,7 @@ export function AdminMemberMetricsDialog({ member }: AdminMemberMetricsDialogPro
                       <MetricRow label="Tỷ lệ cashback" value={`${latestPayout.cashbackRatePct}%`} />
                       <MetricRow label="Volume" value={formatUsd(latestPayout.volumeUsd)} />
                       <MetricRow label="Phí gross" value={formatUsd(latestPayout.grossFeeUsd)} />
-                      <MetricRow label="Hoa hồng KOL" value={formatUsd(latestPayout.kolCommissionUsd)} />
+                      <MetricRow label="Hoa hồng Partner" value={formatUsd(latestPayout.kolCommissionUsd)} />
                       <MetricRow label="Số tiền cashback" value={formatUsd(latestPayout.cashbackAmountUsd)} />
                       <MetricRow label="Ngày tạo" value={formatDateTime(latestPayout.createdAt)} />
                       <MetricRow label="Ngày thông báo" value={formatDateTime(latestPayout.notifiedAt)} />

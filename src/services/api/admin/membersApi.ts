@@ -71,7 +71,7 @@ export const adminMembersApi = adminApi.injectEndpoints({
       }),
       transformResponse: (payload: AdminMemberEnvelope) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
-          throw new Error(pickApiMessage(payload || {}, 'Không thể tải thành viên theo LPEX UID'))
+          throw new Error(pickApiMessage(payload || {}, 'Không thể tải thành viên theo SCEX UID'))
         }
 
         return normalizeMember(payload.data)
