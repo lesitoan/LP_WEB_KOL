@@ -1,4 +1,4 @@
-// Mock data for KOL Dashboard
+// Mock data for Partner Dashboard
 
 export interface Referral {
   id: string

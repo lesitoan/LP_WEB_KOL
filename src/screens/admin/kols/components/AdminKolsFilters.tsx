@@ -54,7 +54,7 @@ export function AdminKolsFilters({
       textFilters={[
         {
           key: 'search',
-          placeholder: 'Tìm theo mã KOL, tên KOL, ref code, slug...',
+          placeholder: 'Tìm theo mã Partner, tên Partner, ref code, slug...',
           widthClassName: 'flex-1 min-w-[260px] max-w-[520px]',
         },
       ]}

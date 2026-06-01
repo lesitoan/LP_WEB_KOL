@@ -33,17 +33,17 @@ export function AdminMemberLookupDialog() {
       </DialogTrigger>
       <DialogContent className="max-w-xl w-[calc(100vw-1rem)] sm:w-full">
         <DialogHeader>
-          <DialogTitle>Tra cứu thành viên theo LPEX UID</DialogTitle>
+          <DialogTitle>Tra cứu thành viên theo SCEX UID</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <Field orientation="vertical">
-            <FieldLabel>LPEX UID</FieldLabel>
+            <FieldLabel>SCEX UID</FieldLabel>
             <div className="flex gap-2">
               <Input
                 value={lpexUid}
                 onChange={(event) => setLpexUid(event.target.value)}
-                placeholder="Nhập LPEX UID"
+                placeholder="Nhập SCEX UID"
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') {
                     event.preventDefault()
@@ -55,7 +55,7 @@ export function AdminMemberLookupDialog() {
                 Tìm
               </Button>
             </div>
-            <FieldDescription>Endpoint: GET /admin/members/by-lpex-uid/:lpexUid</FieldDescription>
+            <FieldDescription>Endpoint: GET /admin/members/by-scex-uid/:scexUid</FieldDescription>
           </Field>
 
           {lookupQuery.error ? (
@@ -71,10 +71,10 @@ export function AdminMemberLookupDialog() {
                 @{member.telegramUsername || '---'} · TG ID {member.telegramUserId}
               </p>
               <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-                <span>LPEX: {formatLpexStatus(member.lpexUserStatus)}</span>
+                <span>SCEX: {formatLpexStatus(member.lpexUserStatus)}</span>
                 <span>Telegram: {formatTelegramStatus(member.telegramStatus)}</span>
                 <span>Volume: {formatUsd(member.usdVolume)}</span>
-                <span>KOL: {member.referrerKol?.displayName ?? member.referrerKolCode ?? '---'}</span>
+                <span>Partner: {member.referrerKol?.displayName ?? member.referrerKolCode ?? '---'}</span>
               </div>
             </div>
           ) : null}

@@ -28,7 +28,7 @@ export default function DashboardKolFilters({
 }: DashboardKolFiltersProps) {
   return (
     <TableFilterBar
-      textFilters={[{ key: 'search', placeholder: 'Tìm theo mã KOL, tên KOL...' }]}
+      textFilters={[{ key: 'search', placeholder: 'Tìm theo mã Partner, tên Partner...' }]}
       textValues={{ search: draftSearch }}
       selectFilters={[{ key: 'status', label: 'Trạng thái', options: statusOptions }]}
       activeFilterChips={activeFilterChips}

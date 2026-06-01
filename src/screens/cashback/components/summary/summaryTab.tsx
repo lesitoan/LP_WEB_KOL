@@ -75,7 +75,7 @@ export function SummaryTab() {
       fillColor: 'rgba(56, 189, 248, 0.22)',
     },
     {
-      label: 'KOL giữ lại',
+      label: 'Partner giữ lại',
       value: toCurrency(summary.kolRetainedUsd),
       tone: 'Biên lợi nhuận',
       className: 'border-violet-400/35 bg-gradient-to-br from-violet-500/20 via-violet-500/8 to-background',

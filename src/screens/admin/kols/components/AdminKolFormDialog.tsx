@@ -206,22 +206,22 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
       <DialogContent className="max-w-3xl lg:max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden p-0">
         <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex max-h-[92vh] flex-col">
           <DialogHeader className="px-4 sm:px-5 pt-5">
-            <DialogTitle>{isCreate ? 'Tạo KOL mới' : 'Cập nhật KOL'}</DialogTitle>
+            <DialogTitle>{isCreate ? 'Tạo Partner mới' : 'Cập nhật Partner'}</DialogTitle>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-5 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <FieldGroup className="gap-6">
-              <FormSection title="Thông tin KOL">
+              <FormSection title="Thông tin Partner">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <Field orientation="vertical">
                     <FieldLabel>
-                      Mã KOL <RequiredMark />
+                      Mã Partner <RequiredMark />
                     </FieldLabel>
                     <Input
-                      placeholder="KOL_ABC"
+                      placeholder="PARTNER_ABC"
                       {...register('code', {
-                        required: 'Mã KOL không được để trống.',
-                        maxLength: { value: 50, message: 'Mã KOL tối đa 50 ký tự.' },
+                        required: 'Mã Partner không được để trống.',
+                        maxLength: { value: 50, message: 'Mã Partner tối đa 50 ký tự.' },
                       })}
                     />
                     {errors.code ? <FieldDescription className="text-destructive">{errors.code.message}</FieldDescription> : null}
@@ -232,10 +232,10 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
                       Tên hiển thị <RequiredMark />
                     </FieldLabel>
                     <Input
-                      placeholder="KOL ABC"
+                      placeholder="PARTNER ABC"
                       {...register('displayName', {
-                        required: 'Tên KOL không được để trống.',
-                        maxLength: { value: 255, message: 'Tên KOL tối đa 255 ký tự.' },
+                        required: 'Tên Partner không được để trống.',
+                        maxLength: { value: 255, message: 'Tên Partner tối đa 255 ký tự.' },
                       })}
                     />
                     {errors.displayName ? <FieldDescription className="text-destructive">{errors.displayName.message}</FieldDescription> : null}
@@ -243,13 +243,13 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
 
                   <Field orientation="vertical">
                     <FieldLabel>
-                      Mã giới thiệu LPEX <RequiredMark />
+                      Mã giới thiệu SCEX <RequiredMark />
                     </FieldLabel>
                     <Input
                       placeholder="REF123"
                       {...register('lpexRefCode', {
-                        required: 'Mã giới thiệu LPEX không được để trống.',
-                        maxLength: { value: 100, message: 'Mã giới thiệu LPEX tối đa 100 ký tự.' },
+                        required: 'Mã giới thiệu SCEX không được để trống.',
+                        maxLength: { value: 100, message: 'Mã giới thiệu SCEX tối đa 100 ký tự.' },
                       })}
                     />
                     {errors.lpexRefCode ? <FieldDescription className="text-destructive">{errors.lpexRefCode.message}</FieldDescription> : null}
@@ -260,7 +260,7 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
                       Tên Telegram <RequiredMark />
                     </FieldLabel>
                     <Input
-                      placeholder="@kolabc"
+                      placeholder="@partnerabc"
                       {...register('telegramUsername', {
                         required: 'Tên Telegram không được để trống.',
                         maxLength: { value: 100, message: 'Tên Telegram tối đa 100 ký tự.' },
@@ -291,7 +291,7 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
                   {!isCreate ? (
                     <Field orientation="vertical">
                       <FieldLabel>Đường dẫn slug</FieldLabel>
-                      <Input placeholder="kol-abc" {...register('slug')} />
+                      <Input placeholder="partner-abc" {...register('slug')} />
                     </Field>
                   ) : null}
                 </div>
@@ -444,7 +444,7 @@ export function AdminKolFormDialog({ mode, trigger, kol, onSubmitPayload }: Admi
               Hủy
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isCreate ? 'Tạo KOL' : 'Lưu thay đổi'}
+              {isCreate ? 'Tạo Partner' : 'Lưu thay đổi'}
             </Button>
           </DialogFooter>
         </form>

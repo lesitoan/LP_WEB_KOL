@@ -49,7 +49,7 @@ export function AdminKolDetailDialog({ kolId }: AdminKolDetailDialogProps) {
 
       <DialogContent className="max-w-3xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden p-0">
         <DialogHeader className="border-b border-border px-5 pt-5 pb-4">
-          <DialogTitle>Chi tiết KOL</DialogTitle>
+          <DialogTitle>Chi tiết Partner</DialogTitle>
         </DialogHeader>
 
         <div className="max-h-[76vh] overflow-y-auto px-5 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -61,7 +61,7 @@ export function AdminKolDetailDialog({ kolId }: AdminKolDetailDialogProps) {
             </div>
           ) : error ? (
             <div className="rounded-md border border-destructive/30 bg-destructive/[0.08] p-4 text-sm text-destructive">
-              <p>{extractApiErrorMessage(error, 'Không thể tải chi tiết KOL')}</p>
+              <p>{extractApiErrorMessage(error, 'Không thể tải chi tiết Partner')}</p>
               <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => refetch()}>
                 Thử lại
               </Button>
@@ -82,7 +82,7 @@ export function AdminKolDetailDialog({ kolId }: AdminKolDetailDialogProps) {
 
               <div className="grid gap-3 md:grid-cols-2">
                 <DetailRow label="Đường dẫn slug" value={data.slug} />
-                <DetailRow label="Mã giới thiệu LPEX" value={data.lpexRefCode} />
+                <DetailRow label="Mã giới thiệu SCEX" value={data.lpexRefCode} />
                 <DetailRow label="Liên hệ Zalo" value={data.zaloContact} />
                 <DetailRow label="Ngôn ngữ" value={data.defaultLanguage} />
                 <DetailRow label="Bậc hiện tại" value={currentTierLabel} />

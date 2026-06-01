@@ -107,7 +107,7 @@ export default function AdminMemberGroupsScreen() {
           <h1 className="text-2xl font-semibold tracking-tight">Nhóm của thành viên</h1>
           <p className="text-sm text-muted-foreground">
             {name}
-            {member?.lpexUid ? ` · LPEX UID ${member.lpexUid}` : ''}
+            {member?.lpexUid ? ` · SCEX UID ${member.lpexUid}` : ''}
           </p>
         </section>
 

@@ -13,17 +13,17 @@ type GroupSummaryDialogProps = {
 }
 
 const accessSummaryLabels: Record<string, string> = {
-  totalKolMembers: 'Tổng số KOL',
+  totalKolMembers: 'Tổng số Partner',
   eligibleMembers: 'Thành viên đủ điều kiện',
   belowThresholdMembers: 'Thành viên dưới ngưỡng',
   aboveThresholdMembers: 'Thành viên trên ngưỡng',
   activeTelegramMembers: 'Thành viên Telegram đang hoạt động',
-  verifiedLpexMembers: 'Thành viên đã xác minh LPEx',
+  verifiedLpexMembers: 'Thành viên đã xác minh SCEX',
   membersWithPayoutHistory: 'Thành viên có lịch sử chi trả',
   totalPayoutRecords: 'Tổng số bản ghi chi trả',
   totalVolumeUsd: 'Tổng volume (USD)',
   totalGrossFeeUsd: 'Tổng phí gộp (USD)',
-  totalKolCommissionUsd: 'Tổng hoa hồng KOL (USD)',
+  totalKolCommissionUsd: 'Tổng hoa hồng Partner (USD)',
   totalCashbackAmountUsd: 'Tổng cashback (USD)',
   lastPayoutAt: 'Lần chi trả gần nhất',
   totalRecords: 'Tổng số',
@@ -39,7 +39,7 @@ const accessSummaryLabels: Record<string, string> = {
 function formatGroupStatus(status: string) {
   const normalized = (status || '').trim().toUpperCase()
   if (normalized === 'ACTIVE') return 'Đang hoạt động'
-  if (normalized === 'INACTIVE') return 'Đã tắt'
+  if (normalized === 'INACTIVE') return 'Không hoạt động'
   return status || '---'
 }
 

@@ -156,7 +156,7 @@ export default function MembersTable() {
       },
       {
         key: "lpexUserStatus",
-        label: "Trạng thái LPEX",
+        label: "Trạng thái SCEX",
         options: LPEX_USER_STATUS,
       },
       // {
@@ -294,7 +294,7 @@ export default function MembersTable() {
     },
     {
       id: "status",
-      header: "Trạng thái LPEX",
+      header: "Trạng thái SCEX",
       cell: (member) => (
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusClass(

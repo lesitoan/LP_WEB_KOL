@@ -24,7 +24,7 @@ export function AdminMembersFilters({
 }: AdminMembersFiltersProps) {
   const selectFilters: SelectFilterConfig[] = [
     { key: 'telegramStatus', label: 'Trạng thái Telegram', options: telegramStatusOptions },
-    { key: 'lpexUserStatus', label: 'Trạng thái LPEX', options: lpexUserStatusOptions },
+    { key: 'lpexUserStatus', label: 'Trạng thái SCEX', options: lpexUserStatusOptions },
   ]
 
   const activeFilterChips: ActiveFilterChip[] = []
@@ -39,13 +39,13 @@ export function AdminMembersFilters({
   if (query.lpexUserStatus) {
     activeFilterChips.push({
       key: 'lpexUserStatus',
-      label: 'Trạng thái LPEX',
+      label: 'Trạng thái SCEX',
       valueLabel: lpexUserStatusOptions.find((option) => option.value === query.lpexUserStatus)?.label ?? query.lpexUserStatus,
     })
   }
 
   if (query.kolId) {
-    activeFilterChips.push({ key: 'kolId', label: 'KOL ID', valueLabel: query.kolId })
+    activeFilterChips.push({ key: 'kolId', label: 'Partner ID', valueLabel: query.kolId })
   }
 
   return (
@@ -53,12 +53,12 @@ export function AdminMembersFilters({
       textFilters={[
         {
           key: 'search',
-          placeholder: 'Tìm theo LPEX UID, telegram, referrer KOL...',
+          placeholder: 'Tìm theo SCEX UID, telegram, referrer Partner...',
           widthClassName: 'flex-1 min-w-[260px] max-w-[520px]',
         },
         // {
         //   key: 'kolId',
-        //   placeholder: 'KOL ID',
+        //   placeholder: 'Partner ID',
         //   widthClassName: 'min-w-[220px] w-[280px]',
         // },
       ]}
