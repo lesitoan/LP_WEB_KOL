@@ -3,10 +3,15 @@ import type {
   ApiResponse,
   ChangePasswordRequest,
   LoginRequest,
-  LoginResponse,
+  LoginAttemptResponse,
   LoginResult,
   UserProfile,
-  ChangePasswordData
+  ChangePasswordData,
+  TwoFactorChallenge,
+  TwoFactorCodeRequest,
+  TwoFactorSetupResult,
+  TwoFactorStatusResult,
+  VerifyTwoFactorRequest,
 } from '@/types/api'
 import { api, pickApiMessage } from './baseApi'
 
@@ -17,6 +22,7 @@ type CurrentUserApiData = {
     fullName: string
     role?: string
     status?: string
+    twoFactorEnabled?: boolean
     lastLoginAt?: string
     createdAt?: string
     updatedAt?: string
@@ -35,12 +41,29 @@ type CurrentUserApiData = {
 }
 
 type CurrentUserApiEnvelope = ApiResponse<CurrentUserApiData>
-type LoginApiEnvelope = ApiResponse<LoginResult>
+type LoginAttemptApiData = LoginResult | TwoFactorChallenge
+type LoginApiEnvelope = ApiResponse<LoginAttemptApiData>
 export type ChangePasswordResponse = ApiResponse<ChangePasswordData>
+
+const isTwoFactorChallenge = (value: LoginAttemptApiData): value is TwoFactorChallenge => {
+  return 'requiresTwoFactor' in value && value.requiresTwoFactor === true
+}
+
+const mapLoginResult = (data: LoginResult): LoginAttemptResponse => ({
+  accessToken: data.accessToken,
+  refreshToken: data.refreshToken,
+  user: {
+    id: data.user.id,
+    email: data.user.email,
+    name: data.user.fullName,
+    role: data.user.role,
+    twoFactorEnabled: data.user.twoFactorEnabled,
+  },
+})
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginRequest>({
+    login: builder.mutation<LoginAttemptResponse, LoginRequest>({
       query: (credentials) => ({
         url: apiV1Path('/kol/auth/login'),
         method: 'POST',
@@ -52,16 +75,25 @@ export const authApi = api.injectEndpoints({
           throw new Error(pickApiMessage(payload || {}, 'Đăng nhập thất bại'))
         }
 
-        return {
-          accessToken: payload.data.accessToken,
-          refreshToken: payload.data.refreshToken,
-          user: {
-            id: payload.data.user.id,
-            email: payload.data.user.email,
-            name: payload.data.user.fullName,
-            role: payload.data.user.role,
-          },
+        if (isTwoFactorChallenge(payload.data)) return payload.data
+
+        return mapLoginResult(payload.data)
+      },
+      invalidatesTags: ['Auth'],
+    }),
+
+    verifyTwoFactorLogin: builder.mutation<LoginAttemptResponse, VerifyTwoFactorRequest>({
+      query: (body) => ({
+        url: apiV1Path('/kol/auth/verify-2fa'),
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (payload: LoginApiEnvelope) => {
+        if (!payload || payload.status !== 'success' || !payload.data || isTwoFactorChallenge(payload.data)) {
+          throw new Error(pickApiMessage(payload || {}, 'Xác thực 2FA thất bại'))
         }
+
+        return mapLoginResult(payload.data)
       },
       invalidatesTags: ['Auth'],
     }),
@@ -81,8 +113,9 @@ export const authApi = api.injectEndpoints({
           id: payload.data.user.id,
           email: payload.data.user.email,
           name: payload.data.kol?.displayName || payload.data.user.fullName,
-          role: payload.data.user.role,
-          status: payload.data.user.status,
+            role: payload.data.user.role,
+            twoFactorEnabled: payload.data.user.twoFactorEnabled,
+            status: payload.data.user.status,
           lastLoginAt: payload.data.user.lastLoginAt,
           createdAt: payload.data.user.createdAt,
           updatedAt: payload.data.user.updatedAt,
@@ -124,7 +157,61 @@ export const authApi = api.injectEndpoints({
       },
       invalidatesTags: ['Auth'],
     }),
+
+    setupTwoFactor: builder.mutation<ApiResponse<TwoFactorSetupResult>, void>({
+      query: () => ({
+        url: apiV1Path('/kol/auth/2fa/setup'),
+        method: 'POST',
+      }),
+      transformResponse: (payload: ApiResponse<TwoFactorSetupResult>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(pickApiMessage(payload || {}, 'Không thể tạo cấu hình 2FA'))
+        }
+
+        return payload
+      },
+    }),
+
+    enableTwoFactor: builder.mutation<ApiResponse<TwoFactorStatusResult>, TwoFactorCodeRequest>({
+      query: (body) => ({
+        url: apiV1Path('/kol/auth/2fa/enable'),
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (payload: ApiResponse<TwoFactorStatusResult>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(pickApiMessage(payload || {}, 'Không thể bật 2FA'))
+        }
+
+        return payload
+      },
+      invalidatesTags: ['Auth'],
+    }),
+
+    disableTwoFactor: builder.mutation<ApiResponse<TwoFactorStatusResult>, TwoFactorCodeRequest>({
+      query: (body) => ({
+        url: apiV1Path('/kol/auth/2fa/disable'),
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (payload: ApiResponse<TwoFactorStatusResult>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(pickApiMessage(payload || {}, 'Không thể tắt 2FA'))
+        }
+
+        return payload
+      },
+      invalidatesTags: ['Auth'],
+    }),
   }),
 })
 
-export const { useLoginMutation, useGetCurrentUserQuery, useChangePasswordMutation } = authApi
+export const {
+  useLoginMutation,
+  useVerifyTwoFactorLoginMutation,
+  useGetCurrentUserQuery,
+  useChangePasswordMutation,
+  useSetupTwoFactorMutation,
+  useEnableTwoFactorMutation,
+  useDisableTwoFactorMutation,
+} = authApi

@@ -9,6 +9,7 @@ import { extractApiErrorMessage } from "@/services/api/baseApi";
 import type { ChangePasswordFormValues } from "./components/changePasswordCard";
 import { AccountInfoCard } from "./components/accountInfoCard";
 import { ChangePasswordCard } from "./components/changePasswordCard";
+import { TwoFactorSecurityCard } from "./components/twoFactorSecurityCard";
 
 function formatDateTime(value?: string) {
   if (!value) return "---";
@@ -73,7 +74,10 @@ export function SettingsScreen() {
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
         <AccountInfoCard rows={accountRows} isLoading={isProfileLoading} />
-        <ChangePasswordCard onSubmit={onSubmit} isSubmitting={isChangingPassword} />
+        <div className="space-y-6">
+          <ChangePasswordCard onSubmit={onSubmit} isSubmitting={isChangingPassword} />
+          <TwoFactorSecurityCard enabled={profile?.twoFactorEnabled} />
+        </div>
       </div>
     </div>
   );
