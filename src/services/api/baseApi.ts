@@ -51,7 +51,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   const url = typeof args === 'string' ? args : args.url || ''
 
   // Không cố refresh cho các endpoint auth chính để tránh loop
-  if (url.includes('/kol/auth/login')) {
+  if (url.includes('/kol/auth/login') || url.includes('/kol/auth/verify-2fa')) {
     return result
   }
 
@@ -133,7 +133,7 @@ const adminBaseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBa
 
   const url = typeof args === 'string' ? args : args.url || ''
 
-  if (url.includes('/admin/auth/login')) {
+  if (url.includes('/admin/auth/login') || url.includes('/admin/auth/verify-2fa')) {
     return result
   }
 

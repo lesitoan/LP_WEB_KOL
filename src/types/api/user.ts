@@ -3,6 +3,7 @@ export interface UserProfile {
   email: string
   name: string
   role?: string
+  twoFactorEnabled?: boolean
   status?: string
   avatarUrl?: string
   createdAt?: string
