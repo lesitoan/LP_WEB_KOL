@@ -27,14 +27,14 @@ export default function DashboardRoutesLayout({
 
   useEffect(() => {
     setMounted(true);
-    if (authHydrated && !hasToken) {
-      const redirect = pathname || "/dashboard";
-      router.replace(`/login?redirect=${encodeURIComponent(redirect)}`);
-    }
+    // if (authHydrated && !hasToken) {
+    //   const redirect = pathname || "/dashboard";
+    //   router.replace(`/login?redirect=${encodeURIComponent(redirect)}`);
+    // }
   }, [authHydrated, hasToken, pathname, router]);
 
-  // Until hydrated or token confirmed, keep loading UI to avoid flicker
-  if (!mounted || !authHydrated || !hasToken || isCheckingSession) {
+  // Until hydrated, keep loading UI to avoid flicker.
+  if (!mounted || !authHydrated) {
     return <PageLoading />;
   }
 
