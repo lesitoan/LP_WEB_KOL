@@ -36,7 +36,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       <main className="relative flex min-h-dvh flex-col overflow-hidden bg-black pt-16 md:pl-[232px]">
         <div className="pointer-events-none fixed bottom-0 left-0 right-0 top-16 z-0 bg-black bg-[url('/images/bg.png')] bg-left-top bg-no-repeat [background-size:680px_auto] md:left-[232px] max-sm:[background-size:520px_auto]" />
-        <div className="relative z-10 flex-1 overflow-y-auto p-8 custom-scrollbar max-sm:p-4">
+        <div className="relative z-10 flex-1 overflow-y-auto p-5 custom-scrollbar">
           {children}
         </div>
       </main>

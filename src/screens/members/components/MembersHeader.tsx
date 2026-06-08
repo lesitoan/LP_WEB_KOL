@@ -292,7 +292,7 @@ export default function MembersHeader() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-5 gap-4">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Cộng đồng / Members</h1>
           <div className="text-[13px] text-muted-foreground">

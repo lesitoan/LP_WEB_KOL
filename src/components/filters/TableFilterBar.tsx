@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, Filter } from 'lucide-react'
 
 export type FilterOption = {
   value: string
@@ -128,14 +128,15 @@ export default function TableFilterBar({
         <div className="relative">
           <button
             type="button"
-            className="text-xs text-muted-foreground px-2 py-1 hover:bg-surface-2 rounded disabled:opacity-60"
+            className="inline-flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-3 hover:text-foreground disabled:opacity-60"
             onClick={() => {
               setIsMenuOpen((prev) => !prev)
               setActiveFilterKey(null)
             }}
             disabled={disabled}
           >
-            + Bộ lọc
+            <Filter className="h-3.5 w-3.5" />
+            Bộ lọc
           </button>
 
           {isMenuOpen ? (
