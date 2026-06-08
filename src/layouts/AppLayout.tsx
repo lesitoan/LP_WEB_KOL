@@ -13,8 +13,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-dvh bg-surface-0">
-      <div className="max-md:hidden fixed left-0 top-0 z-30 h-dvh w-[232px]">
+    <div className="min-h-dvh bg-black">
+      <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
+
+      <div className="max-md:hidden fixed left-0 top-16 z-30 h-[calc(100dvh-4rem)] w-[232px]">
         <Sidebar />
       </div>
 
@@ -26,15 +28,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
             className="md:hidden fixed inset-0 z-40 bg-black/45"
             onClick={() => setIsSidebarOpen(false)}
           />
-          <div className="md:hidden fixed left-0 top-0 z-50 h-dvh w-[232px]">
+          <div className="md:hidden fixed left-0 top-16 z-50 h-[calc(100dvh-4rem)] w-[232px]">
             <Sidebar onItemClick={() => setIsSidebarOpen(false)} />
           </div>
         </>
       ) : null}
 
-      <main className="flex min-h-dvh flex-col overflow-hidden md:pl-[232px]">
-        <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
-        <div className="flex-1 overflow-y-auto p-8 max-sm:p-4 bg-surface-0 custom-scrollbar">
+      <main className="flex min-h-dvh flex-col overflow-hidden pt-16 md:pl-[232px]">
+        <div className="flex-1 overflow-y-auto bg-black bg-[url('/images/bg.png')] bg-left-top bg-no-repeat p-8 custom-scrollbar [background-size:680px_auto] max-sm:p-4 max-sm:[background-size:520px_auto]">
           {children}
         </div>
       </main>

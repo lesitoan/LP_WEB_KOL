@@ -6,49 +6,94 @@
 
 @layer base {
   :root {
-    /* Surfaces — Warm chocolate dark */
-    --background: 20 30% 6%;
-    --foreground: 38 60% 94%;
+    /* SCEX neutral dark */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 96%;
 
-    --surface-0: 20 30% 6%;
-    --surface-1: 20 22% 8.5%;
-    --surface-2: 22 24% 11%;
-    --surface-3: 22 24% 14%;
-    --surface-4: 22 22% 17.5%;
+    --surface-0: 0 0% 0%;
+    --surface-1: 0 0% 4%;
+    --surface-2: 0 0% 7%;
+    --surface-3: 0 0% 12%;
+    --surface-4: 0 0% 18%;
 
-    --card: 20 22% 8.5%;
-    --card-foreground: 38 60% 94%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 20 22% 8.5%;
-    --popover-foreground: 38 60% 94%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 96%;
 
-    --primary: 40 78% 55%;
-    --primary-foreground: 20 30% 6%;
+    --primary: 214 100% 42%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 22 24% 11%;
-    --secondary-foreground: 38 60% 94%;
+    --secondary: 0 0% 7%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 22 24% 14%;
-    --muted-foreground: 30 20% 45%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 56%;
 
-    --accent: 22 24% 14%;
-    --accent-foreground: 38 60% 94%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 96%;
 
     --destructive: 0 70% 50%;
-    --destructive-foreground: 38 60% 94%;
+    --destructive-foreground: 0 0% 96%;
 
-    --border: 25 22% 17%;
-    --border-strong: 25 22% 24%;
-    --input: 25 22% 17%;
-    --ring: 40 78% 55%;
+    --border: 0 0% 13%;
+    --border-strong: 0 0% 22%;
+    --input: 0 0% 13%;
+    --ring: 214 100% 42%;
 
     --radius: 0.625rem;
 
-    /* Brand gold */
-    --brand: 40 78% 55%;
-    --brand-dim: 35 60% 56%;
-    --brand-bright: 46 88% 72%;
-    --brand-glow: 40 78% 55% / 0.2;
+    /* Brand blue */
+    --brand: 214 100% 42%;
+    --brand-dim: 214 100% 38%;
+    --brand-bright: 213 72% 62%;
+    --brand-glow: 214 100% 42% / 0.26;
+
+    /* Palette scales from design */
+    --grey-50: 255 255 255;
+    --grey-100: 255 255 255;
+    --grey-200: 255 255 255;
+    --grey-300: 255 255 255;
+    --grey-400: 255 255 255;
+    --grey-500: 255 255 255;
+    --grey-600: 232 232 232;
+    --grey-700: 181 181 181;
+    --grey-800: 140 140 140;
+    --grey-900: 107 107 107;
+
+    --brand-purple-50: 239 230 252;
+    --brand-purple-100: 204 176 246;
+    --brand-purple-200: 180 138 241;
+    --brand-purple-300: 146 84 235;
+    --brand-purple-400: 125 51 231;
+    --brand-purple-500: 92 0 225;
+    --brand-purple-600: 84 0 205;
+    --brand-purple-700: 65 0 160;
+    --brand-purple-800: 51 0 124;
+    --brand-purple-900: 39 0 95;
+
+    --brand-blue-50: 230 239 251;
+    --brand-blue-100: 176 205 242;
+    --brand-blue-200: 138 180 236;
+    --brand-blue-300: 84 146 228;
+    --brand-blue-400: 51 125 222;
+    --brand-blue-500: 0 93 214;
+    --brand-blue-600: 0 85 195;
+    --brand-blue-700: 0 66 152;
+    --brand-blue-800: 0 51 118;
+    --brand-blue-900: 0 39 90;
+
+    --blue-50: 240 241 243;
+    --blue-100: 207 212 219;
+    --blue-200: 184 191 202;
+    --blue-300: 151 162 177;
+    --blue-400: 131 144 162;
+    --blue-500: 104 116 139;
+    --blue-600: 91 106 126;
+    --blue-700: 71 82 99;
+    --blue-800: 55 64 76;
+    --blue-900: 42 49 58;
 
     /* Semantic */
     --success: 134 50% 62%;
@@ -67,14 +112,14 @@
     --group-silver: 38 15% 71%;
     --group-bronze: 24 44% 54%;
 
-    --sidebar-background: 20 22% 8.5%;
-    --sidebar-foreground: 38 60% 94%;
-    --sidebar-primary: 40 78% 55%;
-    --sidebar-primary-foreground: 20 30% 6%;
-    --sidebar-accent: 22 24% 14%;
-    --sidebar-accent-foreground: 38 60% 94%;
-    --sidebar-border: 25 22% 17%;
-    --sidebar-ring: 40 78% 55%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 214 100% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 13%;
+    --sidebar-ring: 214 100% 42%;
   }
 }
 

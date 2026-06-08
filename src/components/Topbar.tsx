@@ -1,10 +1,10 @@
-﻿"use client";
+'use client'
 
-import { Bell, LogOut, UserRound } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useAuthSession } from "@/hooks/useAuthSession";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useGetKolCurrentTierQuery } from "@/services/api/tierApi";
+import Image from 'next/image'
+import { LogOut, Menu, Settings, Star, UserRound } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,131 +12,130 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdownMenu";
+} from '@/components/ui/dropdownMenu'
+import { useAuthSession } from '@/hooks/useAuthSession'
+import { useGetKolCurrentTierQuery } from '@/services/api/tierApi'
 
 type TopbarProps = {
-  onMenuClick?: () => void;
-};
+  onMenuClick?: () => void
+}
+
+function getInitials(name?: string | null) {
+  if (!name) return 'U'
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+}
 
 export default function Topbar({ onMenuClick }: TopbarProps) {
-  const router = useRouter();
-  const { profile, logout } = useAuthSession();
-  const { data: tierData } = useGetKolCurrentTierQuery();
+  const router = useRouter()
+  const { profile, logout } = useAuthSession()
+  const { data: tierData } = useGetKolCurrentTierQuery()
 
   const currentTierName =
-    tierData?.matchedTier?.name || tierData?.currentTier?.name || "—";
+    tierData?.matchedTier?.name || tierData?.currentTier?.name || 'Starter'
   const currentCommissionRate =
     tierData?.matchedTier?.commissionRatePct ??
     tierData?.currentTier?.commissionRatePct ??
     tierData?.kol.currentCommissionRate ??
-    null;
+    null
 
   const tierBadgeText =
     currentCommissionRate === null
-      ? `${currentTierName}`
-      : `${currentTierName} · Comm. ${currentCommissionRate}%`;
-
-  const initials = (profile?.name || "U")
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+      ? currentTierName
+      : `${currentTierName} · Comm. ${currentCommissionRate}%`
 
   return (
-    <header className="h-14 border-b border-border bg-surface-1 flex items-center px-6 gap-4 shrink-0">
-      <button
-        type="button"
-        onClick={onMenuClick}
-        className="md:hidden w-9 h-9 rounded-lg border border-border bg-surface-2 grid place-items-center text-muted-foreground hover:text-foreground hover:bg-surface-3 transition-colors"
-        aria-label="Mở menu"
-      >
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-          <path d="M3 6h18M3 12h18M3 18h18" />
-        </svg>
-      </button>
-      {/* <div className="flex-1 max-w-[480px] h-9 bg-surface-2 border border-border rounded-lg flex items-center px-3 gap-2 text-[13px] text-muted-foreground hover:border-border-strong transition-colors cursor-pointer">
-        <svg
-          className="w-3.5 h-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
+    <header className="fixed inset-x-0 top-0 z-40 flex h-16 shrink-0 items-center border-b border-[#202020] bg-black px-6 text-white">
+      <div className="flex h-full w-[232px] shrink-0 items-center gap-3 max-md:w-auto">
+        <button
+          type="button"
+          onClick={onMenuClick}
+          className="mr-1 grid h-9 w-9 place-items-center rounded-md border border-[#262626] bg-[#0b0b0b] text-[#d7d7d7] transition-colors hover:bg-[#171717] hover:text-white md:hidden"
+          aria-label="Mở menu"
         >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        <span className="min-w-0 flex-1 truncate whitespace-nowrap">Tìm member, group, giao dịch...</span>
-      </div> */}
+          <Menu className="h-4 w-4" strokeWidth={1.9} />
+        </button>
+
+        <Image
+          src="/images/Logo.png"
+          alt="SCEX"
+          width={132}
+          height={34}
+          priority
+          className="h-auto w-[120px] object-contain"
+        />
+      </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-[hsl(40_78%_55%/0.1)] to-[hsl(40_78%_55%/0.02)] border border-[hsl(40_78%_55%/0.3)] rounded-lg text-xs font-semibold text-brand">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l2.5 6 6.5.5-5 4.5 1.5 6.5L12 16l-5.5 3.5L8 13 3 8.5 9.5 8z" />
-          </svg>
-          {tierBadgeText}
+        <div className="hidden items-center gap-2 rounded-full border border-[#2a2a2a] bg-[#070707] py-1.5 pl-2 pr-3 text-xs font-semibold text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] sm:flex">
+          <span className="grid h-7 w-7 place-items-center rounded-full bg-[#292929] text-[#ffcf12] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
+            <Star className="h-4 w-4 fill-current" strokeWidth={1.8} />
+          </span>
+          <span className="leading-4">{tierBadgeText}</span>
         </div>
-        {/* <button className="w-9 h-9 rounded-lg grid place-items-center text-muted-foreground hover:bg-surface-3 hover:text-foreground transition-all relative">
-          <Bell className="w-4 h-4" />
-          <span className="absolute top-2 right-2 w-[7px] h-[7px] rounded-full bg-brand shadow-[0_0_0_2px_hsl(var(--surface-1))]" />
-        </button> */}
 
-        {/* User avatar + menu */}
-        <div className="flex items-center gap-3">
-          <div className="hidden flex-col items-end md:flex">
-            <span className="text-xs font-medium text-foreground leading-tight">
-              {profile?.name ?? "---"}
-            </span>
-            <span className="text-[11px] text-muted-foreground">{profile?.email ?? "—"}</span>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="w-9 h-9 rounded-full border border-border bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors">
-                <Avatar className="h-8 w-8 border border-border/70">
-                  <AvatarFallback className="bg-brand/10 text-brand text-xs font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel className="space-y-0.5">
-                <div className="text-sm font-medium leading-none">
-                  {profile?.name ?? "---"}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {profile?.email ?? ""}
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={(event) => {
-                  event.preventDefault();
-                  router.push("/settings");
-                }}
-                className="gap-2"
-              >
-                <UserRound className="h-4 w-4" />
-                Cài đặt tài khoản
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                onSelect={(event) => {
-                  event.preventDefault();
-                  logout();
-                }}
-                className="gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                Đăng xuất
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="grid h-10 w-10 place-items-center rounded-full bg-brand-blue-900 transition-colors hover:bg-brand-blue-800">
+              <Avatar className="h-9 w-9 border border-brand-blue-500/40">
+                <AvatarFallback className="bg-brand-blue-500 text-xs font-semibold text-white">
+                  {getInitials(profile?.name)}
+                </AvatarFallback>
+              </Avatar>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-52 border-[#252525] bg-[#080808] text-white"
+          >
+            <DropdownMenuLabel className="space-y-1">
+              <div className="text-sm font-semibold leading-none">
+                {profile?.name ?? 'Unknown User'}
+              </div>
+              <div className="truncate text-xs font-normal text-[#a5a5a5]">
+                {profile?.email ?? ''}
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-[#252525]" />
+            <DropdownMenuItem
+              onSelect={(event) => {
+                event.preventDefault()
+                router.push('/settings')
+              }}
+              className="gap-2 focus:bg-[#171717] focus:text-white"
+            >
+              <UserRound className="h-4 w-4" />
+              Cài đặt tài khoản
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(event) => {
+                event.preventDefault()
+                router.push('/settings')
+              }}
+              className="gap-2 focus:bg-[#171717] focus:text-white"
+            >
+              <Settings className="h-4 w-4" />
+              Cài đặt thành viên
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-[#252525]" />
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={(event) => {
+                event.preventDefault()
+                logout()
+              }}
+              className="gap-2 text-red-400 focus:bg-red-500/10 focus:text-red-300"
+            >
+              <LogOut className="h-4 w-4" />
+              Đăng xuất
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
-  );
+  )
 }
