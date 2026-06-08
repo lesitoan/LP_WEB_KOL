@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import {
   handleUnauthorizedAdminSession,
-  // handleUnauthorizedSession,
+  handleUnauthorizedSession,
   readAdminAuthSession,
   readAuthSession,
   writeAdminAuthSession,
@@ -40,8 +40,8 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   let result = await baseQuery(args, api, extraOptions)
 
   const silentLogout = () => {
-    // handleUnauthorizedSession()
-    return result
+    handleUnauthorizedSession()
+    return new Promise<never>(() => {})
   }
 
   if (result.error?.status !== 401) {

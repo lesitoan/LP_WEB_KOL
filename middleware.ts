@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
-// const KOL_PUBLIC_PATHS = ['/login']
+const KOL_PUBLIC_PATHS = ['/login']
 const ADMIN_PUBLIC_PATHS = ['/admin/login']
 
 export function middleware(req: NextRequest) {
@@ -35,18 +35,18 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // const accessToken = req.cookies.get('accessToken')?.value
-  // const isKolPublic = KOL_PUBLIC_PATHS.includes(pathname)
-  //
-  // if (!accessToken && !isKolPublic) {
-  //   const loginUrl = new URL('/login', req.url)
-  //   loginUrl.searchParams.set('redirect', pathname)
-  //   return NextResponse.redirect(loginUrl)
-  // }
-  //
-  // if (accessToken && pathname === '/login') {
-  //   return NextResponse.redirect(new URL('/dashboard', req.url))
-  // }
+  const accessToken = req.cookies.get('accessToken')?.value
+  const isKolPublic = KOL_PUBLIC_PATHS.includes(pathname)
+
+  if (!accessToken && !isKolPublic) {
+    const loginUrl = new URL('/login', req.url)
+    loginUrl.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  if (accessToken && pathname === '/login') {
+    return NextResponse.redirect(new URL('/dashboard', req.url))
+  }
 
   return NextResponse.next()
 }

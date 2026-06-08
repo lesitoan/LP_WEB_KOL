@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { useGetCurrentUserQuery } from '@/services/api/authApi'
 import { api } from '@/services/api/baseApi'
-import { clearAuthSession } from '@/lib/authSession'
+import { clearAuthSession, readAuthSession } from '@/lib/authSession'
 import type { UserProfile } from '@/types/api'
 
 type AuthSessionState = {
@@ -14,13 +14,6 @@ type AuthSessionState = {
   profile: UserProfile | null
   hydrated: boolean
 }
-
-const bypassAuthProfile = {
-  id: 'dev-bypass',
-  email: 'dev-bypass@local',
-  name: 'Dev Bypass',
-  role: 'kol',
-} as UserProfile
 
 export function useAuthSession() {
   const router = useRouter()
@@ -33,18 +26,17 @@ export function useAuthSession() {
   })
 
   useEffect(() => {
-    // const stored = readAuthSession()
+    const stored = readAuthSession()
     setSession({
-      accessToken: 'dev-bypass-token',
-      refreshToken: 'dev-bypass-refresh-token',
-      profile: bypassAuthProfile,
+      accessToken: stored.accessToken,
+      refreshToken: stored.refreshToken,
+      profile: stored.user,
       hydrated: true,
     })
   }, [])
 
   const { data: currentUser, isLoading, isFetching } = useGetCurrentUserQuery(undefined, {
-    skip: true,
-    // skip: !session.hydrated || !session.accessToken,
+    skip: !session.hydrated || !session.accessToken,
   })
 
   const isCheckingSession = Boolean(session.hydrated && session.accessToken && (isLoading || isFetching))
@@ -68,8 +60,7 @@ export function useAuthSession() {
     refreshToken: session.refreshToken,
     profile,
     hydrated: session.hydrated,
-    hasToken: true,
-    // hasToken: Boolean(session.accessToken),
+    hasToken: Boolean(session.accessToken),
     isCheckingSession,
     logout,
     setSession,
