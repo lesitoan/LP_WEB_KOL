@@ -6,6 +6,7 @@ import {
   DollarSign,
   Home,
   Layers,
+  Lightbulb,
   LogOut,
   Star,
   Trophy,
@@ -22,6 +23,7 @@ const navSections = [
     items: [
       { id: 'home', label: 'Tổng quan', href: '/dashboard', icon: Home },
       { id: 'members', label: 'Cộng đồng', href: '/members', icon: UsersRound },
+      { id: 'insights', label: 'Insights', href: '/insights', icon: Lightbulb },
       { id: 'groups', label: 'Groups', href: '/groups', icon: Layers },
     ],
   },

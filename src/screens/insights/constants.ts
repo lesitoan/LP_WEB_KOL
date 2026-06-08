@@ -1,0 +1,92 @@
+import type { Insight, InsightTab } from '@/types/insights'
+
+export const insightTabs: InsightTab[] = [
+  { id: 'market', label: 'Thị trường & Vĩ mô' },
+  { id: 'onchain', label: 'On-chain & Whale' },
+  { id: 'risk', label: 'Rủi ro & Pháp lý' },
+  { id: 'narrative', label: 'Narrative & Tâm lý thị trường' },
+  { id: 'research', label: 'Research Reports' },
+]
+
+export const insights: Insight[] = [
+  {
+    id: 'market-btc-smart-money-1',
+    category: 'market',
+    title: 'Smart Money L/S - BTC',
+    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
+    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
+    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
+  },
+  {
+    id: 'market-btc-smart-money-2',
+    category: 'market',
+    title: 'Smart Money L/S - BTC',
+    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
+    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
+    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
+  },
+  {
+    id: 'market-btc-smart-money-3',
+    category: 'market',
+    title: 'Smart Money L/S - BTC',
+    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
+    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
+    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
+  },
+  {
+    id: 'market-btc-smart-money-4',
+    category: 'market',
+    title: 'Smart Money L/S - BTC',
+    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
+    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
+    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
+  },
+  {
+    id: 'market-btc-smart-money-5',
+    category: 'market',
+    title: 'Smart Money L/S - BTC',
+    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
+    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
+    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
+  },
+  {
+    id: 'market-btc-smart-money-6',
+    category: 'market',
+    title: 'Smart Money L/S - BTC',
+    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
+    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
+    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
+  },
+  {
+    id: 'onchain-whale-flow',
+    category: 'onchain',
+    title: 'Whale Exchange Flow - ETH',
+    risk: 'Rủi ro: Dòng nạp sàn tăng có thể tạo biến động ngắn hạn.',
+    dataPoint: 'Net inflow +12.4K ETH - Ví lớn hoạt động mạnh trong 6h',
+    context: 'Theo dõi vùng thanh khoản trước khi xác nhận hướng đi.',
+  },
+  {
+    id: 'risk-regulatory-watch',
+    category: 'risk',
+    title: 'Regulatory Watch - Stablecoins',
+    risk: 'Rủi ro: Tin pháp lý có thể ảnh hưởng liquidity trong phiên Mỹ.',
+    dataPoint: 'Headline risk cao - Spread stablecoin vẫn trong ngưỡng ổn định',
+    context: 'Ưu tiên kịch bản phòng thủ, hạn chế đòn bẩy cao.',
+  },
+  {
+    id: 'narrative-ai-rotation',
+    category: 'narrative',
+    title: 'Narrative Rotation - AI',
+    risk: 'Rủi ro: FOMO tăng nhanh sau các cú break thiếu volume xác nhận.',
+    dataPoint: 'Social volume +18% - Funding trung tính - Dòng tiền phân hóa',
+    context: 'Narrative còn khỏe nhưng cần lọc token theo thanh khoản.',
+  },
+  {
+    id: 'research-weekly-brief',
+    category: 'research',
+    title: 'Weekly Market Brief',
+    risk: 'Rủi ro: Báo cáo mang tính tham khảo, không phải khuyến nghị.',
+    dataPoint: 'BTC dominance ổn định - Alt beta thấp hơn tuần trước',
+    context: 'Thị trường ưu tiên chọn lọc hơn là risk-on toàn diện.',
+  },
+]
