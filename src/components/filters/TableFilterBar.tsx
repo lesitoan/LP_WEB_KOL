@@ -110,12 +110,12 @@ export default function TableFilterBar({
         {activeFilterChips.map((chip) => (
           <span
             key={chip.key}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[hsl(40_78%_55%/0.1)] border border-[hsl(40_78%_55%/0.25)] rounded-full text-[11.5px] font-medium text-brand"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-blue-500/30 text-[11.5px] font-medium text-white"
           >
             {chip.label}: {chip.valueLabel}
             <button
               type="button"
-              className="opacity-70 hover:opacity-100"
+              className="text-white/70 hover:text-white"
               onClick={() => onRemoveChip(chip.key)}
               disabled={disabled}
               aria-label={`Xóa lọc ${chip.label}`}
