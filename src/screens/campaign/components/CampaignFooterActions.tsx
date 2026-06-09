@@ -2,9 +2,9 @@ export default function CampaignFooterActions() {
   const buttons = ["📊 Analytics", "📤 Share", "⚙ Edit"];
 
   return (
-    <div className="px-6 py-4 border-t border-border flex justify-between items-center text-[13px] text-muted-foreground">
-      <span>Hiển thị Top 8 / 142 participants</span>
-      <div className="flex gap-2">
+    <div className="px-4 md:px-6 py-4 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-muted-foreground">
+      <span className="text-center md:text-left">Hiển thị Top 8 / 142 participants</span>
+      <div className="flex flex-wrap justify-center gap-2">
         {buttons.map((b) => (
           <button
             key={b}

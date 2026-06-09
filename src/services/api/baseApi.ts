@@ -37,12 +37,12 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   api,
   extraOptions,
 ) => {
+  let result = await baseQuery(args, api, extraOptions)
+
   const silentLogout = () => {
     handleUnauthorizedSession()
     return new Promise<never>(() => {})
   }
-
-  let result = await baseQuery(args, api, extraOptions)
 
   if (result.error?.status !== 401) {
     return result

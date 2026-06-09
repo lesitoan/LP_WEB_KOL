@@ -33,7 +33,7 @@ export default function DashboardRoutesLayout({
     }
   }, [authHydrated, hasToken, pathname, router]);
 
-  // Until hydrated or token confirmed, keep loading UI to avoid flicker
+  // Until hydrated or token confirmed, keep loading UI to avoid flicker.
   if (!mounted || !authHydrated || !hasToken || isCheckingSession) {
     return <PageLoading />;
   }
