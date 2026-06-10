@@ -9,12 +9,12 @@ export function TierHeroCardSkeleton() {
           'linear-gradient(135deg, rgba(255, 234, 116, 0.5) 0%, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 234, 116, 0.5) 100%)',
       }}
     >
-      <div className="rounded-[14px] bg-[#171717] p-5">
-        <div className="grid grid-cols-3 divide-x divide-[#262626] mb-5">
+      <div className="rounded-[14px] bg-[#171717] p-4 md:p-5">
+        <div className="mb-5 grid grid-cols-3 divide-x divide-[#262626]">
           {[0, 1, 2].map((col) => (
-            <div key={col} className="flex flex-col items-center justify-center px-4 py-3 gap-2">
-              <Skeleton className="h-8 w-16" />
-              <Skeleton className="h-3 w-24" />
+            <div key={col} className="flex flex-col items-center justify-center gap-1.5 px-2 py-2 md:gap-2 md:px-4 md:py-3">
+              <Skeleton className="h-5 w-12 md:h-8 md:w-16" />
+              <Skeleton className="h-2.5 w-16 md:h-3 md:w-24" />
             </div>
           ))}
         </div>

@@ -46,27 +46,27 @@ export default function TierHeroCard() {
           'linear-gradient(135deg, rgba(255, 234, 116, 0.5) 0%, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 234, 116, 0.5) 100%)',
       }}
     >
-      <div className="rounded-[14px] bg-[#171717] p-5">
-        <div className="grid grid-cols-3 divide-x divide-[#262626] mb-5">
-          <div className="flex flex-col items-center justify-center px-4 py-3">
-            <div className="text-[28px] font-bold text-foreground leading-none mb-2">
+      <div className="rounded-[14px] bg-[#171717] p-4 md:p-5">
+        <div className="mb-5 grid grid-cols-3 divide-x divide-[#262626]">
+          <div className="flex min-w-0 flex-col items-center justify-center px-2 py-2 md:px-4 md:py-3">
+            <div className="mb-1.5 text-[clamp(0.875rem,4vw,1.25rem)] font-bold leading-tight text-foreground md:mb-2 md:text-[clamp(1.25rem,3vw,1.75rem)]">
               {commissionRate}%
             </div>
-            <div className="text-[13px] text-muted-foreground">Tỷ lệ hoa hồng</div>
+            <div className="text-center text-[11px] text-muted-foreground md:text-[13px]">Tỷ lệ hoa hồng</div>
           </div>
 
-          <div className="flex flex-col items-center justify-center px-4 py-3">
-            <div className="text-[40px] font-bold uppercase leading-[52px] mb-2 bg-gradient-to-r from-[#FFFBE5] to-[#FFEA74] bg-clip-text text-transparent">
+          <div className="flex min-w-0 flex-col items-center justify-center px-2 py-2 md:px-4 md:py-3">
+            <div className="mb-1.5 max-w-full break-words text-center text-[clamp(0.875rem,4vw,1.25rem)] font-bold uppercase leading-tight bg-gradient-to-r from-[#FFFBE5] to-[#FFEA74] bg-clip-text text-transparent md:mb-2 md:text-[clamp(1.25rem,3vw,1.75rem)] md:leading-tight">
               {currentTierName}
             </div>
-            <div className="text-[13px] text-muted-foreground">Tier hiện tại</div>
+            <div className="text-center text-[11px] text-muted-foreground md:text-[13px]">Tier hiện tại</div>
           </div>
 
-          <div className="flex items-center justify-center px-4 py-3">
+          <div className="flex items-center justify-center px-2 py-2 md:px-4 md:py-3">
             <img
               src="/images/tier_icons/tier_logo.png"
               alt="Tier"
-              className="w-16 h-16 object-contain"
+              className="h-10 w-10 object-contain md:h-16 md:w-16"
             />
           </div>
         </div>
@@ -89,14 +89,14 @@ export default function TierHeroCard() {
           </div>
 
           {nextTier ? (
-            <p className="text-[13px] text-foreground">
+            <p className="text-[11px] leading-5 text-foreground md:text-[13px]">
               Bạn còn{' '}
               <strong className="text-brand-bright font-semibold">{membersNeeded}</strong> active
               members để lên hạng{' '}
               <strong className="text-[#FFEA74] font-bold">{nextTier.name}</strong>
             </p>
           ) : (
-            <p className="text-[13px] text-muted-foreground">Bạn đang ở tier cao nhất</p>
+            <p className="text-[11px] leading-5 text-muted-foreground md:text-[13px]">Bạn đang ở tier cao nhất</p>
           )}
         </div>
       </div>
