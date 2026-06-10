@@ -17,12 +17,6 @@ type GroupsFiltersProps = {
   onStatusChange: (value: string) => void;
   onClearStatus: () => void;
   onViewModeChange: (mode: GroupsViewMode) => void;
-  statusBadges?: Array<{
-    key: string
-    label: string
-    count: number
-    tone?: 'warning' | 'info' | 'danger' | 'neutral'
-  }>
 }
 
 const STATUS_FILTER_OPTIONS = [
@@ -39,7 +33,6 @@ export function GroupsFilters({
   onStatusChange,
   onClearStatus,
   onViewModeChange,
-  statusBadges = [],
 }: GroupsFiltersProps) {
   const selectFilters: SelectFilterConfig[] = [
     {
@@ -74,7 +67,6 @@ export function GroupsFilters({
         textValues={{ search: searchInput }}
         selectFilters={selectFilters}
         activeFilterChips={activeFilterChips}
-        statusBadges={statusBadges}
         disabled={isFetching}
         onTextChange={(_, value) => onSearchInputChange(value)}
         onSelectFilter={(_, value) => onStatusChange(value)}
