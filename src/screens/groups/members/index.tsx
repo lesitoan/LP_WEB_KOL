@@ -355,7 +355,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
         <h2 className="text-base font-medium text-right">Thành viên nhóm ({pagination.totalItems})</h2>
       </div>
 
-      <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">
+      <div className="bg-[#171717] border border-border rounded-[14px] overflow-visible relative">
         <TableFilterBar
           textFilters={[
             {

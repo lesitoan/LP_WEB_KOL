@@ -85,7 +85,7 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
       </Tooltip>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden p-0">
+        <DialogContent className="max-w-3xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden bg-[#171717] p-0">
           <DialogHeader className="mb-2 border-b border-border px-4 pt-4 pb-3 sm:px-6 sm:pt-6">
             <DialogTitle>Tổng quan nhóm</DialogTitle>
           </DialogHeader>

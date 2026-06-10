@@ -75,7 +75,7 @@ export function BenefitFormDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-lg w-[calc(100vw-1rem)] sm:w-full p-0">
+      <DialogContent className="max-w-lg w-[calc(100vw-1rem)] sm:w-full bg-[#171717] p-0">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader className="px-5 pt-5">
             <DialogTitle>{dialogTitle}</DialogTitle>

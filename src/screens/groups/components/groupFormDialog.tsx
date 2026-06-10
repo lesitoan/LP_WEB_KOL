@@ -125,7 +125,7 @@ export function GroupFormDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-2xl lg:max-w-4xl xl:max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden p-0">
+      <DialogContent className="max-w-2xl lg:max-w-4xl xl:max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[92vh] overflow-hidden bg-[#171717] p-0">
         <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex max-h-[92vh] flex-col">
           <DialogHeader className="px-4 sm:px-5 pt-5">
             <DialogTitle>{dialogTitle}</DialogTitle>

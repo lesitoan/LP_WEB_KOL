@@ -137,7 +137,7 @@ export function DataTable<T>({
                   <button
                     key={value}
                     className={`w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground ${
-                      value === pagination.page ? 'bg-surface-3 text-foreground font-semibold' : ''
+                      value === pagination.page ? 'bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground' : ''
                     }`}
                     onClick={() => pagination.onPageChange(value)}
                     disabled={pagination.isDisabled}
