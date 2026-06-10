@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
+  ChartGantt,
   DollarSign,
   Home,
   Layers,
@@ -38,6 +39,7 @@ const navSections = [
     label: 'Phát triển',
     items: [
       { id: 'tier', label: 'Tier & Tín hiệu', href: '/tier', icon: Star },
+      { id: 'analytics', label: 'Phân tích', href: '/analytics', icon: ChartGantt },
     ],
   },
   {
