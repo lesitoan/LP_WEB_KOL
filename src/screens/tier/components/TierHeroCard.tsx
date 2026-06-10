@@ -1,8 +1,6 @@
 ﻿import { useGetKolCurrentTierQuery, useGetKolTiersQuery } from '@/services/api/tierApi'
 import { TierHeroCardSkeleton } from '@/components/skeletons/TierHeroCardSkeleton'
 
-
-
 export default function TierHeroCard() {
   const { data, isLoading } = useGetKolCurrentTierQuery()
   const { data: tiers = [], isLoading: isTiersLoading } = useGetKolTiersQuery()
@@ -12,8 +10,6 @@ export default function TierHeroCard() {
   }
 
   const activeMemberCount = data?.activeMemberCount ?? 0
-  const currentTierFromApi = data?.matchedTier ?? data?.currentTier ?? null
-
   const sortedTiers = [...tiers].sort((a, b) => a.minActiveMembers - b.minActiveMembers)
 
   const matchedTierByCount =
@@ -25,105 +21,83 @@ export default function TierHeroCard() {
       )
       .at(-1) ?? null
 
-  const matchedTier = matchedTierByCount ?? currentTierFromApi
-
+  const matchedTier = matchedTierByCount ?? data?.matchedTier ?? data?.currentTier ?? null
   const nextTier =
-    sortedTiers.find((tier) => tier.minActiveMembers > activeMemberCount) ?? null
+    data?.nextTier ?? sortedTiers.find((tier) => tier.minActiveMembers > activeMemberCount) ?? null
 
-  const membersNeeded = nextTier
-    ? Math.max(0, nextTier.minActiveMembers - activeMemberCount)
-    : null
+  const membersNeeded =
+    data?.membersNeededForNextTier ??
+    (nextTier ? Math.max(0, nextTier.minActiveMembers - activeMemberCount) : null)
 
-  const currentTierName = matchedTier?.name || data?.currentTier?.name
-
+  const commissionRate = matchedTier?.commissionRatePct ?? data?.kol.currentCommissionRate ?? '—'
+  const currentTierName = matchedTier?.name ?? '—'
   const nextTierTarget = nextTier?.minActiveMembers ?? activeMemberCount
+
   const progressPercent =
     nextTier && nextTierTarget > 0
       ? Math.max(0, Math.min(100, (activeMemberCount / nextTierTarget) * 100))
       : 100
 
-  const splitBenefits = (matchedTier?.description || '')
-    .split('+')
-    .map((item) => item.trim())
-    .filter(Boolean)
-
-  const currentTierBenefits = (matchedTier?.description || data?.currentTier?.description || '')
-    .split('+')
-    .map((item) => item.trim())
-    .filter(Boolean)
-
-  const benefitsDescription = nextTier?.description || currentTierBenefits.join(' + ')
-
   return (
-    <div className="bg-[radial-gradient(ellipse_at_center_top,hsl(40_78%_55%/0.15),transparent_60%),linear-gradient(180deg,hsl(var(--surface-2)),hsl(var(--surface-1)))] border border-border rounded-[20px] px-8 py-10 text-center mb-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,hsl(40_78%_55%/0.08),transparent_40%),radial-gradient(circle_at_80%_60%,hsl(28_88%_60%/0.05),transparent_40%)] pointer-events-none" />
-      <div className="relative">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-[14px] bg-gradient-to-br from-[hsl(40_78%_55%/0.25)] to-[hsl(40_78%_55%/0.05)] border border-[hsl(40_78%_55%/0.4)] grid place-items-center shadow-[0_0_40px_hsl(var(--brand-glow))]">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="hsl(var(--brand))">
-            <path d="M12 2l2.5 6 6.5.5-5 4.5 1.5 6.5L12 16l-5.5 3.5L8 13 3 8.5 9.5 8z" />
-          </svg>
-        </div>
-        <div className="text-[11px] text-muted-foreground tracking-[0.04em] uppercase font-medium mb-1">
-          TIER HIỆN TẠI
-        </div>
-        <div className="text-4xl font-bold tracking-tight bg-gradient-to-br from-brand to-foreground bg-clip-text text-transparent mb-2">
-          {currentTierName}
+    <div
+      className="rounded-2xl p-[2px] mb-6"
+      style={{
+        backgroundImage:
+          'linear-gradient(135deg, rgba(255, 234, 116, 0.5) 0%, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 234, 116, 0.5) 100%)',
+      }}
+    >
+      <div className="rounded-[14px] bg-[#171717] p-5">
+        <div className="grid grid-cols-3 divide-x divide-[#262626] mb-5">
+          <div className="flex flex-col items-center justify-center px-4 py-3">
+            <div className="text-[28px] font-bold text-foreground leading-none mb-2">
+              {commissionRate}%
+            </div>
+            <div className="text-[13px] text-muted-foreground">Tỷ lệ hoa hồng</div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center px-4 py-3">
+            <div className="text-[40px] font-bold uppercase leading-[52px] mb-2 bg-gradient-to-r from-[#FFFBE5] to-[#FFEA74] bg-clip-text text-transparent">
+              {currentTierName}
+            </div>
+            <div className="text-[13px] text-muted-foreground">Tier hiện tại</div>
+          </div>
+
+          <div className="flex items-center justify-center px-4 py-3">
+            <img
+              src="/images/tier_icons/tier_logo.png"
+              alt="Tier"
+              className="w-16 h-16 object-contain"
+            />
+          </div>
         </div>
 
-        <div className="max-w-[480px] mx-auto my-5 mb-4">
-          <div className="h-2 bg-surface-3 rounded-full overflow-hidden">
+        <div className="rounded-lg bg-white/[0.06] backdrop-blur-[20px] p-4">
+          <div className="text-[13px] mb-3">
+            <strong className="text-[#FFEA74] font-semibold">{activeMemberCount}</strong>
+            {nextTier ? (
+              <span className="text-foreground"> / {nextTierTarget} members</span>
+            ) : (
+              <span className="text-muted-foreground"> active members</span>
+            )}
+          </div>
+
+          <div className="h-2 bg-[#262626] rounded-full overflow-hidden mb-3">
             <div
-              className="h-full bg-gradient-to-r from-brand-dim to-brand rounded-full shadow-[0_0_12px_hsl(var(--brand-glow))]"
+              className="h-full bg-[#FFEA74] rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <div className="flex justify-between mt-3 text-[13px]">
-            <span>
-              <strong className="text-foreground font-semibold">{activeMemberCount}</strong>{' '}
-              <span className="text-muted-foreground">thành viên</span>
-            </span>
-            {nextTier ? (
-              <span className="text-muted-foreground">
-                {Math.round(progressPercent)}% {'→'}{' '}
-                <strong className="text-tier-legend font-semibold">{nextTier.name}</strong>
-              </span>
-            ) : (
-              <span className="text-muted-foreground">
-                {Math.round(progressPercent)}%
-              </span>
-            )}
-          </div>
-        </div>
 
-        {nextTier ? (
-          <div className="text-[13px] text-muted-foreground mb-4">
-            💪 Còn <strong className="text-foreground font-semibold">{membersNeeded ?? 0} thành viên</strong> nữa để lên{' '}
-            {nextTier.name}
-          </div>
-        ) : null}
-
-        <div className="inline-flex flex-col gap-2 text-left mx-auto mt-5 p-4 px-5 bg-surface-2 border border-border rounded-lg text-[13px]">
-          <div className="text-[11px] text-muted-foreground tracking-[0.04em] uppercase font-medium mb-1">
-            {nextTier ? `Lên ${nextTier.name}, bạn sẽ unlock` : 'Bạn đang ở tier cao nhất'}
-          </div>
           {nextTier ? (
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <span className="text-brand">✨</span> Commission{' '}
-              <strong className="text-foreground">
-                {matchedTier?.commissionRatePct ?? data?.kol.currentCommissionRate ?? '-'}% {'→'} {nextTier.commissionRatePct}%
-              </strong>
-            </div>
-          ) : null}
-          {benefitsDescription
-            .split('+')
-            .map((item) => item.trim())
-            .filter(Boolean)
-            .map((benefit) => (
-              <div key={benefit} className="flex items-center gap-3 text-muted-foreground">
-                <span className="text-brand">✨</span>
-                <strong className="text-foreground">{benefit}</strong>
-              </div>
-            ))}
+            <p className="text-[13px] text-foreground">
+              Bạn còn{' '}
+              <strong className="text-brand-bright font-semibold">{membersNeeded}</strong> active
+              members để lên hạng{' '}
+              <strong className="text-[#FFEA74] font-bold">{nextTier.name}</strong>
+            </p>
+          ) : (
+            <p className="text-[13px] text-muted-foreground">Bạn đang ở tier cao nhất</p>
+          )}
         </div>
       </div>
     </div>
