@@ -1,9 +1,8 @@
 "use client"
 
-import { useMemo } from "react";
 import type { GroupItem, ListGroupsQuery, UpdateGroupBody } from "@/types/api";
 import { GroupsFilters } from "./groupsFilters";
-import { getStatusVariant, GroupsTableView } from "./groupsTableView";
+import { GroupsTableView } from "./groupsTableView";
 import { GroupsItemView } from "./groupsItemView";
 import type { GroupsViewMode } from "../hooks/useGroupsFiltersState";
 
@@ -41,39 +40,13 @@ export function GroupsListContainer({
   const startIndex = totalItems === 0 ? 0 : (query.page - 1) * query.limit + 1
   const endIndex = Math.min(query.page * query.limit, totalItems)
 
-  const statusBadges = useMemo(() => {
-    const counter = new Map<string, number>()
-
-    for (const group of groups) {
-      const rawStatus = (group.status || 'unknown').trim().toLowerCase()
-      if (!rawStatus || rawStatus === 'active') continue
-      counter.set(rawStatus, (counter.get(rawStatus) ?? 0) + 1)
-    }
-
-    return Array.from(counter.entries())
-      .map(([status, count]) => {
-        const tone: 'warning' | 'info' | 'danger' | 'neutral' =
-          status === 'blocked' ? 'danger' : status === 'paused' ? 'warning' : status === 'inactive' ? 'neutral' : 'info'
-
-        return {
-          key: status,
-          label: getStatusVariant(status).label,
-          count,
-          tone,
-        }
-      })
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 4)
-  }, [groups])
-
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">
+    <div className="bg-[#171717] border border-border rounded-[14px] overflow-visible relative">
       <GroupsFilters
         searchInput={searchInput}
         statusValue={query.status || ''}
         viewMode={viewMode}
         isFetching={isFetching}
-        statusBadges={statusBadges}
         onSearchInputChange={onSearchInputChange}
         onStatusChange={(value) =>
           onQueryChange({
@@ -123,7 +96,7 @@ export function GroupsListContainer({
               onToggleGroupStatus={onToggleGroupStatus}
               onDeleteGroup={onDeleteGroup}
             />
-            <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface-1/60 p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 rounded-lg border border-border bg-[#171717]/60 p-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-muted-foreground">
                 {totalItems > 0
                   ? `Hiển thị ${startIndex}-${endIndex} của ${totalItems} group`

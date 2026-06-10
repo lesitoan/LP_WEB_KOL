@@ -77,7 +77,7 @@ export function usePopup() {
     return function PopupRenderer() {
       return (
         <AlertDialog open={state.open} onOpenChange={(open) => !open && closePopup(false)}>
-          <AlertDialogContent>
+          <AlertDialogContent className="border-[#2A2A2A] bg-[#171717]">
             <AlertDialogHeader>
               <AlertDialogTitle>{state.payload.title}</AlertDialogTitle>
               {state.payload.description ? (

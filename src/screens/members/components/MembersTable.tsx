@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
 import countries from 'i18n-iso-countries';
@@ -88,6 +88,12 @@ const LPEX_USER_STATUS = [
   { value: "INACTIVE", label: "Không hoạt động" },
 ];
 
+const MEMBER_TYPE_TABS = [
+  { value: "all", label: "Tất cả" },
+  { value: "inactive_2_weeks", label: "Không hoạt động 2 tuần" },
+  { value: "warning", label: "Bị cảnh báo", count: 8 },
+] as const;
+
 // const ELIGIBILITY_OPTIONS = [
 //   { value: "ELIGIBLE", label: "Đủ điều kiện" },
 //   { value: "WARNING", label: "Cảnh báo" },
@@ -100,6 +106,7 @@ const LPEX_USER_STATUS = [
 
 export default function MembersTable() {
   countries.registerLocale(enLocale)
+  const [activeMemberType, setActiveMemberType] = useState<(typeof MEMBER_TYPE_TABS)[number]["value"]>("all");
   const {
     page,
     limit,
@@ -326,7 +333,7 @@ export default function MembersTable() {
   ];
 
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">
+    <div className="bg-[#171717] border border-border rounded-[14px] overflow-visible relative">
         <MembersFilters
         searchInput={searchInput}
         countryCodeInput={countryCodeInput}
@@ -360,6 +367,35 @@ export default function MembersTable() {
           }
         }}
       />
+
+      <div className="border-b border-border px-5">
+        <div className="flex items-center gap-8 overflow-x-auto">
+          {MEMBER_TYPE_TABS.map((tab) => {
+            const isActive = activeMemberType === tab.value;
+
+            return (
+              <button
+                key={tab.value}
+                type="button"
+                className={`relative inline-flex h-11 shrink-0 items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setActiveMemberType(tab.value)}
+              >
+                <span>{tab.label}</span>
+                {"count" in tab ? (
+                  <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                    {tab.count}
+                  </span>
+                ) : null}
+                {isActive ? (
+                  <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary" />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="rounded-b-[14px] overflow-hidden">
         <DataTable

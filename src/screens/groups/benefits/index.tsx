@@ -144,10 +144,10 @@ export function GroupBenefitsScreen({ groupId }: GroupBenefitsScreenProps) {
         <AddBenefitDialog onAdd={handleCreateBenefit} />
       </div>
 
-      <div className="bg-surface-1 border border-border rounded-[14px] overflow-hidden relative">
+      <div className="bg-[#171717] border border-border rounded-[14px] overflow-hidden relative">
         {!isGroupLoading && !isBenefitsLoading && benefitItems.length === 0 ? (
           <div className="px-6 py-16 text-center space-y-3">
-            <div className="mx-auto w-10 h-10 rounded-full bg-surface-2 border border-border grid place-items-center text-muted-foreground">
+            <div className="mx-auto w-10 h-10 rounded-full bg-[#28282880] border border-border grid place-items-center text-muted-foreground">
               <Gift className="h-5 w-5" />
             </div>
             <h3 className="text-sm font-semibold">Chưa có benefit nào</h3>
