@@ -1,7 +1,15 @@
+import AnalyticsGrowthChartSkeleton from "@/components/skeletons/analytics/AnalyticsGrowthChartSkeleton"
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { growthData } from "../constants"
+import { useFakeAnalyticsLoading } from "./useFakeAnalyticsLoading"
 
 export default function AnalyticsGrowthChart() {
+  const isLoading = useFakeAnalyticsLoading()
+
+  if (isLoading) {
+    return <AnalyticsGrowthChartSkeleton />
+  }
+
   return (
     <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
       <h2 className="mb-4 text-sm font-semibold">

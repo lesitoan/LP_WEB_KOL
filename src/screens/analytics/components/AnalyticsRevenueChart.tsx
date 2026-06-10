@@ -1,3 +1,4 @@
+import AnalyticsRevenueChartSkeleton from "@/components/skeletons/analytics/AnalyticsRevenueChartSkeleton"
 import {
   CartesianGrid,
   Line,
@@ -8,6 +9,7 @@ import {
   YAxis,
 } from "recharts"
 import { revenueData } from "../constants"
+import { useFakeAnalyticsLoading } from "./useFakeAnalyticsLoading"
 
 export function formatUsd(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -20,6 +22,12 @@ export function formatUsd(value: number) {
 
 
 export default function AnalyticsRevenueChart({ title }: { title: string }) {
+  const isLoading = useFakeAnalyticsLoading()
+
+  if (isLoading) {
+    return <AnalyticsRevenueChartSkeleton title={title} />
+  }
+
   return (
     <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
       <h2 className="mb-4 text-sm font-semibold">{title}</h2>

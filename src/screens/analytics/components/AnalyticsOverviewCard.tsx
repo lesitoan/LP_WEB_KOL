@@ -1,4 +1,6 @@
+import AnalyticsOverviewCardSkeleton from "@/components/skeletons/analytics/AnalyticsOverviewCardSkeleton"
 import { ShieldAlert, type LucideIcon, UserPlus, UsersRound, UserX } from "lucide-react"
+import { useFakeAnalyticsLoading } from "./useFakeAnalyticsLoading"
 
 function StatCard({
   icon: Icon,
@@ -21,6 +23,12 @@ function StatCard({
 }
 
 export default function AnalyticsOverviewCard() {
+  const isLoading = useFakeAnalyticsLoading()
+
+  if (isLoading) {
+    return <AnalyticsOverviewCardSkeleton />
+  }
+
   return (
     <section className="mb-5 rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
       <h2 className="mb-4 text-base font-semibold">Chỉ số tổng quan nhóm</h2>

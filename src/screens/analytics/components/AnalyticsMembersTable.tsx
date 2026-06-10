@@ -1,7 +1,15 @@
+import AnalyticsMembersTableSkeleton from "@/components/skeletons/analytics/AnalyticsMembersTableSkeleton"
 import { UsersRound } from "lucide-react"
 import { groupRows } from "../constants"
+import { useFakeAnalyticsLoading } from "./useFakeAnalyticsLoading"
 
 export default function AnalyticsMembersTable() {
+  const isLoading = useFakeAnalyticsLoading()
+
+  if (isLoading) {
+    return <AnalyticsMembersTableSkeleton />
+  }
+
   return (
     <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
       <h2 className="mb-5 text-base font-semibold">Thống kê members theo từng nhóm</h2>
