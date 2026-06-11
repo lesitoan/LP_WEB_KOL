@@ -2,6 +2,7 @@ export interface MemberItem {
   id: string
   lpexUid: string
   lpexUserStatus: string
+  memberProgressStatus?: MemberProgressStatus | null
   registeredAtLpex: string
   telegramUserId: string
   telegramUsername: string
@@ -26,8 +27,11 @@ export interface MemberItem {
     telegramMembershipState: string
     telegramMembershipStatus: string
     lastMembershipVerifiedAt: string | null
+    iconKey?: string | null
   }[]
 }
+
+export type MemberProgressStatus = 'NOT_KYC' | 'KYC_COMPLETED' | 'DEPOSIT_COMPLETED' | 'TRADE_COMPLETED'
 
 export interface MembersPagination {
   page: number
