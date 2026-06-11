@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { GroupItem, UpdateGroupBody } from '@/types/api'
 import { EditGroupDialog } from './editGroupDialog'
+import { GroupLogoBadge } from './groupLogoBadge'
 import { GroupSummaryDialog } from './groupSummaryDialog'
 
 interface GroupSettingsCardProps {
@@ -95,14 +96,17 @@ export function GroupSettingsCard({
       <div className="absolute left-0 top-7 h-8 w-1 rounded-r-full bg-[#FFCC00]" />
 
       <div className="mb-4 flex items-start justify-between gap-3 border-b border-[#3D3D3D] pb-4">
-        <div className="min-w-0">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <h3 className="truncate text-sm font-semibold text-foreground">{group.title || 'Tên group'}</h3>
-            </TooltipTrigger>
-            <TooltipContent>{group.title || 'Tên group'}</TooltipContent>
-          </Tooltip>
-          <p className="mt-1 truncate text-xs text-muted-foreground">{truncateDescription(group.description)}</p>
+        <div className="flex min-w-0 items-start gap-3">
+          <GroupLogoBadge iconKey={group.iconKey} title={group.title} className="h-8 w-9" textClassName="text-sm" />
+          <div className="min-w-0">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <h3 className="truncate text-sm font-semibold text-foreground">{group.title || 'Tên group'}</h3>
+              </TooltipTrigger>
+              <TooltipContent>{group.title || 'Tên group'}</TooltipContent>
+            </Tooltip>
+            <p className="mt-1 truncate text-xs text-muted-foreground">{truncateDescription(group.description)}</p>
+          </div>
         </div>
 
         <div className="relative shrink-0">

@@ -69,10 +69,12 @@ export function DataTable<T>({
         <table className="w-full border-collapse min-w-[980px] bg-[#171717]">
           <thead className="bg-[#171717]">
             <tr className="bg-[#171717]">
-              {columns.map((column) => (
+              {columns.map((column, columnIndex) => (
                 <th
                   key={column.id}
-                  className={`sticky top-0 z-10 text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-[#171717] whitespace-nowrap ${
+                  className={`sticky top-0 z-10 bg-[#171717] px-3 py-3 text-left text-xs font-semibold text-muted-foreground normal-case tracking-normal whitespace-nowrap ${
+                    columnIndex === columns.length - 1 ? 'pr-4 text-right' : ''
+                  } ${
                     column.headerClassName ?? ""
                   }`}
                 >
@@ -97,10 +99,12 @@ export function DataTable<T>({
             ) : (
               data.map((row, rowIndex) => (
                 <tr key={rowKey(row, rowIndex)} className="hover:bg-surface-2 transition-colors">
-                  {columns.map((column) => (
+                  {columns.map((column, columnIndex) => (
                     <td
                       key={column.id}
-                      className={`px-6 py-4 text-[13px] whitespace-nowrap ${column.cellClassName ?? ""}`}
+                      className={`px-3 py-4 text-[13px] whitespace-nowrap ${
+                        columnIndex === columns.length - 1 ? 'pr-4 text-right' : ''
+                      } ${column.cellClassName ?? ""}`}
                     >
                       {column.cell(row)}
                     </td>

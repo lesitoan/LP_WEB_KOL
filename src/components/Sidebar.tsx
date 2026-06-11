@@ -9,6 +9,7 @@ import {
   Layers,
   Lightbulb,
   LogOut,
+  Settings,
   Star,
   Trophy,
   UsersRound,
@@ -25,26 +26,28 @@ const navSections = [
       { id: 'home', label: 'Tổng quan', href: '/dashboard', icon: Home },
       { id: 'members', label: 'Cộng đồng', href: '/members', icon: UsersRound },
       { id: 'insights', label: 'Insights', href: '/insights', icon: Lightbulb },
-      { id: 'groups', label: 'Groups', href: '/groups', icon: Layers },
-    ],
-  },
-    {
-    label: 'Doanh thu',
-    items: [
-      // { id: 'cashback', label: 'Cashback', href: '/cashback', icon: DollarSign },
       { id: 'campaign', label: 'Chiến dịch', href: '/campaign', icon: Trophy },
     ],
   },
+  //   {
+  //   label: 'Doanh thu',
+  //   items: [
+  //     // { id: 'cashback', label: 'Cashback', href: '/cashback', icon: DollarSign },
+  //   ],
+  // },
   {
     label: 'Phát triển',
     items: [
-      { id: 'tier', label: 'Tier & Tín hiệu', href: '/tier', icon: Star },
+      { id: 'tier', label: 'Tier & Quyền lợi', href: '/tier', icon: Star },
       { id: 'analytics', label: 'Phân tích', href: '/analytics', icon: ChartGantt },
     ],
   },
   {
     label: 'Hệ thống',
-    items: [{ id: 'settings', label: 'Cài đặt thành viên', href: '/settings', icon: Layers }],
+    items: [
+      { id: 'groups', label: 'Cài đặt nhóm', href: '/groups', icon: Layers },
+      { id: 'settings', label: 'Cài đặt hệ thống', href: '/settings', icon: Settings },
+    ],
   },
 ]
 

@@ -41,7 +41,7 @@ export function GroupsListContainer({
   const endIndex = Math.min(query.page * query.limit, totalItems)
 
   return (
-    <div className="bg-[#171717] border border-border rounded-[14px] overflow-visible relative">
+    <div className="bg-[#171717] border border-border rounded-[14px] overflow-hidden relative">
       <GroupsFilters
         searchInput={searchInput}
         statusValue={query.status || ''}
@@ -65,7 +65,7 @@ export function GroupsListContainer({
         onViewModeChange={onViewModeChange}
       />
 
-      <div className="rounded-b-[14px] overflow-hidden">
+      <div className="min-w-0 rounded-b-[14px] overflow-hidden">
         {viewMode === "table" ? (
           <GroupsTableView
             groups={groups}

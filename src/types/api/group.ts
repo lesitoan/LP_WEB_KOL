@@ -3,6 +3,7 @@ export interface GroupItem {
   kolId: string
   telegramGroupId: string | null
   title: string
+  iconKey: string | null
   tierLabel: string | null
   description: string | null
   minVolumeRequired: string
@@ -22,6 +23,7 @@ export interface GroupItem {
 export interface UpdateGroupBody {
   telegramGroupId?: string
   title?: string
+  iconKey?: string | null
   tierLabel?: string
   description?: string
   minVolumeRequired?: number
@@ -42,6 +44,7 @@ export interface UpdateGroupStatusBody {
 export interface CreateGroupBody {
   telegramGroupId?: string
   title: string
+  iconKey?: string | null
   tierLabel?: string
   description?: string
   minVolumeRequired?: number

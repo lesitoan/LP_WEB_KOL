@@ -2,7 +2,8 @@
 
 import { Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import type { CreateGroupBody, GroupItem, UpdateGroupBody } from '@/types/api'
+import { DEFAULT_GROUP_LOGO_KEY } from '@/lib/groupLogo'
+import type { GroupItem, UpdateGroupBody } from '@/types/api'
 import { GroupFormDialog } from './groupFormDialog'
 
 interface EditGroupDialogProps {
@@ -17,6 +18,7 @@ export function EditGroupDialog({ group, onSave }: EditGroupDialogProps) {
 
   const initialValues = {
     title: group.title ?? '',
+    iconKey: group.iconKey ?? DEFAULT_GROUP_LOGO_KEY,
     telegramGroupId: group.telegramGroupId ?? '',
     description: group.description ?? '',
     minVolumeRequired: group.minVolumeRequired ?? '0',
@@ -38,7 +40,8 @@ export function EditGroupDialog({ group, onSave }: EditGroupDialogProps) {
         </Button>
       )}
       initialValues={initialValues}
-      onSubmitPayload={async (payload: CreateGroupBody) => {
+      submitMode="update"
+      onSubmitPayload={async (payload: UpdateGroupBody) => {
         await onSave(group.id, payload)
       }}
     />

@@ -9,6 +9,7 @@ import { DataTable, type DataTablePagination, type DataTableColumn } from '@/com
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { GroupItem, UpdateGroupBody } from '@/types/api'
 import { EditGroupDialog } from './editGroupDialog'
+import { GroupLogoBadge } from './groupLogoBadge'
 import { GroupSummaryDialog } from './groupSummaryDialog'
 
 type GroupsTableViewProps = {
@@ -49,6 +50,42 @@ function ToggleStatusBadge({ enabled }: { enabled: boolean }) {
   return (
     <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusVariant}`}>
       {enabled ? 'Bật' : 'Tắt'}
+    </span>
+  )
+}
+
+function GroupToggleBadge({ enabled }: { enabled: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-medium ${
+        enabled ? 'bg-[#003F27] text-[#15C982]' : 'bg-[#2B2B2B] text-[#B7B7B7]'
+      }`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-[#15C982]' : 'bg-[#B7B7B7]'}`} />
+      {enabled ? 'Bật' : 'Tắt'}
+    </span>
+  )
+}
+
+function GroupStatusSwitch({
+  checked,
+  disabled,
+  onCheckedChange,
+}: {
+  checked: boolean
+  disabled?: boolean
+  onCheckedChange: (checked: boolean) => void
+}) {
+  return (
+    <span className="inline-flex items-center gap-2">
+      <Switch
+        className="h-5 w-9 border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-4 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+        checked={checked}
+        disabled={disabled}
+        onCheckedChange={onCheckedChange}
+        aria-label={checked ? 'Tắt nhóm' : 'Bật nhóm'}
+      />
+      <span className="text-sm font-medium text-[#D7D7D7]">{checked ? 'Bật' : 'Tắt'}</span>
     </span>
   )
 }
@@ -95,9 +132,12 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
       id: 'name',
       header: 'Tên nhóm',
       cell: (group) => (
-        <div className="space-y-1 max-w-[240px]">
-          <p className="font-medium truncate">{group.title}</p>
-          <p className="text-xs text-muted-foreground">{truncateDescription(group.description)}</p>
+        <div className="flex max-w-[260px] items-center gap-3">
+          <GroupLogoBadge iconKey={group.iconKey} title={group.title} className="h-7 w-8" textClassName="text-sm" />
+          <div className="min-w-0 space-y-1">
+            <p className="truncate font-medium">{group.title}</p>
+            <p className="truncate text-xs text-muted-foreground">{truncateDescription(group.description)}</p>
+          </div>
         </div>
       ),
     },
@@ -109,8 +149,9 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
         const isUpdating = Boolean(updatingStatusById[group.id])
 
         return (
+          <span className="inline-flex items-center gap-2">
           <Switch
-            className="scale-90"
+            className="h-5 w-9 border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-4 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
             checked={isActive}
             disabled={isUpdating}
             onCheckedChange={(checked) => {
@@ -118,13 +159,14 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
             }}
             aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
           />
+          <span className="text-sm font-medium text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
+          </span>
         )
       },
     },
     {
       id: 'volume',
       header: 'Volume (USD)',
-      cellClassName: 'font-geist-mono',
       cell: (group) => formatVolumeRange(group),
     },
     {
@@ -145,18 +187,16 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     {
       id: 'autoKick',
       header: 'Auto-kick',
-      cell: (group) => <ToggleStatusBadge enabled={group.autoKickEnabled} />,
+      cell: (group) => <GroupToggleBadge enabled={group.autoKickEnabled} />,
     },
     {
       id: 'rejoin',
       header: 'Rejoin',
-      cell: (group) => <ToggleStatusBadge enabled={group.rejoinEnabled} />,
+      cell: (group) => <GroupToggleBadge enabled={group.rejoinEnabled} />,
     },
     {
       id: 'actions',
       header: 'Hành động',
-      headerClassName: 'text-right',
-      cellClassName: 'text-right',
       cell: (group) => (
         <div className="flex items-center justify-end gap-1">
           <GroupSummaryDialog groupId={group.id} />
