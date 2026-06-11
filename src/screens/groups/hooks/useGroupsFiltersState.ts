@@ -10,7 +10,7 @@ type GroupsFiltersState = ListFiltersState<ListGroupsQuery, GroupsViewMode>
 const INITIAL_GROUPS_FILTERS_STATE: GroupsFiltersState = {
   query: {
     page: 1,
-    limit: 10,
+    limit: 20,
   },
   viewMode: 'table',
   searchInput: '',
@@ -40,7 +40,7 @@ export function useGroupsFiltersState() {
       const search = searchParams.get('search') || ''
       const status = parseStatus(searchParams.get('status'))
       const page = parsePositiveInt(searchParams.get('page'), 1)
-      const limit = parsePositiveInt(searchParams.get('limit'), 10)
+      const limit = parsePositiveInt(searchParams.get('limit'), 20)
       const viewMode = parseViewMode(searchParams.get('view'))
 
       return {

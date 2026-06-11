@@ -143,7 +143,7 @@ export function GroupsScreen() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-5">
+      <div className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Nhóm thành viên</h1>

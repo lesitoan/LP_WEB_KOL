@@ -91,7 +91,7 @@ const LPEX_USER_STATUS = [
 const MEMBER_TYPE_TABS = [
   { value: "all", label: "Tất cả" },
   { value: "inactive_2_weeks", label: "Không hoạt động 2 tuần" },
-  { value: "warning", label: "Bị cảnh báo", count: 8 },
+  { value: "warning", label: "Bị cảnh báo" },
 ] as const;
 
 // const ELIGIBILITY_OPTIONS = [
@@ -368,8 +368,8 @@ export default function MembersTable() {
         }}
       />
 
-      <div className="border-b border-border px-5">
-        <div className="flex items-center gap-8 overflow-x-auto">
+      <div className="px-6">
+        <div className="flex items-end gap-7 overflow-x-auto">
           {MEMBER_TYPE_TABS.map((tab) => {
             const isActive = activeMemberType === tab.value;
 
@@ -377,19 +377,19 @@ export default function MembersTable() {
               <button
                 key={tab.value}
                 type="button"
-                className={`relative inline-flex h-11 shrink-0 items-center gap-2 text-sm font-medium transition-colors ${
+                className={`relative inline-flex shrink-0 items-center justify-center gap-2 pb-3 text-sm font-medium leading-5 transition-colors ${
                   isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
                 onClick={() => setActiveMemberType(tab.value)}
               >
                 <span>{tab.label}</span>
-                {"count" in tab ? (
+                {/* {"count" in tab ? (
                   <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
                     {tab.count}
                   </span>
-                ) : null}
+                ) : null} */}
                 {isActive ? (
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary" />
+                  <span className="absolute bottom-0 left-1/2 h-0.5 w-[calc(100%+16px)] -translate-x-1/2 rounded-full bg-white" />
                 ) : null}
               </button>
             );

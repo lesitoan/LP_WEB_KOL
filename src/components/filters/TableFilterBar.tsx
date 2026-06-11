@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Check, ChevronDown, Filter } from 'lucide-react'
 
 export type FilterOption = {
@@ -39,6 +40,7 @@ type TableFilterBarProps = {
   selectFilters: SelectFilterConfig[]
   activeFilterChips: ActiveFilterChip[]
   statusBadges?: StatusBadge[]
+  endContent?: ReactNode
   disabled?: boolean
   onTextChange: (key: string, value: string) => void
   onSelectFilter: (key: string, value: string) => void
@@ -51,6 +53,7 @@ export default function TableFilterBar({
   selectFilters,
   activeFilterChips,
   statusBadges = [],
+  endContent,
   disabled = false,
   onTextChange,
   onSelectFilter,
@@ -75,7 +78,7 @@ export default function TableFilterBar({
   }, [])
 
   return (
-    <div className="p-4 px-5 border-b border-border space-y-3">
+    <div className="p-6 space-y-3">
       <div className="flex items-center gap-2 flex-wrap" ref={containerRef}>
         {textFilters.map((textFilter) => (
           <div
@@ -211,6 +214,8 @@ export default function TableFilterBar({
             })}
           </div>
         ) : null}
+
+        {endContent ? <div className="ml-auto shrink-0">{endContent}</div> : null}
       </div>
     </div>
   )

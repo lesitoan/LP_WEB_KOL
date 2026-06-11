@@ -64,15 +64,15 @@ export function DataTable<T>({
   pagination,
 }: DataTableProps<T>) {
   return (
-    <div className={className ?? "bg-surface-1 border border-border rounded-[14px] overflow-hidden"}>
-      <div className={TABLE_SCROLL_VIEWPORT_CLASS}>
-        <table className="w-full border-collapse min-w-[980px]">
-          <thead>
-            <tr>
+     <div className={className ?? "bg-[#171717] border border-border rounded-[14px] overflow-hidden"}>
+      <div className={`${TABLE_SCROLL_VIEWPORT_CLASS} border-t border-[#303030] bg-[#171717]`}>
+        <table className="w-full border-collapse min-w-[980px] bg-[#171717]">
+          <thead className="bg-[#171717]">
+            <tr className="bg-[#171717]">
               {columns.map((column) => (
                 <th
                   key={column.id}
-                  className={`sticky top-0 z-10 text-left p-3 px-5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-surface-2 border-b border-border whitespace-nowrap ${
+                  className={`sticky top-0 z-10 text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-[#171717] whitespace-nowrap ${
                     column.headerClassName ?? ""
                   }`}
                 >
@@ -84,13 +84,13 @@ export function DataTable<T>({
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={columns.length} className="p-6 border-b border-border">
+                <td colSpan={columns.length} className="p-6">
                   <DataTableSkeleton columnsCount={columns.length} loadingContent={loadingContent} />
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="p-24 text-center text-sm text-muted-foreground border-b border-border">
+                <td colSpan={columns.length} className="px-6 py-24 text-center text-sm text-muted-foreground">
                   {emptyContent ?? "Không có dữ liệu"}
                 </td>
               </tr>
@@ -100,7 +100,7 @@ export function DataTable<T>({
                   {columns.map((column) => (
                     <td
                       key={column.id}
-                      className={`p-4 px-5 border-b border-border text-[13px] whitespace-nowrap ${column.cellClassName ?? ""}`}
+                      className={`px-6 py-4 text-[13px] whitespace-nowrap ${column.cellClassName ?? ""}`}
                     >
                       {column.cell(row)}
                     </td>
@@ -113,7 +113,7 @@ export function DataTable<T>({
       </div>
 
       {pagination ? (
-        <div className="px-5 py-3 border-t border-border text-[12.5px] text-muted-foreground md:flex md:items-center md:justify-between">
+        <div className="px-6 py-4 text-[12.5px] text-muted-foreground md:flex md:items-center md:justify-between">
           <span className="block text-center md:text-left">{pagination.summaryText ?? `Tổng ${pagination.totalItems} dòng`}</span>
 
           <div className="mt-2 flex items-center justify-center gap-3 md:mt-0 md:justify-end">
@@ -159,7 +159,7 @@ export function DataTable<T>({
               </button>
             </div>
 
-            {pagination.onLimitChange ? (
+            {/* {pagination.onLimitChange ? (
               <label className="inline-flex items-center gap-2 whitespace-nowrap">
                 <span>Dòng/trang</span>
                 <select
@@ -175,7 +175,7 @@ export function DataTable<T>({
                   ))}
                 </select>
               </label>
-            ) : null}
+            ) : null} */}
           </div>
         </div>
       ) : null}

@@ -292,7 +292,7 @@ export default function MembersHeader() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-5 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-6 gap-4">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Cộng đồng / Members</h1>
           <div className="text-[13px] text-muted-foreground">
@@ -319,7 +319,7 @@ export default function MembersHeader() {
             </svg>
             {isFetching ? "Đang export..." : "Export Excel"}
           </button>
-          <button
+          {/* <button
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-[13px] font-semibold bg-brand text-primary-foreground hover:bg-brand-dim transition-all"
             type="button"
             onClick={() => setIsInviteDialogOpen(true)}
@@ -336,7 +336,7 @@ export default function MembersHeader() {
               <path d="M12 5v14M5 12h14" />
             </svg>
             Mời thêm thành viên
-          </button>
+          </button> */}
         </div>
       </div>
       <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
