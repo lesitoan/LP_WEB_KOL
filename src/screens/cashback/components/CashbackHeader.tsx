@@ -7,8 +7,8 @@ export default function CashbackHeader({ saved, onSave }: CashbackHeaderProps) {
   return (
     <div className="flex items-start justify-between mb-6 gap-4">
       <div>
-        <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Cashback Settings</h1>
-        <div className="text-[13px] text-muted-foreground">
+        <h1 className="text-2xl font-semibold tracking-tight mb-0.5">Cashback Settings</h1>
+        <div className="text-sm text-muted-foreground">
           Bạn đang ở tier <strong className="text-brand font-semibold">ELITE</strong> · Commission 50% · Cashback tối đa 49%
         </div>
       </div>

@@ -1,8 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { LogOut, Menu, Settings, Star, UserRound } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { LogOut, Menu, Star } from 'lucide-react'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -31,7 +30,6 @@ function getInitials(name?: string | null) {
 }
 
 export default function Topbar({ onMenuClick }: TopbarProps) {
-  const router = useRouter()
   const { profile, logout } = useAuthSession()
   const { data: tierData } = useGetKolCurrentTierQuery()
 
@@ -100,27 +98,6 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                 {profile?.email ?? ''}
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-[#252525]" />
-            <DropdownMenuItem
-              onSelect={(event) => {
-                event.preventDefault()
-                router.push('/settings')
-              }}
-              className="gap-2 focus:bg-[#171717] focus:text-white"
-            >
-              <UserRound className="h-4 w-4" />
-              Cài đặt tài khoản
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={(event) => {
-                event.preventDefault()
-                router.push('/settings')
-              }}
-              className="gap-2 focus:bg-[#171717] focus:text-white"
-            >
-              <Settings className="h-4 w-4" />
-              Cài đặt thành viên
-            </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-[#252525]" />
             <DropdownMenuItem
               variant="destructive"

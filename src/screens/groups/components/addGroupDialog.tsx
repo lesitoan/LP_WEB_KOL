@@ -2,6 +2,7 @@
 
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DEFAULT_GROUP_LOGO_KEY } from '@/lib/groupLogo'
 import type { CreateGroupBody } from '@/types/api'
 import { GroupFormDialog } from './groupFormDialog'
 
@@ -28,6 +29,7 @@ export function AddGroupDialog({ onAdd, defaultOpen = false, open, onOpenChange 
       )}
       initialValues={{
         title: '',
+        iconKey: DEFAULT_GROUP_LOGO_KEY,
         telegramGroupId: '',
         description: '',
         minVolumeRequired: '0',
@@ -37,7 +39,9 @@ export function AddGroupDialog({ onAdd, defaultOpen = false, open, onOpenChange 
         autoKickEnabled: false,
         rejoinEnabled: true,
       }}
-      onSubmitPayload={onAdd}
+      onSubmitPayload={async (payload) => {
+        await onAdd(payload as CreateGroupBody)
+      }}
     />
   )
 }

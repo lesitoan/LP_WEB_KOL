@@ -12,10 +12,10 @@ export default function TierScreen() {
     <div className="animate-fade-in">
       <div className="flex items-start justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">
+          <h1 className="text-2xl font-medium tracking-tight mb-0.5">
             Tier & Quyền lợi
           </h1>
-          <div className="text-[13px] text-muted-foreground">
+          <div className="text-sm font-normal text-muted-foreground">
             Theo dõi tiến độ lên tier và truy cập data/signal theo cấp
           </div>
         </div>
@@ -23,7 +23,7 @@ export default function TierScreen() {
 
       <TierHeroCard />
 
-      <h2 className="text-lg font-semibold mb-4">So sánh các tier</h2>
+      <h2 className="text-xl font-medium mb-4">So sánh các tier</h2>
       <TierComparisonTable />
 
       {/* <h2 className="text-lg font-semibold mb-4">

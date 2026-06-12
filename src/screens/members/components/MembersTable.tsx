@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import type { ActiveFilterChip, SelectFilterConfig } from "@/components/filters/TableFilterBar";
@@ -10,6 +11,7 @@ import { toast } from "@/hooks/useToast";
 import { useGetMembersQuery } from "@/services/api/membersApi";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
 import type { MemberItem } from "@/types/api";
+import { GroupLogoBadge } from "@/screens/groups/components/groupLogoBadge";
 import MembersFilters from "./filter/MembersFilters";
 import { useMembersFilters } from "../hooks/useMembersFilters";
 
@@ -46,12 +48,17 @@ function formatUsdVolume(value: string) {
   });
 }
 
+function truncateGroupTitle(title: string | null | undefined, maxLength = 10) {
+  const normalizedTitle = (title || "—").trim() || "—";
+  return normalizedTitle.slice(0, maxLength);
+}
+
 function statusClass(status: string) {
   switch (status.toLowerCase()) {
     case "active":
       return "bg-success/[0.12] text-success border border-success/20";
     case "inactive":
-      return "bg-muted/[0.12] text-muted-foreground border border-muted/20";
+      return "bg-[#2B2B2B] text-[#B7B7B7] border border-[#3A3A3A]";
     default:
       return "bg-warning/[0.12] text-warning border border-warning/20";
   }
@@ -74,6 +81,20 @@ function formatTelegramMembershipState(status: string | null | undefined) {
   return option?.label ?? "Không xác định";
 }
 
+function getMemberProgressConfig(status: MemberItem["memberProgressStatus"]) {
+  switch (status) {
+    case "KYC_COMPLETED":
+      return { label: "Đã KYC", steps: 2, labelClassName: "text-success", textClassName: "text-base" };
+    case "DEPOSIT_COMPLETED":
+      return { label: "Đã deposit", steps: 3, labelClassName: "text-[#FFD000]", textClassName: "text-base" };
+    case "TRADE_COMPLETED":
+      return { label: "Đã giao dịch", steps: 4, labelClassName: "text-info", textClassName: "text-base" };
+    case "NOT_KYC":
+    default:
+      return { label: "Chưa KYC", steps: 1, labelClassName: "text-muted-foreground", textClassName: "text-base" };
+  }
+}
+
 function normalizeStatus(value: string | null | undefined) {
   return (value ?? "UNKNOWN").trim().toUpperCase();
 }
@@ -91,7 +112,7 @@ const LPEX_USER_STATUS = [
 const MEMBER_TYPE_TABS = [
   { value: "all", label: "Tất cả" },
   { value: "inactive_2_weeks", label: "Không hoạt động 2 tuần" },
-  { value: "warning", label: "Bị cảnh báo", count: 8 },
+  { value: "warning", label: "Bị cảnh báo" },
 ] as const;
 
 // const ELIGIBILITY_OPTIONS = [
@@ -114,6 +135,7 @@ export default function MembersTable() {
     countryCodeInput,
     telegramStatusFilter,
     lpexUserStatusFilter,
+    eligibilityStatusFilter,
     query,
     sortBy,
     sortOrder,
@@ -124,7 +146,11 @@ export default function MembersTable() {
     setCountryCodeInput,
     setTelegramStatusFilter,
     setLpexUserStatusFilter,
+    setEligibilityStatusFilter,
   } = useMembersFilters();
+
+  const selectedMemberType =
+    eligibilityStatusFilter === "FINAL_WARNING" ? "warning" : activeMemberType;
 
   const { data, isLoading, isFetching, error } = useGetMembersQuery(query, {
     refetchOnMountOrArgChange: true,
@@ -232,19 +258,70 @@ export default function MembersTable() {
             {initials(member)}
           </div>
           <div>
-            <div className="text-[13.5px] font-medium">{fullName(member)}</div>
-            <div className="text-[11px] text-muted-foreground font-geist-mono">
-              @{member.telegramUsername} · TG ID {member.telegramUserId}
+            <div className="text-base font-normal leading-6 text-white">{fullName(member)}</div>
+            <div className="text-sm text-muted-foreground">
+              @{member.telegramUsername}
             </div>
           </div>
         </div>
       ),
     },
     {
-      id: "lpexUid",
-      header: "UID",
-      cell: (member) => <span className="font-geist-mono">{member.lpexUid || "—"}</span>,
+      id: "groups",
+      header: "Groups",
+      cell: (member) => {
+        const groups = member.eligibleGroups || [];
+        const visibleGroups = groups.slice(0, 3);
+
+        if (groups.length === 0) {
+          return <span className="text-base text-muted-foreground">—</span>;
+        }
+
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="inline-flex items-center gap-1.5">
+                {visibleGroups.map((group) => (
+                  <GroupLogoBadge
+                    key={group.accessId || group.groupId}
+                    iconKey={group.iconKey}
+                    title={group.title}
+                    className="h-5 w-6"
+                    textClassName="text-[10px]"
+                  />
+                ))}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              align="start"
+              className="rounded-lg border-[#303030] bg-[#1F1F1F] px-2.5 py-2 shadow-xl"
+            >
+              <div className="space-y-1.5">
+                {groups.map((group) => (
+                  <div key={group.accessId || group.groupId} className="flex items-center gap-2">
+                    <GroupLogoBadge
+                      iconKey={group.iconKey}
+                      title={group.title}
+                      className="h-5 w-6"
+                      textClassName="text-[10px]"
+                    />
+                    <span className="max-w-[96px] text-sm font-medium text-foreground">
+                      {truncateGroupTitle(group.title)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
     },
+    // {
+    //   id: "lpexUid",
+    //   header: "UID",
+    //   cell: (member) => <span className="font-geist-mono">{member.lpexUid || "—"}</span>,
+    // },
     // {
     //   id: "country",
     //   header: "Country",
@@ -267,36 +344,11 @@ export default function MembersTable() {
     //     );
     //   },
     // },
-    {
-      id: "groups",
-      header: "Groups",
-      cell: (member) => {
-        const groups = member.eligibleGroups || [];
-        if (groups.length === 0) {
-          return <span className="text-muted-foreground">—</span>;
-        }
-
-        return (
-          <div className="flex flex-col gap-1 items-start">
-            {groups.map((group: any, idx: number) => {
-              const fullTitle = group.title || "";
-              const displayTitle = fullTitle.length > 15 ? fullTitle.substring(0, 15) + "..." : fullTitle;
-              
-              return (
-                <div key={idx} className="flex items-center text-[12.5px] cursor-help" title={fullTitle}>
-                  <span className="mr-1.5 text-muted-foreground">-</span>
-                  <span className="font-medium">{displayTitle}</span>
-                </div>
-              );
-            })}
-          </div>
-        );
-      },
-    },
+    
     {
       id: "volume",
       header: renderSortableHeader("Volume 30D", "usdVolume"),
-      cellClassName: "font-geist-mono font-medium",
+      cellClassName: "font-medium text-base",
       cell: (member) => formatUsdVolume(member.usdVolume),
     },
     {
@@ -304,7 +356,7 @@ export default function MembersTable() {
       header: "Trạng thái SCEX",
       cell: (member) => (
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusClass(
+          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusClass(
             member.lpexUserStatus || "unknown",
           )}`}
         >
@@ -317,7 +369,7 @@ export default function MembersTable() {
       header: "Trạng thái telegram",
       cell: (member) => (
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusClass(
+          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusClass(
             member.telegramStatus || "unknown",
           )}`}
         >
@@ -328,7 +380,30 @@ export default function MembersTable() {
     {
       id: "registeredAt",
       header: renderSortableHeader("Ngày đăng ký", "createdAt"),
-      cell: (member) => formatDate(member.registeredAtLpex || member.createdAt),
+      cell: (member) => <span className="text-base">{formatDate(member.registeredAtLpex || member.createdAt)}</span>,
+    },
+    {
+      id: "verification",
+      header: "Xác minh",
+      cell: (member) => {
+        const progress = getMemberProgressConfig(member.memberProgressStatus);
+
+        return (
+          <div className="inline-flex min-w-[116px] flex-col items-start gap-2 text-left">
+            <span className={`text-xs font-normal leading-tight ${progress.labelClassName}`}>
+              {progress.label}
+            </span>
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4].map((step) => (
+                <span
+                  key={step}
+                  className={`h-1 w-6 rounded-full ${step <= progress.steps ? "bg-[#16C784]" : "bg-[#2A2A2A]"}`}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      },
     },
   ];
 
@@ -368,28 +443,31 @@ export default function MembersTable() {
         }}
       />
 
-      <div className="border-b border-border px-5">
-        <div className="flex items-center gap-8 overflow-x-auto">
+      <div className="border-b border-[#303030] px-6">
+        <div className="scrollbar-none flex items-end gap-7 overflow-x-auto">
           {MEMBER_TYPE_TABS.map((tab) => {
-            const isActive = activeMemberType === tab.value;
+            const isActive = selectedMemberType === tab.value;
 
             return (
               <button
                 key={tab.value}
                 type="button"
-                className={`relative inline-flex h-11 shrink-0 items-center gap-2 text-sm font-medium transition-colors ${
+                className={`relative inline-flex shrink-0 items-center justify-center gap-2 pb-3 text-sm font-medium leading-5 transition-colors ${
                   isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
-                onClick={() => setActiveMemberType(tab.value)}
+                onClick={() => {
+                  setActiveMemberType(tab.value);
+                  setEligibilityStatusFilter(tab.value === "warning" ? "FINAL_WARNING" : "");
+                }}
               >
                 <span>{tab.label}</span>
-                {"count" in tab ? (
-                  <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                {/* {"count" in tab ? (
+                  <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-xs font-normal text-primary-foreground">
                     {tab.count}
                   </span>
-                ) : null}
+                ) : null} */}
                 {isActive ? (
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary" />
+                  <span className="absolute -bottom-px left-1/2 h-0.5 w-[calc(100%+16px)] -translate-x-1/2 rounded-full bg-white" />
                 ) : null}
               </button>
             );
@@ -405,7 +483,7 @@ export default function MembersTable() {
           isLoading={isLoading}
           loadingContent="Đang tải danh sách members..."
           emptyContent="Không có member phù hợp với bộ lọc"
-          className="border-none rounded-none"
+          className="border-none rounded-none [&_.data-table-scroll-viewport]:scrollbar-none [&_.data-table-scroll-viewport]:border-t-0"
           pagination={{
             page,
             totalPages,

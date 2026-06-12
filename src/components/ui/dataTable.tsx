@@ -53,6 +53,76 @@ function pageList(current: number, total: number) {
   return [1, 'ellipsis', current - 1, current, current + 1, 'ellipsis', total] as const
 }
 
+export function DataTablePaginationBar({ pagination }: { pagination: DataTablePagination }) {
+  return (
+    <div className="px-6 py-4 text-[12.5px] text-muted-foreground md:flex md:items-center md:justify-between">
+      <span className="block text-center md:text-left">{pagination.summaryText ?? `Tổng ${pagination.totalItems} dòng`}</span>
+
+      <div className="mt-2 flex items-center justify-center gap-3 md:mt-0 md:justify-end">
+        <div className="flex gap-1">
+          <button
+            className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+            onClick={() => pagination.onPageChange(Math.max(1, pagination.page - 1))}
+            disabled={pagination.isDisabled || pagination.page <= 1}
+            type="button"
+            aria-label="Trang trước"
+          >
+            {'<'}
+          </button>
+
+          {pageList(pagination.page, Math.max(1, pagination.totalPages)).map((value, idx) =>
+            value === 'ellipsis' ? (
+              <span key={`ellipsis-${idx}`} className="w-7 h-7 grid place-items-center text-xs">
+                ...
+              </span>
+            ) : (
+              <button
+                key={value}
+                className={`w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground ${
+                  value === pagination.page ? 'bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground' : ''
+                }`}
+                onClick={() => pagination.onPageChange(value)}
+                disabled={pagination.isDisabled}
+                type="button"
+              >
+                {value}
+              </button>
+            ),
+          )}
+
+          <button
+            className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+            onClick={() => pagination.onPageChange(Math.min(pagination.totalPages, pagination.page + 1))}
+            disabled={pagination.isDisabled || pagination.page >= pagination.totalPages}
+            type="button"
+            aria-label="Trang sau"
+          >
+            {'>'}
+          </button>
+        </div>
+
+        {/* {pagination.onLimitChange ? (
+          <label className="inline-flex items-center gap-2 whitespace-nowrap">
+            <span>Dòng/trang</span>
+            <select
+              className="h-7 rounded-md bg-surface-2 border border-border px-2 text-xs text-foreground"
+              value={pagination.limit}
+              onChange={(event) => pagination.onLimitChange?.(Number(event.target.value))}
+              disabled={pagination.isDisabled}
+            >
+              {(pagination.limitOptions ?? [10, 20, 50]).map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null} */}
+      </div>
+    </div>
+  )
+}
+
 export function DataTable<T>({
   columns,
   data,
@@ -64,15 +134,17 @@ export function DataTable<T>({
   pagination,
 }: DataTableProps<T>) {
   return (
-    <div className={className ?? "bg-surface-1 border border-border rounded-[14px] overflow-hidden"}>
-      <div className={TABLE_SCROLL_VIEWPORT_CLASS}>
-        <table className="w-full border-collapse min-w-[980px]">
-          <thead>
-            <tr>
-              {columns.map((column) => (
+     <div className={className ?? "bg-[#171717] border border-border rounded-[14px] overflow-hidden"}>
+      <div className={`${TABLE_SCROLL_VIEWPORT_CLASS} border-t border-[#303030] bg-[#171717]`}>
+        <table className="w-full border-collapse min-w-[980px] bg-[#171717]">
+          <thead className="bg-[#171717]">
+            <tr className="bg-[#171717]">
+              {columns.map((column, columnIndex) => (
                 <th
                   key={column.id}
-                  className={`sticky top-0 z-10 text-left p-3 px-5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-surface-2 border-b border-border whitespace-nowrap ${
+                  className={`sticky top-0 z-10 bg-[#171717] px-3 py-3 text-left text-xs font-semibold text-muted-foreground normal-case tracking-normal whitespace-nowrap ${
+                    columnIndex === columns.length - 1 ? 'pr-4 text-right' : ''
+                  } ${
                     column.headerClassName ?? ""
                   }`}
                 >
@@ -84,23 +156,25 @@ export function DataTable<T>({
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={columns.length} className="p-6 border-b border-border">
+                <td colSpan={columns.length} className="p-6">
                   <DataTableSkeleton columnsCount={columns.length} loadingContent={loadingContent} />
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="p-24 text-center text-sm text-muted-foreground border-b border-border">
+                <td colSpan={columns.length} className="px-6 py-24 text-center text-sm text-muted-foreground">
                   {emptyContent ?? "Không có dữ liệu"}
                 </td>
               </tr>
             ) : (
               data.map((row, rowIndex) => (
                 <tr key={rowKey(row, rowIndex)} className="hover:bg-surface-2 transition-colors">
-                  {columns.map((column) => (
+                  {columns.map((column, columnIndex) => (
                     <td
                       key={column.id}
-                      className={`p-4 px-5 border-b border-border text-[13px] whitespace-nowrap ${column.cellClassName ?? ""}`}
+                      className={`px-3 py-4 text-[13px] whitespace-nowrap ${
+                        columnIndex === columns.length - 1 ? 'pr-4 text-right' : ''
+                      } ${column.cellClassName ?? ""}`}
                     >
                       {column.cell(row)}
                     </td>
@@ -112,73 +186,7 @@ export function DataTable<T>({
         </table>
       </div>
 
-      {pagination ? (
-        <div className="px-5 py-3 border-t border-border text-[12.5px] text-muted-foreground md:flex md:items-center md:justify-between">
-          <span className="block text-center md:text-left">{pagination.summaryText ?? `Tổng ${pagination.totalItems} dòng`}</span>
-
-          <div className="mt-2 flex items-center justify-center gap-3 md:mt-0 md:justify-end">
-            <div className="flex gap-1">
-              <button
-                className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-                onClick={() => pagination.onPageChange(Math.max(1, pagination.page - 1))}
-                disabled={pagination.isDisabled || pagination.page <= 1}
-                type="button"
-              aria-label="Trang trước"
-              >
-                {'<'}
-              </button>
-
-              {pageList(pagination.page, Math.max(1, pagination.totalPages)).map((value, idx) =>
-                value === 'ellipsis' ? (
-                  <span key={`ellipsis-${idx}`} className="w-7 h-7 grid place-items-center text-xs">
-                    ...
-                  </span>
-                ) : (
-                  <button
-                    key={value}
-                    className={`w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground ${
-                      value === pagination.page ? 'bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground' : ''
-                    }`}
-                    onClick={() => pagination.onPageChange(value)}
-                    disabled={pagination.isDisabled}
-                    type="button"
-                  >
-                    {value}
-                  </button>
-                ),
-              )}
-
-              <button
-                className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-                onClick={() => pagination.onPageChange(Math.min(pagination.totalPages, pagination.page + 1))}
-                disabled={pagination.isDisabled || pagination.page >= pagination.totalPages}
-                type="button"
-                aria-label="Trang sau"
-              >
-                {'>'}
-              </button>
-            </div>
-
-            {pagination.onLimitChange ? (
-              <label className="inline-flex items-center gap-2 whitespace-nowrap">
-                <span>Dòng/trang</span>
-                <select
-                  className="h-7 rounded-md bg-surface-2 border border-border px-2 text-xs text-foreground"
-                  value={pagination.limit}
-                  onChange={(event) => pagination.onLimitChange?.(Number(event.target.value))}
-                  disabled={pagination.isDisabled}
-                >
-                  {(pagination.limitOptions ?? [10, 20, 50]).map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+      {pagination ? <DataTablePaginationBar pagination={pagination} /> : null}
     </div>
   )
 }

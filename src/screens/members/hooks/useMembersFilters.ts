@@ -34,6 +34,7 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
   const countryCode = searchParams.get('countryCode')?.trim().toUpperCase() || ''
   const telegramStatus = searchParams.get('telegramStatus')?.trim().toLowerCase() || ''
   const lpexUserStatus = searchParams.get('lpexUserStatus')?.trim().toLowerCase() || ''
+  const eligibilityStatus = searchParams.get('eligibilityStatus')?.trim().toUpperCase() || ''
   const sortByRaw = searchParams.get('sortBy')?.trim()
   const sortOrderRaw = searchParams.get('sortOrder')?.trim()
 
@@ -55,7 +56,7 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
       lpexUserStatus: lpexUserStatus || undefined,
       groupId: undefined,
       membershipState: undefined,
-      eligibilityStatus: undefined,
+      eligibilityStatus: eligibilityStatus || undefined,
       includeGroups: true,
     },
     viewMode: 'list' as MembersFiltersViewMode,
@@ -97,6 +98,10 @@ function serializeToSearchParams(state: {
     params.set('lpexUserStatus', state.query.lpexUserStatus)
   }
 
+  if (state.query.eligibilityStatus) {
+    params.set('eligibilityStatus', state.query.eligibilityStatus.toLowerCase())
+  }
+
   return params
 }
 
@@ -131,6 +136,7 @@ export function useMembersFilters() {
       countryCodeInput: state.query.countryCode ?? '',
       telegramStatusFilter: state.query.telegramStatus ?? '',
       lpexUserStatusFilter: state.query.lpexUserStatus ?? '',
+      eligibilityStatusFilter: state.query.eligibilityStatus ?? '',
       query: state.query,
       sortBy: state.query.sortBy ?? 'createdAt',
       sortOrder: state.query.sortOrder ?? 'desc',
@@ -160,6 +166,12 @@ export function useMembersFilters() {
         ...state.query,
         page: 1,
         lpexUserStatus: lpexUserStatus || undefined,
+      }),
+    setEligibilityStatusFilter: (eligibilityStatus: string) =>
+      setQuery({
+        ...state.query,
+        page: 1,
+        eligibilityStatus: eligibilityStatus || undefined,
       }),
     setSort: (sortBy: "telegramUsername" | "usdVolume" | "createdAt", sortOrder: "asc" | "desc") =>
       setQuery({

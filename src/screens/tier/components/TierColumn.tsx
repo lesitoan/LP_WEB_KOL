@@ -1,6 +1,6 @@
-import { CircleCheck, Coins, Users } from 'lucide-react'
+import { Check, CircleCheck, Coins, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { KolTier } from '@/types/api'
+import type { KolTier, KolTierFeature } from '@/types/api'
 
 const TIER_BORDER_GRADIENT =
   'linear-gradient(135deg, rgba(255, 187, 0, 0.75) 0%, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(153, 112, 0, 0.75) 100%)'
@@ -17,6 +17,19 @@ function splitDescription(description: string | null) {
     .split('+')
     .map((item) => item.trim())
     .filter(Boolean)
+}
+
+function getTierOptions(tier: KolTier): KolTierFeature[] {
+  if (tier.features?.length) {
+    return [...tier.features].sort((a, b) => a.sortOrder - b.sortOrder)
+  }
+
+  return splitDescription(tier.description).map((label, index) => ({
+    id: label,
+    label,
+    sortOrder: index + 1,
+    isIncluded: true,
+  }))
 }
 
 function getTierIconSrc(code: string) {
@@ -55,7 +68,7 @@ type TierColumnProps = {
 }
 
 export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps) {
-  const benefits = splitDescription(tier.description)
+  const options = getTierOptions(tier)
 
   const content = (
     <div className="flex h-full flex-col p-5">
@@ -63,11 +76,11 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
         <div className="flex items-center gap-3">
           <img
             src={getTierIconSrc(tier.code)}
-            alt={tier.name}
+            alt={tier.name} 
             className={`h-10 w-10 object-contain ${isCurrent ? '' : 'opacity-40'}`}
           />
           <span
-            className={`text-sm font-bold uppercase tracking-wide ${isCurrent ? 'text-foreground' : 'text-muted-foreground'}`}
+            className={`text-lg  uppercase tracking-wide ${isCurrent ? 'text-foreground font-bold' : 'text-muted-foreground font-medium'}`}
           >
             {tier.name}
           </span>
@@ -77,10 +90,10 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
       <div className="mb-5 flex items-start gap-3">
         <Coins className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
         <div>
-          <div className={`text-[28px] font-bold leading-none ${isCurrent ? 'text-[#FFEA74]' : 'text-foreground'}`}>
+          <div className={`text-[32px] font-bold leading-none ${isCurrent ? 'text-[#FFEA74]' : 'text-foreground'}`}>
             {tier.commissionRatePct}%
           </div>
-          <div className="mt-1.5 text-[13px] text-muted-foreground">Commission rate</div>
+          <div className="mt-1.5 text-[14px] text-muted-foreground">Hoa hồng</div>
         </div>
       </div>
 
@@ -88,20 +101,34 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
         <Users className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
         <div>
           <div className="text-base font-medium text-foreground">{formatActiveMembers(tier)}</div>
-          <div className="mt-1 text-[13px] text-muted-foreground">Active members</div>
+          <div className="mt-1 text-[14px] text-muted-foreground">Thành viên hoạt động</div>
         </div>
       </div>
 
-      {benefits.length > 0 ? (
+      {options.length > 0 ? (
         <div className="mt-auto space-y-2.5">
-          {benefits.map((benefit) => (
-            <div key={benefit} className="flex items-center gap-2.5 text-[13px]">
-              <CircleCheck
-                className="size-[18px] shrink-0 fill-brand text-brand stroke-white"
-                strokeWidth={1.5}
-                aria-hidden="true"
-              />
-              <span className={isCurrent ? 'text-foreground' : 'text-muted-foreground'}>{benefit}</span>
+          {options.map((option) => (
+            <div key={option.id} className="flex items-center gap-2.5">
+              {option.isIncluded ? (
+                <CircleCheck
+                  className="size-[16px] shrink-0 fill-brand text-brand stroke-white"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                />
+              ) : (
+                <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[#2B2B2B] text-white/85">
+                  <Check className="size-3.5" strokeWidth={2.4} aria-hidden="true" />
+                </span>
+              )}
+              <span
+                className={cn(
+                  'text-foreground',
+                  'text-base leading-6',
+                  isCurrent ? 'font-semibold' : 'font-normal',
+                )}
+              >
+                {option.label}
+              </span>
             </div>
           ))}
         </div>

@@ -55,26 +55,18 @@ export function GroupsFilters({
       : []
 
   return (
-    <div>
-      <TableFilterBar
-        textFilters={[
-          {
-            key: "search",
-            placeholder: "Tìm theo tên group, tier, telegram group id...",
-            widthClassName: "flex-1 min-w-[260px] max-w-[520px]",
-          },
-        ]}
-        textValues={{ search: searchInput }}
-        selectFilters={selectFilters}
-        activeFilterChips={activeFilterChips}
-        disabled={isFetching}
-        onTextChange={(_, value) => onSearchInputChange(value)}
-        onSelectFilter={(_, value) => onStatusChange(value)}
-        onRemoveChip={() => onClearStatus()}
-      />
-
-      <div className="flex items-center justify-between px-5 py-2 border-t border-border text-xs text-muted-foreground">
-        <span>Chế độ hiển thị</span>
+    <TableFilterBar
+      textFilters={[
+        {
+          key: "search",
+          placeholder: "Tìm theo tên group, tier, telegram group id...",
+          widthClassName: "flex-1 min-w-[260px] max-w-[520px]",
+        },
+      ]}
+      textValues={{ search: searchInput }}
+      selectFilters={selectFilters}
+      activeFilterChips={activeFilterChips}
+      endContent={
         <div className="inline-flex items-center gap-2">
           <Button
             type="button"
@@ -99,7 +91,11 @@ export function GroupsFilters({
             Item
           </Button>
         </div>
-      </div>
-    </div>
-  );
+      }
+      disabled={isFetching}
+      onTextChange={(_, value) => onSearchInputChange(value)}
+      onSelectFilter={(_, value) => onStatusChange(value)}
+      onRemoveChip={() => onClearStatus()}
+    />
+  )
 }

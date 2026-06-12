@@ -131,7 +131,7 @@ export function GroupBenefitsScreen({ groupId }: GroupBenefitsScreenProps) {
   const benefitItems = benefits ?? []
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <Button type="button" variant="outline" onClick={() => router.push('/groups')}>

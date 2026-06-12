@@ -12,7 +12,7 @@ export default function AnalyticsGrowthChart() {
 
   return (
     <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
-      <h2 className="mb-4 text-sm font-semibold">
+      <h2 className="mb-4 text-base font-medium">
         So sánh tốc độ tăng trưởng volume (theo nhóm)
       </h2>
       <div className="h-[290px]">
