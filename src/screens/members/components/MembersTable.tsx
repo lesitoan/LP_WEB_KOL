@@ -135,6 +135,7 @@ export default function MembersTable() {
     countryCodeInput,
     telegramStatusFilter,
     lpexUserStatusFilter,
+    eligibilityStatusFilter,
     query,
     sortBy,
     sortOrder,
@@ -145,7 +146,11 @@ export default function MembersTable() {
     setCountryCodeInput,
     setTelegramStatusFilter,
     setLpexUserStatusFilter,
+    setEligibilityStatusFilter,
   } = useMembersFilters();
+
+  const selectedMemberType =
+    eligibilityStatusFilter === "FINAL_WARNING" ? "warning" : activeMemberType;
 
   const { data, isLoading, isFetching, error } = useGetMembersQuery(query, {
     refetchOnMountOrArgChange: true,
@@ -439,9 +444,9 @@ export default function MembersTable() {
       />
 
       <div className="border-b border-[#303030] px-6">
-        <div className="flex items-end gap-7 overflow-x-auto">
+        <div className="scrollbar-none flex items-end gap-7 overflow-x-auto">
           {MEMBER_TYPE_TABS.map((tab) => {
-            const isActive = activeMemberType === tab.value;
+            const isActive = selectedMemberType === tab.value;
 
             return (
               <button
@@ -450,7 +455,10 @@ export default function MembersTable() {
                 className={`relative inline-flex shrink-0 items-center justify-center gap-2 pb-3 text-sm font-medium leading-5 transition-colors ${
                   isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
-                onClick={() => setActiveMemberType(tab.value)}
+                onClick={() => {
+                  setActiveMemberType(tab.value);
+                  setEligibilityStatusFilter(tab.value === "warning" ? "FINAL_WARNING" : "");
+                }}
               >
                 <span>{tab.label}</span>
                 {/* {"count" in tab ? (
@@ -475,7 +483,7 @@ export default function MembersTable() {
           isLoading={isLoading}
           loadingContent="Đang tải danh sách members..."
           emptyContent="Không có member phù hợp với bộ lọc"
-          className="border-none rounded-none [&_.data-table-scroll-viewport]:border-t-0"
+          className="border-none rounded-none [&_.data-table-scroll-viewport]:scrollbar-none [&_.data-table-scroll-viewport]:border-t-0"
           pagination={{
             page,
             totalPages,
