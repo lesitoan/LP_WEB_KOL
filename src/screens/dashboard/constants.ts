@@ -21,8 +21,8 @@ export const dashboardSegments: Array<{ value: DashboardSegment; label: string }
 ];
 
 export const defaultDateRange = {
-  from: "2026-03-05",
-  to: "2026-03-06",
+  from: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split("T")[0],
+  to: new Date().toISOString().split("T")[0],
 };
 
 export const tierSummary = {

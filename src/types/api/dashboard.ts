@@ -17,6 +17,42 @@ export interface ChartPoint {
   referrals: number
 }
 
+export interface KolDashboardSummaryQuery {
+  startDate?: string
+  endDate?: string
+}
+
+export type KolDashboardMetricKey = 'commission' | 'referral' | 'deposit' | 'trade' | 'kyc'
+export type KolDashboardMetricTrend = 'up' | 'down' | 'neutral'
+
+export interface KolDashboardMetricCard {
+  key: KolDashboardMetricKey
+  title: string
+  value: number
+  unit: string | null
+  growthPercentage: number | null
+  trend: KolDashboardMetricTrend | null
+  comparisonLabel: string | null
+  currentPeriodValue: number | null
+  previousPeriodValue: number | null
+}
+
+export interface KolDashboardPeriodComparison {
+  selectedPeriod:
+    | { type: 'all_time' }
+    | { type: 'range'; startDate: string; endDate: string; days: number | null }
+  previousPeriod:
+    | { type: 'all_time' }
+    | { type: 'range'; startDate: string; endDate: string; days: number | null }
+    | null
+}
+
+export interface KolDashboardSummary {
+  heroCard: KolDashboardMetricCard
+  metricCards: KolDashboardMetricCard[]
+  periodComparison: KolDashboardPeriodComparison
+}
+
 // Member statistics overview (dashboard tile)
 
 export interface MemberOverviewMonthInfo {
