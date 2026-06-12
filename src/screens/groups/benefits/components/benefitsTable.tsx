@@ -69,10 +69,15 @@ export function BenefitsTable({ benefits, isLoading = false, isFetching = false,
       ),
     },
   ]
+  const tableColumns = columns.map((column) => ({
+    ...column,
+    headerClassName: `!text-xs ${column.headerClassName ?? ''}`,
+    cellClassName: `!text-base ${column.cellClassName ?? ''}`,
+  }))
 
   return (
     <DataTable
-      columns={columns}
+      columns={tableColumns}
       data={benefits}
       rowKey={(benefit) => benefit.id}
       isLoading={isLoading}

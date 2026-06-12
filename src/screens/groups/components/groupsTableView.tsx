@@ -48,7 +48,7 @@ export function getStatusVariant(status: string) {
 function ToggleStatusBadge({ enabled }: { enabled: boolean }) {
   const statusVariant = enabled ? getStatusVariant('active').cssClass : getStatusVariant('inactive').cssClass
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${statusVariant}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${statusVariant}`}>
       {enabled ? 'Bật' : 'Tắt'}
     </span>
   )
@@ -57,7 +57,7 @@ function ToggleStatusBadge({ enabled }: { enabled: boolean }) {
 function GroupToggleBadge({ enabled }: { enabled: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-medium ${
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-base font-medium ${
         enabled ? 'bg-[#003F27] text-[#15C982]' : 'bg-[#2B2B2B] text-[#B7B7B7]'
       }`}
     >
@@ -85,7 +85,7 @@ function GroupStatusSwitch({
         onCheckedChange={onCheckedChange}
         aria-label={checked ? 'Tắt nhóm' : 'Bật nhóm'}
       />
-      <span className="text-sm font-medium text-[#D7D7D7]">{checked ? 'Bật' : 'Tắt'}</span>
+      <span className="text-base font-medium text-[#D7D7D7]">{checked ? 'Bật' : 'Tắt'}</span>
     </span>
   )
 }
@@ -136,7 +136,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
           <GroupLogoBadge iconKey={group.iconKey} title={group.title} className="h-7 w-8" textClassName="text-sm" />
           <div className="min-w-0 space-y-1">
             <p className="truncate font-medium">{group.title}</p>
-            <p className="truncate text-xs text-muted-foreground">{truncateDescription(group.description)}</p>
+            <p className="truncate text-sm text-muted-foreground">{truncateDescription(group.description)}</p>
           </div>
         </div>
       ),
@@ -159,7 +159,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
             }}
             aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
           />
-          <span className="text-sm font-medium text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
+          <span className="text-base font-medium text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
           </span>
         )
       },
@@ -242,10 +242,15 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
       ),
     },
   ]
+  const tableColumns = columns.map((column) => ({
+    ...column,
+    headerClassName: `!text-xs ${column.headerClassName ?? ''}`,
+    cellClassName: `!text-base ${column.cellClassName ?? ''}`,
+  }))
 
   return (
     <DataTable
-      columns={columns}
+      columns={tableColumns}
       data={groups}
       rowKey={(group) => group.id}
       isLoading={isFetching}

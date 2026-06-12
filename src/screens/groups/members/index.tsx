@@ -271,8 +271,8 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
             {initials(member)}
           </div>
           <div>
-            <div className="text-[13.5px] font-medium">{fullName(member)}</div>
-            <div className="text-[11px] text-muted-foreground font-geist-mono">
+            <div className="text-base font-medium">{fullName(member)}</div>
+            <div className="text-sm text-muted-foreground font-geist-mono">
               @{member.telegramUsername || ''} · TG ID {member.telegramUserId}
             </div>
           </div>
@@ -288,7 +288,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'lpexStatus',
       header: 'Trạng thái SCEX',
       cell: (member) => (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${getLpexStatusClass(member.lpexUserStatus)}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${getLpexStatusClass(member.lpexUserStatus)}`}>
           {formatLpexStatusLabel(member.lpexUserStatus)}
         </span>
       ),
@@ -297,7 +297,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'telegramStatus',
       header: 'Trạng thái telegram',
       cell: (member) => (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium ${getTelegramStatusClass(member.telegramStatus)}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${getTelegramStatusClass(member.telegramStatus)}`}>
           {formatTelegramStatusLabel(member.telegramStatus)}
         </span>
       ),
@@ -306,7 +306,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'eligibilityStatus',
       header: 'Trạng thái thành viên',
       cell: (member) => (
-        <span className="inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[11.5px] font-medium bg-info/[0.12] text-info border border-info/20">
+        <span className="inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium bg-info/[0.12] text-info border border-info/20">
           {formatEligibilityStatusLabel(member.eligibilityStatus)}
         </span>
       ),
@@ -344,6 +344,11 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       cell: (member) => formatUsdVolume(member.usdVolume),
     },
   ]
+  const tableColumns = columns.map((column) => ({
+    ...column,
+    headerClassName: `!text-xs ${column.headerClassName ?? ''}`,
+    cellClassName: `!text-base ${column.cellClassName ?? ''}`,
+  }))
 
   return (
     <div className="space-y-6">
@@ -408,7 +413,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
 
         <div className="rounded-b-[14px] overflow-hidden">
           <DataTable
-            columns={columns}
+            columns={tableColumns}
             data={members}
             rowKey={(member) => member.id}
             isLoading={isLoading}

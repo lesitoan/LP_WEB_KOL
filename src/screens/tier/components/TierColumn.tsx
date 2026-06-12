@@ -80,7 +80,7 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
             className={`h-10 w-10 object-contain ${isCurrent ? '' : 'opacity-40'}`}
           />
           <span
-            className={`text-sm font-bold uppercase tracking-wide ${isCurrent ? 'text-foreground' : 'text-muted-foreground'}`}
+            className={`text-lg font-bold uppercase tracking-wide ${isCurrent ? 'text-foreground' : 'text-muted-foreground'}`}
           >
             {tier.name}
           </span>
@@ -90,10 +90,10 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
       <div className="mb-5 flex items-start gap-3">
         <Coins className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
         <div>
-          <div className={`text-[28px] font-bold leading-none ${isCurrent ? 'text-[#FFEA74]' : 'text-foreground'}`}>
+          <div className={`text-[32px] font-bold leading-none ${isCurrent ? 'text-[#FFEA74]' : 'text-foreground'}`}>
             {tier.commissionRatePct}%
           </div>
-          <div className="mt-1.5 text-[13px] text-muted-foreground">Commission rate</div>
+          <div className="mt-1.5 text-[14px] text-muted-foreground">Hoa hồng</div>
         </div>
       </div>
 
@@ -101,29 +101,29 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
         <Users className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
         <div>
           <div className="text-base font-medium text-foreground">{formatActiveMembers(tier)}</div>
-          <div className="mt-1 text-[13px] text-muted-foreground">Active members</div>
+          <div className="mt-1 text-[14px] text-muted-foreground">Thành viên hoạt động</div>
         </div>
       </div>
 
       {options.length > 0 ? (
         <div className="mt-auto space-y-2.5">
           {options.map((option) => (
-            <div key={option.id} className="flex items-center gap-2.5 text-[13px]">
+            <div key={option.id} className="flex items-center gap-2.5">
               {option.isIncluded ? (
                 <CircleCheck
-                  className="size-[18px] shrink-0 fill-brand text-brand stroke-white"
+                  className="size-[16px] shrink-0 fill-brand text-brand stroke-white"
                   strokeWidth={1.5}
                   aria-hidden="true"
                 />
               ) : (
-                <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#2B2B2B] text-white/85">
+                <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[#2B2B2B] text-white/85">
                   <Check className="size-3.5" strokeWidth={2.4} aria-hidden="true" />
                 </span>
               )}
               <span
                 className={cn(
-                  option.isIncluded && isCurrent ? 'text-foreground' : 'text-muted-foreground',
-                  !option.isIncluded && 'line-through decoration-muted-foreground/40',
+                  'text-foreground',
+                  'text-base font-normal leading-6',
                 )}
               >
                 {option.label}
