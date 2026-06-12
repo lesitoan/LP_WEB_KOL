@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { CampaignData, LeaderboardEntry } from "@/types/api/campaign";
+
+interface Props {
+  campaign: CampaignData;
+  leaderboard: LeaderboardEntry[];
+}
 
 const TROPHY_SRC = "/images/campaign/campaign-trophy.png";
-const CAMPAIGN_END = new Date("2026-06-30T23:59:00+07:00");
 
 function pad(n: number): string {
   return String(n).padStart(2, "0");
@@ -11,10 +16,9 @@ function pad(n: number): string {
 
 function calcTimeLeft(target: Date) {
   const diff = target.getTime() - Date.now();
-  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0 };
   return {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    hours: Math.floor(diff / (1000 * 60 * 60)),
     minutes: Math.floor((diff / (1000 * 60)) % 60),
     seconds: Math.floor((diff / 1000) % 60),
   };
@@ -22,22 +26,52 @@ function calcTimeLeft(target: Date) {
 
 function useCountdown(target: Date) {
   const [time, setTime] = useState(() => calcTimeLeft(target));
-  
+
   useEffect(() => {
     setTime(calcTimeLeft(target));
     const id = setInterval(() => setTime(calcTimeLeft(target)), 1000);
     return () => clearInterval(id);
   }, [target]);
-  
+
   return time;
 }
 
-export default function CampaignHeroBanner() {
-  const { hours, minutes, seconds } = useCountdown(CAMPAIGN_END);
+// Format số volume VNĐ
+function formatVND(volumeStr: string | number): string {
+  const usd = typeof volumeStr === "string" ? parseFloat(volumeStr || "0") : volumeStr;
+  const vnd = usd * 25000;
+  const viFormatter = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 });
+  if (vnd >= 1_000_000_000) return `${viFormatter.format(vnd / 1_000_000_000)} tỷ VNĐ`;
+  if (vnd >= 1_000_000) return `${viFormatter.format(vnd / 1_000_000)} triệu VNĐ`;
+  return `${Math.round(vnd).toLocaleString("vi-VN")} VNĐ`;
+}
+
+// Format ngày
+function formatMonthLabel(isoDate: string): string {
+  const date = new Date(isoDate);
+  const month = date.getMonth() + 1;
+  return `THÁNG ${month}`;
+}
+
+// Component
+export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
+  const endDate = useMemo(() => new Date(campaign.endAt), [campaign.endAt]);
+  const { hours, minutes, seconds } = useCountdown(endDate);
+
+  const safeLeaderboard = Array.isArray(leaderboard) ? leaderboard : [];
+
+  // Ưu tiên lấy số liệu tổng từ backend (nếu có), nếu không có mới fallback tính từ leaderboard (bảng rank có thể bị limit)
+  const participantCount = campaign.participantCount ?? safeLeaderboard.length;
+  const totalVolume = useMemo(() => {
+    if (campaign.totalVolumeUsd !== undefined) return campaign.totalVolumeUsd;
+    return safeLeaderboard.reduce((sum, entry) => {
+      return sum + parseFloat(entry.usdVolume || "0");
+    }, 0);
+  }, [safeLeaderboard, campaign.totalVolumeUsd]);
 
   return (
     <div className="relative overflow-hidden rounded-2xl mb-6 min-h-[140px] flex items-center bg-[#13110C] border border-[#2A2416]">
-      {/* ── Ảnh BG (Cúp vàng + Gradient) ── */}
+      {/* ── Ảnh BG ── */}
       <img
         src={TROPHY_SRC}
         alt="Trophy Background"
@@ -51,56 +85,42 @@ export default function CampaignHeroBanner() {
         {/* Title */}
         <div className="shrink-0 ml-[20%] md:ml-[18%]">
           <p className="text-[16px] md:text-[21px] font-semibold tracking-[0.1em] uppercase text-white mb-1">
-            Vua Volume
+            {campaign.name}
           </p>
           <h2 className="text-[32px] md:text-[40px] font-extrabold text-[#F5C35A] tracking-tight leading-none">
-            THÁNG 6
+            {formatMonthLabel(campaign.startAt)}
           </h2>
         </div>
 
         {/* Stats Block */}
         <div className="flex flex-wrap md:flex-nowrap items-center bg-[#1C1C1E]/95 backdrop-blur-md border border-white/5 rounded-2xl px-4 md:px-8 py-4 gap-4 md:gap-8 shadow-xl">
           
-          {/* Participants */}
+          {/* Participants — đếm từ leaderboard.length */}
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-1.5">
-              <svg className="w-[18px] h-[18px] text-[#3B82F6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
+              <img src="/images/campaign/Ic_filled_users-group.png" alt="Participants" className="w-[18px] h-[18px] shrink-0 object-contain" />
               <p className="text-[12px] text-[#8B8B93] font-medium">Participants</p>
             </div>
-            <p className="text-[22px] font-bold text-white leading-none">142</p>
+            <p className="text-[22px] font-bold text-white leading-none">{participantCount}</p>
           </div>
 
           <div className="h-12 w-px bg-white/10 shrink-0" />
 
-          {/* Total volume */}
+          {/* Total volume — tính bằng reduce từ leaderboard */}
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-1.5">
-              <svg className="w-[18px] h-[18px] text-[#3B82F6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.5 8h4.5a2 2 0 0 1 0 4h-5" />
-                <path d="M9.5 12h5.5a2 2 0 0 1 0 4h-6" />
-                <path d="M12 6v2" />
-                <path d="M12 16v2" />
-              </svg>
+              <img src="/images/campaign/Ic_filled_bitcoin-circle.png" alt="Total Volume" className="w-[18px] h-[18px] shrink-0 object-contain" />
               <p className="text-[12px] text-[#8B8B93] font-medium">Tổng</p>
             </div>
-            <p className="text-[22px] font-bold text-white leading-none">$42.5 M</p>
+            <p className="text-[22px] font-bold text-white leading-none">{formatVND(totalVolume)}</p>
           </div>
 
           <div className="h-12 w-px bg-white/10 shrink-0" />
 
-          {/* Live countdown */}
+          {/* Live countdown — tính từ campaign.endAt */}
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-1.5">
-              <svg className="w-[18px] h-[18px] text-[#3B82F6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
+              <img src="/images/campaign/Ic_filled_alarm-clock.png" alt="Remaining Time" className="w-[18px] h-[18px] shrink-0 object-contain" />
               <p className="text-[12px] text-[#8B8B93] font-medium">Thời gian còn lại</p>
             </div>
             <div className="text-[22px] font-bold text-white leading-none tracking-wider">

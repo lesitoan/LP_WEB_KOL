@@ -116,3 +116,43 @@ export const leaderboard: LeaderboardRow[] = [
     podium: false,
   },
 ];
+
+export interface CampaignHistoryData {
+  id: string;
+  title: string;
+  month: string;
+  status: "active" | "ended";
+  participants: number;
+  totalVol: string;
+  timeLeft: string;
+}
+
+export const campaignHistory: CampaignHistoryData[] = [
+  {
+    id: "1",
+    title: "Vua volume",
+    month: "THÁNG 3",
+    status: "ended",
+    participants: 142,
+    totalVol: "$42.5 M",
+    timeLeft: "-- : -- : --",
+  },
+  {
+    id: "2",
+    title: "Vua volume",
+    month: "THÁNG 5",
+    status: "active",
+    participants: 142,
+    totalVol: "$42.5 M",
+    timeLeft: "12 : 04 : 28",
+  },
+  {
+    id: "3",
+    title: "Vua volume",
+    month: "THÁNG 6",
+    status: "active",
+    participants: 142,
+    totalVol: "$42.5 M",
+    timeLeft: "12 : 04 : 28",
+  },
+];
