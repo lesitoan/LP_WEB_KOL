@@ -7,6 +7,8 @@ import type {
   DashboardStats,
   KolDashboardSummary,
   KolDashboardSummaryQuery,
+  KolRecentActivitiesQuery,
+  KolRecentActivityItem,
   MemberMonthlyJoinsData,
   MemberOverviewStats,
   ReferralItem,
@@ -51,6 +53,31 @@ export const dashboardApi = api.injectEndpoints({
       transformResponse: (payload: ApiResponse<KolDashboardSummary>) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
           throw new Error(extractApiErrorMessage(payload, 'Không thể tải tổng quan dashboard'))
+        }
+
+        return payload.data
+      },
+      providesTags: ['Dashboard'],
+    }),
+
+    getKolRecentActivities: builder.query<KolRecentActivityItem[], KolRecentActivitiesQuery | void>({
+      query: (params) => {
+        const searchParams = new URLSearchParams()
+
+        if (params?.limit) {
+          searchParams.set('limit', String(params.limit))
+        }
+
+        const queryString = searchParams.toString()
+
+        return {
+          url: `${apiV1Path('/kol/activities/recent')}${queryString ? `?${queryString}` : ''}`,
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: ApiResponse<KolRecentActivityItem[]>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(extractApiErrorMessage(payload, 'Không thể tải hoạt động gần đây'))
         }
 
         return payload.data
@@ -141,6 +168,7 @@ export const dashboardApi = api.injectEndpoints({
 
 export const {
   useGetKolDashboardSummaryQuery,
+  useGetKolRecentActivitiesQuery,
   // useGetMemberOverviewStatsQuery,
   // useGetCashbackGrowthSummaryQuery,
   // useGetCommissionGrowthSummaryQuery,

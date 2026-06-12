@@ -1,14 +1,14 @@
 "use client";
 
-import { Copy, Facebook, MessageCircle, Send } from "lucide-react";
+import { Copy } from "lucide-react";
 import { referralUrl } from "../constants";
 
 const shareChannels = [
-  { label: "Facebook", icon: Facebook, className: "bg-[#1877f2] text-white" },
-  { label: "Telegram", icon: Send, className: "bg-[#2ca5e0] text-white" },
-  { label: "X (Twitter)", textIcon: "X", className: "bg-transparent text-white" },
-  { label: "WhatsApp", icon: MessageCircle, className: "bg-transparent text-emerald-400" },
-  { label: "Reddit", textIcon: "r/", className: "bg-[#ff4500] text-white" },
+  { label: "Facebook", src: "/images/social_logo/facebook.png" },
+  { label: "Telegram", src: "/images/social_logo/telegram.png" },
+  { label: "X (Twitter)", src: "/images/social_logo/x.png" },
+  { label: "WhatsApp", src: "/images/social_logo/whatsapp.png" },
+  { label: "Reddit", src: "/images/social_logo/reddit.png" },
 ];
 
 export default function ReferralShareCard() {
@@ -50,24 +50,20 @@ export default function ReferralShareCard() {
             Chia sẻ lên mạng xã hội
           </p>
           <div className="grid grid-cols-5 gap-4 lg:gap-2 xl:gap-4">
-            {shareChannels.map((channel) => {
-              const Icon = channel.icon;
-
-              return (
-                <button
-                  key={channel.label}
-                  type="button"
-                  className="flex min-w-0 flex-col items-center gap-2 rounded-md p-1 transition-colors hover:bg-white/5"
-                >
-                  <span
-                    className={`grid h-10 w-10 place-items-center rounded-full text-[28px] font-semibold leading-none lg:h-9 lg:w-9 lg:text-[24px] xl:h-10 xl:w-10 xl:text-[28px] ${channel.className}`}
-                  >
-                    {Icon ? <Icon className="h-6 w-6 lg:h-5 lg:w-5 xl:h-6 xl:w-6" /> : channel.textIcon}
-                  </span>
-                  <span className="w-full truncate text-center text-[11px] text-white xl:text-xs">{channel.label}</span>
-                </button>
-              );
-            })}
+            {shareChannels.map((channel) => (
+              <button
+                key={channel.label}
+                type="button"
+                className="flex min-w-0 flex-col items-center gap-2 rounded-md p-1 transition-colors hover:bg-white/5"
+              >
+                <img
+                  src={channel.src}
+                  alt={channel.label}
+                  className="h-10 w-10 object-contain"
+                />
+                <span className="w-full truncate text-center text-xs text-white">{channel.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </div>

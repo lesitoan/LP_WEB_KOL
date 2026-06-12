@@ -53,6 +53,29 @@ export interface KolDashboardSummary {
   periodComparison: KolDashboardPeriodComparison
 }
 
+export interface KolRecentActivitiesQuery {
+  limit?: number
+}
+
+export type KolRecentActivityType =
+  | 'member_registrations_today'
+  | 'member_low_volume_warning'
+  | 'commission_cycle_summary'
+  | 'cashback_ready_to_claim'
+
+export type KolRecentActivityIcon = 'up' | 'warning' | 'dollar' | 'gift'
+export type KolRecentActivitySeverity = 'info' | 'warning' | 'success'
+
+export interface KolRecentActivityItem {
+  type: KolRecentActivityType
+  icon: KolRecentActivityIcon
+  severity: KolRecentActivitySeverity
+  title: string
+  description: string
+  occurredAt: string
+  metadata?: Record<string, unknown>
+}
+
 // Member statistics overview (dashboard tile)
 
 export interface MemberOverviewMonthInfo {
