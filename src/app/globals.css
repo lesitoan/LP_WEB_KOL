@@ -188,3 +188,9 @@ input[type="range"].cashback-slider::-webkit-slider-thumb:hover {
   font-family: 'Geist Mono', monospace;
   font-feature-settings: "tnum";
 }
+
+/* Hide default browser calendar picker indicator for date inputs */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
