@@ -17,6 +17,7 @@ const FormInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormInputPr
   error,
   ...props 
 }, ref) => {
+  const textareaProps = props as React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
   const baseInputClass = `w-full bg-[#131313] border ${error ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-[#006AF5]'} rounded-xl text-[14px] text-white placeholder-[#8B8B93] focus:outline-none transition-colors`;
 
@@ -48,10 +49,10 @@ const FormInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormInputPr
       <div className="relative">
         {isTextarea ? (
           <textarea
-            {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+            {...textareaProps}
             ref={ref as React.Ref<HTMLTextAreaElement>}
             className={`${baseInputClass} ${paddingClass} resize-none`}
-            rows={props.rows || 4}
+            rows={textareaProps.rows || 4}
           />
         ) : (
           <input
