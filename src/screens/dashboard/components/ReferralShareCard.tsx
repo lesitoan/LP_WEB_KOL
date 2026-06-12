@@ -27,7 +27,7 @@ export default function ReferralShareCard() {
         <h2 className="text-[22px] font-bold uppercase leading-tight tracking-normal text-white lg:text-[20px] xl:text-[24px]">
           Giới thiệu bạn bè
         </h2>
-        <p className="mt-2 text-sm font-medium text-zinc-100 xl:text-base">
+        <p className="mt-2 text-sm font-medium text-zinc-100 xl:text-lg">
           Chia sẻ link để nhận thêm hoa hồng từ mỗi Referral mới
         </p>
       </div>

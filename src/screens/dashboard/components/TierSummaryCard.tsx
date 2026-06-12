@@ -48,7 +48,7 @@ export default function TierSummaryCard() {
       <div className="pointer-events-none absolute inset-y-0 right-0 w-44 bg-gradient-to-l from-black via-black/70 to-transparent" />
 
       <div className="relative z-[1]">
-        <h2 className="mb-5 text-base font-semibold text-foreground">Tier hiện tại & Tỷ lệ hoa hồng</h2>
+        <h2 className="mb-5 text-base font-normal text-foreground">Tier hiện tại & Tỷ lệ hoa hồng</h2>
 
         <div className="grid items-center gap-6 lg:grid-cols-[300px_1fr_124px] 2xl:grid-cols-[360px_1fr_124px]">
           <div className="flex items-center gap-5 border-border-strong lg:border-r lg:pr-7">
@@ -65,12 +65,12 @@ export default function TierSummaryCard() {
               <div className="truncate text-[36px] font-bold uppercase leading-none tracking-normal text-yellow-100">
                 {currentTierName}
               </div>
-              <p className="mt-4 text-lg font-semibold text-zinc-300">Tier hiện tại</p>
+              <p className="mt-4 text-xl font-medium text-zinc-300">Tier hiện tại</p>
             </div>
           </div>
 
           <div className="min-w-0">
-            <div className="mb-4 text-lg font-semibold">
+            <div className="mb-4 text-xl font-semibold">
               <span className="text-yellow-300">{activeMemberCount}</span>
               {nextTier ? (
                 <span className="text-foreground"> / {nextTierTarget} members</span>
@@ -85,7 +85,7 @@ export default function TierSummaryCard() {
               />
             </div>
             {nextTier ? (
-              <p className="mt-4 text-base font-medium text-zinc-200">
+              <p className="mt-4 text-lg font-medium text-zinc-200">
                 Bạn còn <span className="text-sky-400">{membersNeeded}</span> active members để lên hạng{" "}
                 <span className="font-bold text-yellow-300">{nextTier.name}</span>
               </p>
@@ -95,8 +95,8 @@ export default function TierSummaryCard() {
           </div>
 
           <div className="border-border-strong text-left lg:border-l lg:pl-6 lg:text-center">
-            <div className="text-[42px] font-bold leading-none">{commissionRate}%</div>
-            <div className="mt-5 text-lg font-semibold text-zinc-300">Hoa hồng</div>
+            <div className="text-[40px] font-bold leading-none">{commissionRate}%</div>
+            <div className="mt-5 text-xl font-medium text-zinc-300">Hoa hồng</div>
           </div>
         </div>
       </div>

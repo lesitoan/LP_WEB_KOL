@@ -66,7 +66,7 @@ export default function DashboardFilters() {
             type="button"
             onClick={() => updateParams({ segment: segment.value })}
             className={cn(
-              "h-10 rounded-full px-4 text-sm font-semibold text-muted-foreground transition-all",
+              "h-10 rounded-full px-4 text-base font-medium text-muted-foreground transition-all",
               "hover:bg-surface-2 hover:text-foreground",
               selectedSegment === segment.value &&
                 "border border-white bg-surface-3 text-foreground shadow-[0_0_0_1px_hsl(var(--border))]",
@@ -123,7 +123,7 @@ export default function DashboardFilters() {
           </div>
         </div>
         {isInvalidRange ? (
-          <p className="text-xs font-medium text-red-400">Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu</p>
+          <p className="text-xs font-normal text-red-400">Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu</p>
         ) : null}
       </div>
     </div>

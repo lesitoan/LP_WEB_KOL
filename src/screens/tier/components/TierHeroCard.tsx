@@ -80,16 +80,19 @@ export default function TierHeroCard() {
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col justify-center rounded-lg bg-white/[0.06] p-4 backdrop-blur-[20px]">
-            <div className="mb-3 shrink-0 text-base">
-              <strong className="font-semibold text-[#FFD000]">{activeMemberCount}</strong>
-              {nextTier ? (
-                <span className="text-foreground"> / {nextTierTarget} members</span>
-              ) : (
-                <span className="text-muted-foreground"> active members</span>
-              )}
+            <div className="mb-3 flex shrink-0 items-start justify-between gap-4 text-xl">
+              <div>
+                <strong className="font-semibold text-[#FFD000]">{activeMemberCount}</strong>
+                {nextTier ? (
+                  <span className="text-foreground text-base"> / {nextTierTarget} members</span>
+                ) : (
+                  <span className="text-muted-foreground text-base"> active members</span>
+                )}
+              </div>
+              <span className="text-base font-medium leading-none text-foreground">{Math.round(progressPercent)}%</span>
             </div>
 
-            <div className="mb-3 h-2 w-full shrink-0 overflow-hidden rounded-full bg-[#262626]">
+            <div className="mb-3 h-2 w-full shrink-0 overflow-hidden rounded-full bg-white">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
@@ -101,10 +104,10 @@ export default function TierHeroCard() {
             </div>
 
             {nextTier ? (
-              <p className="text-base leading-5 text-foreground">
+              <p className="tex t-base leading-5 text-foreground">
                 Bạn còn{' '}
-                <strong className="font-semibold text-brand-bright">{membersNeeded}</strong> active members để lên
-                hạng <strong className="font-bold text-[#FFD000]">{nextTier.name}</strong>
+                <span className="font-medium text-brand-bright">{membersNeeded}</span> active members để lên
+                hạng <span className="font-semibold text-[#FFD000]">{nextTier.name}</span>
               </p>
             ) : (
               <p className="text-base leading-5 text-muted-foreground">

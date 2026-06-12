@@ -19,13 +19,13 @@ const legendFormatter = (value: string) => {
     silver: "Silver Group",
   };
 
-  return <span className="text-sm text-zinc-200">{labels[value] ?? value}</span>;
+  return <span className="text-sm font-normal text-zinc-200">{labels[value] ?? value}</span>;
 };
 
 export default function VolumeByGroupChart() {
   return (
     <section className="mb-4 rounded-[14px] bg-surface-2 p-5 md:p-6">
-      <h2 className="mb-6 text-base font-semibold text-foreground">Volume 30 ngày (theo nhóm)</h2>
+      <h2 className="mb-6 text-base font-medium text-foreground">Volume 30 ngày (theo nhóm)</h2>
 
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">

@@ -73,7 +73,7 @@ export default function AttentionActivities() {
                   >
                     <Icon className="h-4 w-4" />
                   </span>
-                  <p className="truncate text-base font-semibold text-zinc-100 lg:text-sm xl:text-base">
+                  <p className="truncate text-base font-normal text-zinc-100 lg:text-sm xl:text-base">
                     {activity.title}
                   </p>
                 </div>

@@ -254,7 +254,7 @@ export default function MembersTable() {
           </div>
           <div>
             <div className="text-base font-normal leading-6 text-white">{fullName(member)}</div>
-            <div className="text-sm text-muted-foreground font-geist-mono">
+            <div className="text-sm text-muted-foreground">
               @{member.telegramUsername}
             </div>
           </div>
@@ -343,7 +343,7 @@ export default function MembersTable() {
     {
       id: "volume",
       header: renderSortableHeader("Volume 30D", "usdVolume"),
-      cellClassName: "font-geist-mono font-medium text-base",
+      cellClassName: "font-medium text-base",
       cell: (member) => formatUsdVolume(member.usdVolume),
     },
     {
@@ -351,7 +351,7 @@ export default function MembersTable() {
       header: "Trạng thái SCEX",
       cell: (member) => (
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${statusClass(
+          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusClass(
             member.lpexUserStatus || "unknown",
           )}`}
         >
@@ -364,7 +364,7 @@ export default function MembersTable() {
       header: "Trạng thái telegram",
       cell: (member) => (
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${statusClass(
+          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusClass(
             member.telegramStatus || "unknown",
           )}`}
         >
@@ -385,7 +385,7 @@ export default function MembersTable() {
 
         return (
           <div className="inline-flex min-w-[116px] flex-col items-start gap-2 text-left">
-            <span className={`font-medium leading-tight ${progress.textClassName} ${progress.labelClassName}`}>
+            <span className={`text-xs font-normal leading-tight ${progress.labelClassName}`}>
               {progress.label}
             </span>
             <div className="flex items-center gap-1">
@@ -438,7 +438,7 @@ export default function MembersTable() {
         }}
       />
 
-      <div className="px-6">
+      <div className="border-b border-[#303030] px-6">
         <div className="flex items-end gap-7 overflow-x-auto">
           {MEMBER_TYPE_TABS.map((tab) => {
             const isActive = activeMemberType === tab.value;
@@ -454,12 +454,12 @@ export default function MembersTable() {
               >
                 <span>{tab.label}</span>
                 {/* {"count" in tab ? (
-                  <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                  <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-xs font-normal text-primary-foreground">
                     {tab.count}
                   </span>
                 ) : null} */}
                 {isActive ? (
-                  <span className="absolute bottom-0 left-1/2 h-0.5 w-[calc(100%+16px)] -translate-x-1/2 rounded-full bg-white" />
+                  <span className="absolute -bottom-px left-1/2 h-0.5 w-[calc(100%+16px)] -translate-x-1/2 rounded-full bg-white" />
                 ) : null}
               </button>
             );
@@ -475,7 +475,7 @@ export default function MembersTable() {
           isLoading={isLoading}
           loadingContent="Đang tải danh sách members..."
           emptyContent="Không có member phù hợp với bộ lọc"
-          className="border-none rounded-none"
+          className="border-none rounded-none [&_.data-table-scroll-viewport]:border-t-0"
           pagination={{
             page,
             totalPages,

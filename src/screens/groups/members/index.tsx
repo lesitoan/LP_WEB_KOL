@@ -288,7 +288,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'lpexStatus',
       header: 'Trạng thái SCEX',
       cell: (member) => (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${getLpexStatusClass(member.lpexUserStatus)}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getLpexStatusClass(member.lpexUserStatus)}`}>
           {formatLpexStatusLabel(member.lpexUserStatus)}
         </span>
       ),
@@ -297,7 +297,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'telegramStatus',
       header: 'Trạng thái telegram',
       cell: (member) => (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${getTelegramStatusClass(member.telegramStatus)}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getTelegramStatusClass(member.telegramStatus)}`}>
           {formatTelegramStatusLabel(member.telegramStatus)}
         </span>
       ),
@@ -306,7 +306,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'eligibilityStatus',
       header: 'Trạng thái thành viên',
       cell: (member) => (
-        <span className="inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium bg-info/[0.12] text-info border border-info/20">
+        <span className="inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal bg-info/[0.12] text-info border border-info/20">
           {formatEligibilityStatusLabel(member.eligibilityStatus)}
         </span>
       ),

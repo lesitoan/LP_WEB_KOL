@@ -46,7 +46,7 @@ const navSections = [
     label: 'Hệ thống',
     items: [
       { id: 'groups', label: 'Cài đặt nhóm', href: '/groups', icon: Layers },
-      { id: 'settings', label: 'Cài đặt hệ thống', href: '/settings', icon: Settings },
+      // { id: 'settings', label: 'Cài đặt hệ thống', href: '/settings', icon: Settings },
     ],
   },
 ]
@@ -74,7 +74,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
       <nav className="flex-1 space-y-8">
         {navSections.map((section) => (
           <section key={section.label} className="space-y-2">
-            <div className="px-0 text-[11px] font-medium uppercase leading-none text-[#8a8a8a]">
+            <div className="px-0 text-xs font-normal uppercase leading-none text-[#8a8a8a]">
               {section.label}
             </div>
 
@@ -92,7 +92,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
                     href={item.href}
                     onClick={onItemClick}
                     className={cn(
-                      'flex h-10 items-center gap-3 rounded-md px-3 text-[13px] font-medium transition-colors',
+                      'flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors',
                       isActive
                         ? 'bg-[#2b2b2b] text-white'
                         : 'text-[#8f8f8f] hover:bg-[#171717] hover:text-white',
@@ -123,10 +123,10 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
           </Avatar>
 
           <div className="min-w-0 flex-1">
-            <div className="truncate text-[13px] font-semibold leading-5 text-white">
+            <div className="truncate text-sm font-semibold leading-5 text-white">
               {profile?.name ?? 'Unknown User'}
             </div>
-            <div className="truncate text-[12px] leading-4 text-[#e0e0e0]">
+            <div className="truncate text-sm font-normal leading-4 text-[#e0e0e0]">
               {profile?.email ?? '—'}
             </div>
           </div>

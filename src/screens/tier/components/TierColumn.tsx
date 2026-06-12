@@ -76,11 +76,11 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
         <div className="flex items-center gap-3">
           <img
             src={getTierIconSrc(tier.code)}
-            alt={tier.name}
+            alt={tier.name} 
             className={`h-10 w-10 object-contain ${isCurrent ? '' : 'opacity-40'}`}
           />
           <span
-            className={`text-lg font-bold uppercase tracking-wide ${isCurrent ? 'text-foreground' : 'text-muted-foreground'}`}
+            className={`text-lg  uppercase tracking-wide ${isCurrent ? 'text-foreground font-bold' : 'text-muted-foreground font-medium'}`}
           >
             {tier.name}
           </span>
@@ -123,7 +123,8 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
               <span
                 className={cn(
                   'text-foreground',
-                  'text-base font-normal leading-6',
+                  'text-base leading-6',
+                  isCurrent ? 'font-semibold' : 'font-normal',
                 )}
               >
                 {option.label}

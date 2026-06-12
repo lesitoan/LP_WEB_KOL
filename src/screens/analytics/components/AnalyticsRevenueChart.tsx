@@ -30,7 +30,7 @@ export default function AnalyticsRevenueChart({ title }: { title: string }) {
 
   return (
     <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
-      <h2 className="mb-4 text-sm font-semibold">{title}</h2>
+      <h2 className="mb-4 text-base font-medium">{title}</h2>
       <div className="h-[240px] sm:h-[270px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={revenueData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>

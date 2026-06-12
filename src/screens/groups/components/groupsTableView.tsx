@@ -48,7 +48,7 @@ export function getStatusVariant(status: string) {
 function ToggleStatusBadge({ enabled }: { enabled: boolean }) {
   const statusVariant = enabled ? getStatusVariant('active').cssClass : getStatusVariant('inactive').cssClass
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-base font-medium ${statusVariant}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusVariant}`}>
       {enabled ? 'Bật' : 'Tắt'}
     </span>
   )
@@ -57,7 +57,7 @@ function ToggleStatusBadge({ enabled }: { enabled: boolean }) {
 function GroupToggleBadge({ enabled }: { enabled: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-base font-medium ${
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-normal ${
         enabled ? 'bg-[#003F27] text-[#15C982]' : 'bg-[#2B2B2B] text-[#B7B7B7]'
       }`}
     >
@@ -85,7 +85,7 @@ function GroupStatusSwitch({
         onCheckedChange={onCheckedChange}
         aria-label={checked ? 'Tắt nhóm' : 'Bật nhóm'}
       />
-      <span className="text-base font-medium text-[#D7D7D7]">{checked ? 'Bật' : 'Tắt'}</span>
+      <span className="text-xs font-normal text-[#D7D7D7]">{checked ? 'Bật' : 'Tắt'}</span>
     </span>
   )
 }
@@ -159,7 +159,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
             }}
             aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
           />
-          <span className="text-base font-medium text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
+          <span className="text-xs font-normal text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
           </span>
         )
       },

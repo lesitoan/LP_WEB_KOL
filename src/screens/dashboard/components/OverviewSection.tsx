@@ -84,9 +84,9 @@ export default function OverviewSection() {
               <span className="grid h-10 w-10 place-items-center rounded-full">
                 <img src="/images/bitcoin_logo.png" alt="" className="h-10 w-10 object-contain" />
               </span>
-              <span className="text-sm font-bold uppercase text-white">{heroCard?.title ?? "Tổng số hoa hồng"}</span>
+              <span className="text-sm font-medium uppercase text-white">{heroCard?.title ?? "Tổng số hoa hồng"}</span>
             </div>
-            <div className="text-[38px] font-bold leading-tight tracking-normal text-white md:text-[40px]">
+            <div className="text-[40px] font-bold leading-tight tracking-normal text-white md:text-[40px]">
               {heroCard ? formatMetricValue(heroCard) : "0"}
             </div>
           </div>
@@ -102,13 +102,13 @@ export default function OverviewSection() {
               <article key={metric.key} className="rounded-md bg-[#1f1f1f] p-6">
                 <div className="mb-6 flex items-center gap-3">
                   <Icon className="h-7 w-7 text-sky-400" />
-                  <h3 className="text-sm font-bold uppercase text-zinc-400">{metric.title}</h3>
+                  <h3 className="text-sm font-medium uppercase text-zinc-400">{metric.title}</h3>
                 </div>
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div className="text-[32px] font-bold leading-none text-white">{formatMetricValue(metric)}</div>
                   <div
                     className={cn(
-                      "inline-flex items-center gap-1 text-sm font-medium",
+                      "inline-flex items-center gap-1 text-sm font-normal",
                       isNeutral ? "text-zinc-400" : isDown ? "text-red-400" : "text-emerald-400",
                     )}
                   >
