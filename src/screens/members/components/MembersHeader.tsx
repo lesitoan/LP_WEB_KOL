@@ -382,7 +382,7 @@ export default function MembersHeader() {
                   href={`https://t.me/share/url?url=${encodedReferralLink}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#229ED9]/35 bg-[#229ED9]/15 px-3 py-1.5 text-[12.5px] font-medium text-[#229ED9] hover:bg-[#229ED9]/25"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-brand/35 bg-brand/15 px-3 py-1.5 text-[12.5px] font-medium text-brand hover:bg-brand/25"
                 >
                   <Send className="h-3.5 w-3.5" />
                   Telegram
@@ -391,7 +391,7 @@ export default function MembersHeader() {
                   href={`https://twitter.com/intent/tweet?url=${encodedReferralLink}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#1D9BF0]/35 bg-[#1D9BF0]/15 px-3 py-1.5 text-[12.5px] font-medium text-[#1D9BF0] hover:bg-[#1D9BF0]/25"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-brand/35 bg-brand/15 px-3 py-1.5 text-[12.5px] font-medium text-brand hover:bg-brand/25"
                 >
                   <Twitter className="h-3.5 w-3.5" />
                   Twitter
@@ -400,7 +400,7 @@ export default function MembersHeader() {
                   href={`https://www.facebook.com/sharer/sharer.php?u=${encodedReferralLink}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#1877F2]/35 bg-[#1877F2]/15 px-3 py-1.5 text-[12.5px] font-medium text-[#1877F2] hover:bg-[#1877F2]/25"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-brand/35 bg-brand/15 px-3 py-1.5 text-[12.5px] font-medium text-brand hover:bg-brand/25"
                 >
                   <Facebook className="h-3.5 w-3.5" />
                   Facebook

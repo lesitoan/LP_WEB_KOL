@@ -106,14 +106,14 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
                     <button 
                       type="button"
                       onClick={handleNext}
-                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-white bg-[#006AF5] hover:bg-[#005CE6] transition-colors active:scale-95 text-center"
+                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-[#1C1C1E] bg-brand hover:bg-brand-dim transition-colors active:scale-95 text-center"
                     >
                       Tiếp tục
                     </button>
                   ) : (
                     <button 
                       type="submit"
-                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-white bg-[#006AF5] hover:bg-[#005CE6] transition-colors active:scale-95 text-center"
+                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-[#1C1C1E] bg-brand hover:bg-brand-dim transition-colors active:scale-95 text-center"
                     >
                       Tạo chiến dịch
                     </button>

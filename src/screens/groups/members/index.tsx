@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useEffect, useMemo } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { ArrowDown, ArrowLeft, ArrowUp, ArrowUpDown } from 'lucide-react'
 import countries from 'i18n-iso-countries'
@@ -32,16 +33,6 @@ countries.registerLocale(enLocale)
 
 function fullName(member: MemberItem) {
   return `${member.telegramFirstName || ''} ${member.telegramLastName || ''}`.trim() || member.telegramUsername
-}
-
-function initials(member: MemberItem) {
-  const source = fullName(member)
-  const parts = source.split(' ').filter(Boolean)
-  if (parts.length === 0) return 'NA'
-  return parts
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('')
 }
 
 function formatDate(dateIso: string) {
@@ -267,9 +258,13 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       header: renderSortableHeader('Thành viên', 'telegramUsername'),
       cell: (member) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#E8B84D] to-[#A86B3F] grid place-items-center text-xs font-semibold text-foreground shrink-0">
-            {initials(member)}
-          </div>
+          <Image
+            src="/images/avatar_default.png"
+            alt=""
+            width={32}
+            height={32}
+            className="h-8 w-8 shrink-0 rounded-full object-cover"
+          />
           <div>
             <div className="text-base font-medium">{fullName(member)}</div>
             <div className="text-sm text-muted-foreground font-geist-mono">

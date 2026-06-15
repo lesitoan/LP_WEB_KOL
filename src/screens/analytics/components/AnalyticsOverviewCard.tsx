@@ -14,7 +14,7 @@ function StatCard({
   return (
     <div className="rounded-lg bg-[#28282880] p-4 sm:p-5">
       <div className="mb-4 flex items-center gap-2 text-sm font-medium uppercase text-muted-foreground">
-        <Icon className="h-5 w-5 text-sky-400" />
+        <Icon className="h-5 w-5 text-brand" />
         <span>{label}</span>
       </div>
       <div className="text-2xl font-bold tracking-tight text-foreground sm:text-[32px]">{value}</div>

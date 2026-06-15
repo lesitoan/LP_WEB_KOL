@@ -50,7 +50,7 @@ export default function InsightCard({ insight }: InsightCardProps) {
           <Button
             type="button"
             onClick={handleCopy}
-            className="h-9 rounded-md bg-brand-blue-500 px-4 text-[13px] font-semibold text-white hover:bg-brand-blue-600"
+            className="h-9 rounded-md bg-brand px-4 text-[13px] font-semibold text-primary-foreground hover:bg-brand-dim"
           >
             <Copy className="h-4 w-4" strokeWidth={1.8} />
             Copy & biên tập

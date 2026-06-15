@@ -408,7 +408,7 @@ export function GroupFormDialog({
             <Button type="button" variant="outline" className="h-9 bg-white text-[#171717] hover:bg-white/90" disabled={isSubmitting} onClick={() => setOpen(false)}>
               Hủy
             </Button>
-            <Button type="submit" className="h-9 bg-[#007AFF] text-white hover:bg-[#006EE6]" disabled={isSubmitting || descriptionInvalid || rangeInvalid}>
+            <Button type="submit" className="h-9 bg-brand text-[#171717] hover:bg-brand-dim" disabled={isSubmitting || descriptionInvalid || rangeInvalid}>
               {submitText}
             </Button>
           </DialogFooter>

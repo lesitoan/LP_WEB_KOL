@@ -20,8 +20,8 @@
     --popover: 0 0% 4%;
     --popover-foreground: 0 0% 96%;
 
-    --primary: 214 100% 42%;
-    --primary-foreground: 0 0% 100%;
+    --primary: var(--brand);
+    --primary-foreground: 0 0% 7%;
 
     --secondary: 0 0% 7%;
     --secondary-foreground: 0 0% 96%;
@@ -38,15 +38,16 @@
     --border: 0 0% 13%;
     --border-strong: 0 0% 22%;
     --input: 0 0% 13%;
-    --ring: 214 100% 42%;
+    --ring: var(--brand);
 
     --radius: 0.625rem;
 
-    /* Brand blue */
-    --brand: 214 100% 42%;
-    --brand-dim: 214 100% 38%;
-    --brand-bright: 213 72% 62%;
-    --brand-glow: 214 100% 42% / 0.26;
+    /* Brand yellow */
+    /* Brand accent: #F7F0A1. Change this one token to retheme app accents. */
+    --brand: 55 84% 80%;
+    --brand-dim: 52 68% 68%;
+    --brand-bright: 56 100% 86%;
+    --brand-glow: var(--brand) / 0.26;
 
     /* Palette scales from design */
     --grey-50: 255 255 255;
@@ -71,16 +72,16 @@
     --brand-purple-800: 51 0 124;
     --brand-purple-900: 39 0 95;
 
-    --brand-blue-50: 230 239 251;
-    --brand-blue-100: 176 205 242;
-    --brand-blue-200: 138 180 236;
-    --brand-blue-300: 84 146 228;
-    --brand-blue-400: 51 125 222;
-    --brand-blue-500: 0 93 214;
-    --brand-blue-600: 0 85 195;
-    --brand-blue-700: 0 66 152;
-    --brand-blue-800: 0 51 118;
-    --brand-blue-900: 0 39 90;
+    --brand-blue-50: 255 253 235;
+    --brand-blue-100: 255 250 210;
+    --brand-blue-200: 252 246 184;
+    --brand-blue-300: 247 240 161;
+    --brand-blue-400: 239 229 131;
+    --brand-blue-500: 247 240 161;
+    --brand-blue-600: 230 219 117;
+    --brand-blue-700: 194 181 78;
+    --brand-blue-800: 143 129 40;
+    --brand-blue-900: 91 80 24;
 
     --blue-50: 240 241 243;
     --blue-100: 207 212 219;
@@ -97,7 +98,7 @@
     --success: 134 50% 62%;
     --warning: 28 88% 60%;
     --danger: 0 75% 64%;
-    --info: 213 72% 66%;
+    --info: var(--brand);
 
     /* Tier */
     --tier-starter: 30 15% 64%;
@@ -112,12 +113,12 @@
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 214 100% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: var(--brand);
+    --sidebar-primary-foreground: 0 0% 7%;
     --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 96%;
     --sidebar-border: 0 0% 13%;
-    --sidebar-ring: 214 100% 42%;
+    --sidebar-ring: var(--brand);
   }
 }
 

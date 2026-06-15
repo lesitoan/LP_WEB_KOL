@@ -1,12 +1,12 @@
-import { Check, CircleCheck, Coins, Users } from 'lucide-react'
+import { Check, Coins } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { KolTier, KolTierFeature } from '@/types/api'
 
-const TIER_BORDER_GRADIENT =
-  'linear-gradient(135deg, rgba(255, 187, 0, 0.75) 0%, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(153, 112, 0, 0.75) 100%)'
-
+const TIER_CARD_BORDER = '#FCF19D'
+const TIER_CARD_BORDER_SOFT = 'rgba(252, 241, 157, 0.58)'
+const TIER_CHECK = '#DAA440'
 const TIER_CURRENT_BG =
-  'linear-gradient(180deg, rgba(255, 234, 116, 0.14) 0%, rgba(255, 187, 0, 0.1) 45%, rgba(26, 22, 14, 0) 100%), #1a1810'
+  'linear-gradient(180deg, rgba(252, 241, 157, 0.12) 0%, rgba(252, 241, 157, 0.07) 100%), #29291f'
 
 function splitDescription(description: string | null) {
   if (!description || !description.trim()) {
@@ -38,10 +38,10 @@ function getTierIconSrc(code: string) {
 
 function formatActiveMembers(tier: KolTier) {
   if (tier.maxActiveMembers === null) {
-    return `${tier.minActiveMembers.toLocaleString('en-US')}+`
+    return `${tier.minActiveMembers.toLocaleString('en-US')}+ thành viên`
   }
 
-  return `${tier.minActiveMembers.toLocaleString('en-US')} - ${tier.maxActiveMembers.toLocaleString('en-US')}`
+  return `${tier.minActiveMembers.toLocaleString('en-US')} - ${tier.maxActiveMembers.toLocaleString('en-US')} thành viên`
 }
 
 export function getTierColumnLayout(index: number, total: number) {
@@ -67,64 +67,70 @@ type TierColumnProps = {
   layout: TierColumnLayout
 }
 
-export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps) {
+export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
   const options = getTierOptions(tier)
 
-  const content = (
-    <div className="flex h-full flex-col p-5">
-      <div className="mb-5 border-b border-[#333333] pb-5">
+  return (
+    <article
+      className={cn(
+        'flex h-full flex-col rounded-[8px] border p-4 sm:p-5',
+        isCurrent ? 'shadow-[0_0_0_1px_rgba(252,241,157,0.18)]' : 'bg-[#171717]',
+      )}
+      style={{ borderColor: TIER_CARD_BORDER_SOFT, background: isCurrent ? TIER_CURRENT_BG : undefined }}
+    >
+      <div className="border-b border-white/20 pb-4">
         <div className="flex items-center gap-3">
           <img
             src={getTierIconSrc(tier.code)}
-            alt={tier.name} 
-            className={`h-10 w-10 object-contain ${isCurrent ? '' : 'opacity-40'}`}
+            alt={tier.name}
+            className={cn('h-11 w-11 shrink-0 object-contain', isCurrent ? '' : 'opacity-85')}
           />
-          <span
-            className={`text-lg  uppercase tracking-wide ${isCurrent ? 'text-foreground font-bold' : 'text-muted-foreground font-medium'}`}
-          >
-            {tier.name}
-          </span>
-        </div>
-      </div>
 
-      <div className="mb-5 flex items-start gap-3">
-        <Coins className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-        <div>
-          <div className={`text-[32px] font-bold leading-none ${isCurrent ? 'text-[#FFEA74]' : 'text-foreground'}`}>
-            {tier.commissionRatePct}%
+          <div className="min-w-0">
+            <div className="truncate text-xl font-bold uppercase leading-6 tracking-normal text-foreground">
+              {tier.name}
+            </div>
+            <div className="text-sm font-medium italic leading-5 text-[#BDBDBD]">
+              {formatActiveMembers(tier)}
+            </div>
           </div>
-          <div className="mt-1.5 text-[14px] text-muted-foreground">Hoa hồng</div>
         </div>
       </div>
 
-      <div className="mb-5 flex items-start gap-3">
-        <Users className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-        <div>
-          <div className="text-base font-medium text-foreground">{formatActiveMembers(tier)}</div>
-          <div className="mt-1 text-[14px] text-muted-foreground">Thành viên hoạt động</div>
+      <div className="border-b border-white/20 py-4">
+        <div className="flex items-center gap-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#343434] text-white">
+            <Coins className="h-[18px] w-[18px]" strokeWidth={2.2} />
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold leading-none text-foreground">
+              {tier.commissionRatePct}%
+            </span>
+            <span className="text-sm font-medium text-[#BDBDBD]">Hoa hồng</span>
+          </div>
         </div>
       </div>
 
       {options.length > 0 ? (
-        <div className="mt-auto space-y-2.5">
+        <div className="space-y-3 pt-4">
           {options.map((option) => (
-            <div key={option.id} className="flex items-center gap-2.5">
+            <div key={option.id} className="flex items-start gap-2.5">
               {option.isIncluded ? (
-                <CircleCheck
-                  className="size-[16px] shrink-0 fill-brand text-brand stroke-white"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                />
+                <span
+                  className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full border text-white"
+                  style={{ backgroundColor: TIER_CHECK, borderColor: TIER_CARD_BORDER }}
+                >
+                  <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+                </span>
               ) : (
-                <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[#2B2B2B] text-white/85">
-                  <Check className="size-3.5" strokeWidth={2.4} aria-hidden="true" />
+                <span className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full bg-[#2B2B2B] text-[#9C9C9C]">
+                  <Check className="size-3" strokeWidth={3} aria-hidden="true" />
                 </span>
               )}
               <span
                 className={cn(
-                  'text-foreground',
-                  'text-base leading-6',
-                  isCurrent ? 'font-semibold' : 'font-normal',
+                  'text-base leading-5',
+                  option.isIncluded ? 'font-semibold text-foreground' : 'font-medium text-[#BDBDBD]',
                 )}
               >
                 {option.label}
@@ -133,40 +139,6 @@ export default function TierColumn({ tier, isCurrent, layout }: TierColumnProps)
           ))}
         </div>
       ) : null}
-    </div>
-  )
-
-  return (
-    <div className={`relative h-full ${isCurrent ? 'z-10' : ''}`}>
-      {layout.showBottomMobile ? (
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-[#333333]/70 md:hidden" />
-      ) : null}
-      {layout.showBottomMd ? (
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-[#333333]/70 hidden md:block lg:hidden" />
-      ) : null}
-      {layout.showRightMd ? (
-        <div className="absolute bottom-0 right-0 top-0 z-0 hidden w-px bg-[#333333]/70 md:block lg:hidden" />
-      ) : null}
-      {layout.showRightLg ? (
-        <div className="absolute bottom-0 right-0 top-0 z-0 hidden w-px bg-[#333333]/70 lg:block" />
-      ) : null}
-
-      {isCurrent ? (
-        <div
-          className={cn(
-            'relative z-10 h-full w-full overflow-hidden rounded-[10px] p-[2px]',
-            layout.extendRightMd && 'md:w-[calc(100%+1px)]',
-            layout.extendRightLg && 'lg:w-[calc(100%+1px)]',
-          )}
-          style={{ backgroundImage: TIER_BORDER_GRADIENT }}
-        >
-          <div className="h-full rounded-[8px]" style={{ background: TIER_CURRENT_BG }}>
-            {content}
-          </div>
-        </div>
-      ) : (
-        content
-      )}
-    </div>
+    </article>
   )
 }

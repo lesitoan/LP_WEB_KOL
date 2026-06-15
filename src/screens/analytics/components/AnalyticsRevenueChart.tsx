@@ -64,7 +64,7 @@ export default function AnalyticsRevenueChart({ title }: { title: string }) {
                 name === "current" ? "Doanh thu" : name === "target" ? "Target" : "Nền",
               ]}
             />
-            <Line type="monotone" dataKey="current" stroke="#0ea5e9" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" dataKey="current" stroke="hsl(var(--brand))" strokeWidth={2.5} dot={false} />
             <Line type="monotone" dataKey="target" stroke="#facc15" strokeWidth={2.5} dot={false} />
             <Line type="monotone" dataKey="baseline" stroke="#d4d4d8" strokeWidth={2.5} dot={false} />
           </LineChart>

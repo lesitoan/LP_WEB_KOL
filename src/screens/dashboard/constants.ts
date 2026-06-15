@@ -144,7 +144,7 @@ export const attentionActivities = [
   {
     time: "14:36",
     icon: Flag,
-    iconClassName: "bg-sky-500/15 text-sky-400",
+    iconClassName: "bg-brand/15 text-brand",
     content: "Campaign A đã kết thúc",
   },
 ];
