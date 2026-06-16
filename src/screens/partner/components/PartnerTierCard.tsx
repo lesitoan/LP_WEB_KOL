@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Check, Coins } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { PartnerTier } from '../constants'
 
@@ -15,7 +15,7 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
   return (
     <article
       className={cn(
-        'group relative flex h-full flex-col rounded-xl border p-5 shadow-[0_0_15px_rgba(247,240,161,0.03)] transition-all duration-300 hover:-translate-y-1 hover:border-[#b7ad61] hover:bg-[#28271f] hover:shadow-[0_0_20px_rgba(247,240,161,0.15)]',
+        'group relative flex h-full flex-col rounded-xl border p-5 max-sm:px-3 max-sm:py-4 shadow-[0_0_15px_rgba(247,240,161,0.03)] transition-all duration-300 hover:-translate-y-1 hover:border-[#b7ad61] hover:bg-[#28271f] hover:shadow-[0_0_20px_rgba(247,240,161,0.15)]',
         isActive ? 'border-[#7f7948] bg-[#28271f]' : 'border-[#d8cf73] bg-[#151515]',
       )}
     >
@@ -43,8 +43,8 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
       </div>
 
       <div className="flex items-center gap-3 border-b border-[#d8cf73]/25 py-4 transition-colors duration-300 group-hover:border-[#d8cf73]/45 [&>span:last-child]:text-sm">
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#303030] text-white transition-colors duration-300">
-          <Coins className="h-4 w-4" />
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#303030] transition-colors duration-300">
+          <img src="/images/partner/commission_icon.svg" alt="" className="h-[18px] w-[16px] object-contain" />
         </span>
         <span className="text-2xl font-bold text-white transition-colors duration-300">{tier.rate}</span>
         <span className="text-xs font-medium text-[#bdbdbd] transition-colors duration-300">Hoa hồng</span>

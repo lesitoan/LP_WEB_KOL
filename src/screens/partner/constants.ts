@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BarChart3, Coins, Crown, Send, ShieldCheck, Sparkles, Star, Trophy, Users } from 'lucide-react'
+import { Crown, Sparkles, Star, Trophy } from 'lucide-react'
 
 export type PartnerTier = {
   name: string
@@ -12,13 +12,13 @@ export type PartnerTier = {
 }
 
 export type PartnerStep = {
-  icon: LucideIcon
+  icon: string
   title: string
   body: string
 }
 
 export type PartnerBenefit = {
-  icon: LucideIcon
+  icon: string
   title: string
   body: string
 }
@@ -60,14 +60,14 @@ export const partnerTiers: PartnerTier[] = [
 ]
 
 export const partnerSteps: PartnerStep[] = [
-  { icon: Users, title: 'BƯỚC 1: Đăng ký miễn phí', body: 'Vào hạng Starter - 30% hoa hồng, không cần điều kiện.' },
-  { icon: Send, title: 'BƯỚC 2: Kết nối & tạo nhóm Telegram', body: 'Công cụ tự động quản lý, cảnh báo, chăm sóc nhóm cho bạn.' },
-  { icon: BarChart3, title: 'BƯỚC 3: Lên hạng - hoa hồng lên tới 60%', body: 'Vào hạng Starter - 30% hoa hồng, không cần điều kiện.' },
+  { icon: '/images/partner/steps/icon-user-register.svg', title: 'BƯỚC 1: Đăng ký miễn phí', body: 'Vào hạng Starter - 30% hoa hồng, không cần điều kiện.' },
+  { icon: '/images/partner/steps/icon-telegram.svg', title: 'BƯỚC 2: Kết nối & tạo nhóm Telegram', body: 'Công cụ tự động quản lý, cảnh báo, chăm sóc nhóm cho bạn.' },
+  { icon: '/images/partner/steps/icon-revenue-growth.svg', title: 'BƯỚC 3: Lên hạng - hoa hồng lên tới 60%', body: 'Vào hạng Starter - 30% hoa hồng, không cần điều kiện.' },
 ]
 
 export const partnerBenefits: PartnerBenefit[] = [
-  { icon: ShieldCheck, title: 'Tự động hoá', body: 'Quản lý xác thực ref, cảnh báo, kick & rejoin theo volume tuỳ chỉnh cho nhiều nhóm một cách tự động' },
-  { icon: Users, title: 'Phân tích cộng đồng', body: 'Trạng thái hoạt động, cảnh báo, tỷ lệ chuyển đổi, dự phóng thu nhập để chăm sóc thành viên hiệu quả.' },
-  { icon: Coins, title: 'Market Insight', body: 'Vĩ mô, dòng tiền, cá mập, On-chain, tâm lý thị trường & nhiều nội dung giá trị sẵn sàng cho cộng đồng' },
-  { icon: BarChart3, title: 'Chiến dịch thi đua', body: 'Công cụ này tuỳ chỉnh tạo campaign thi đua cho các nhóm để tri ân và gia tăng gắn kết giữa các thành viên.' },
+  { icon: '/images/partner/tools/icon-automation.svg', title: 'Tự động hoá', body: 'Quản lý xác thực ref, cảnh báo, kick & rejoin theo volume tuỳ chỉnh cho nhiều nhóm một cách tự động' },
+  { icon: '/images/partner/tools/icon-search-analytics.svg', title: 'Phân tích cộng đồng', body: 'Trạng thái hoạt động, cảnh báo, tỷ lệ chuyển đổi, dự phóng thu nhập để chăm sóc thành viên hiệu quả.' },
+  { icon: '/images/partner/tools/icon-market-insight.svg', title: 'Market Insight', body: 'Vĩ mô, dòng tiền, cá mập, On-chain, tâm lý thị trường & nhiều nội dung giá trị sẵn sàng cho cộng đồng' },
+  { icon: '/images/partner/tools/icon-campaign-ranking.svg', title: 'Chiến dịch thi đua', body: 'Công cụ này tuỳ chỉnh tạo campaign thi đua cho các nhóm để tri ân và gia tăng gắn kết giữa các thành viên.' },
 ]

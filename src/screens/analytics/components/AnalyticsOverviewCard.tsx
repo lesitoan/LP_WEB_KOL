@@ -3,7 +3,6 @@
 import AnalyticsOverviewCardSkeleton from "@/components/skeletons/analytics/AnalyticsOverviewCardSkeleton"
 import { cn } from "@/lib/utils";
 import { useGetKolDashboardGroupSummaryQuery } from "@/services/api/dashboardApi";
-import { ShieldAlert, type LucideIcon, UserPlus, UsersRound, UserX } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 const defaultDateRange = {
@@ -27,18 +26,18 @@ function formatCommission(value: number | undefined) {
 }
 
 function StatCard({
-  icon: Icon,
+  iconSrc,
   label,
   value,
 }: {
-  icon: LucideIcon
+  iconSrc: string
   label: string
   value: string
 }) {
   return (
     <div className="rounded-lg bg-[#28282880] p-4 sm:p-5">
       <div className="mb-4 flex items-center gap-2 text-sm font-medium uppercase text-muted-foreground">
-        <Icon className="h-5 w-5 text-brand" />
+        <img src={iconSrc} alt="" className="h-8 w-8 object-contain" />
         <span>{label}</span>
       </div>
       <div className="text-2xl font-bold tracking-tight text-foreground sm:text-[32px]">{value}</div>
@@ -91,10 +90,10 @@ export default function AnalyticsOverviewCard() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <StatCard icon={ShieldAlert} label="Số đang bị cảnh báo" value={formatCount(cards?.warningCount.value)} />
-          <StatCard icon={UsersRound} label="Số lượng members" value={formatCount(cards?.memberCount.value)} />
-          <StatCard icon={UserX} label="Số bị kick" value={formatCount(cards?.kickedCount.value)} />
-          <StatCard icon={UserPlus} label="Số tham gia mới" value={formatCount(cards?.newJoinCount.value)} />
+          <StatCard iconSrc="/images/analytics/warning_icon.svg" label="Số đang bị cảnh báo" value={formatCount(cards?.warningCount.value)} />
+          <StatCard iconSrc="/images/analytics/total_members_icon.svg" label="Số lượng members" value={formatCount(cards?.memberCount.value)} />
+          <StatCard iconSrc="/images/analytics/kick_member_icon.svg" label="Số bị kick" value={formatCount(cards?.kickedCount.value)} />
+          <StatCard iconSrc="/images/analytics/join_icon.svg" label="Số tham gia mới" value={formatCount(cards?.newJoinCount.value)} />
         </div>
       </div>
     </section>
