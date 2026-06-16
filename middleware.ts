@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
-const KOL_PUBLIC_PATHS = ['/login']
+const KOL_PUBLIC_PATHS = ['/', '/login']
 const ADMIN_PUBLIC_PATHS = ['/admin/login']
 
 export function middleware(req: NextRequest) {
