@@ -1,6 +1,6 @@
 "use client";
 
-import { Bitcoin, Landmark, Triangle, UserRoundCheck, UsersRound, WalletCards, type LucideIcon } from "lucide-react";
+import { Triangle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -9,12 +9,11 @@ import type { KolDashboardMetricCard, KolDashboardMetricKey } from "@/types/api"
 import { defaultDateRange } from "../constants";
 import { OverviewSkeleton } from "@/components/skeletons/dashboard/OverviewSkeleton";
 
-const metricIcons: Record<KolDashboardMetricKey, LucideIcon> = {
-  commission: Bitcoin,
-  referral: UsersRound,
-  deposit: WalletCards,
-  trade: Landmark,
-  kyc: UserRoundCheck,
+const metricIconSrcs: Record<Exclude<KolDashboardMetricKey, "commission">, string> = {
+  referral: "/images/dashboard/overview/refferal_icon.svg",
+  deposit: "/images/dashboard/overview/deposit_icon.svg",
+  trade: "/images/dashboard/overview/trade_icon.svg",
+  kyc: "/images/dashboard/overview/kyc_icon.svg",
 };
 
 const fallbackMetricOrder: KolDashboardMetricKey[] = ["referral", "deposit", "trade", "kyc"];
@@ -94,14 +93,17 @@ export default function OverviewSection() {
 
         <div className="grid gap-4 md:grid-cols-2">
           {metricCards.map((metric) => {
-            const Icon = metricIcons[metric.key];
             const isDown = metric.trend === "down";
             const isNeutral = metric.trend === "neutral" || metric.trend === null;
 
             return (
               <article key={metric.key} className="rounded-md bg-[#1f1f1f] p-6">
                 <div className="mb-6 flex items-center gap-3">
-                  <Icon className="h-7 w-7 text-brand" />
+                  <img
+                    src={metricIconSrcs[metric.key as Exclude<KolDashboardMetricKey, "commission">]}
+                    alt=""
+                    className="h-8 w-8 object-contain"
+                  />
                   <h3 className="text-sm font-medium uppercase text-zinc-400">{metric.title}</h3>
                 </div>
                 <div className="flex flex-wrap items-end justify-between gap-3">

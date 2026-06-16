@@ -10,7 +10,7 @@ import PartnerToolsSection from './components/PartnerToolsSection'
 
 export default function PartnerScreen() {
   return (
-    <main className="min-h-screen overflow-hidden bg-black pt-[57px] text-white">
+    <main className="min-h-screen overflow-hidden bg-black pt-12 max-md:pt-10 text-white space-y-20 max-md:space-y-16">
       <PartnerHeader />
       <PartnerHero tiers={partnerTiers} />
       <PartnerTierSection tiers={partnerTiers} />
