@@ -53,6 +53,47 @@ export interface KolDashboardSummary {
   periodComparison: KolDashboardPeriodComparison
 }
 
+export interface KolDashboardGroupSummaryQuery extends KolDashboardSummaryQuery {
+  groupId?: string
+}
+
+export interface KolDashboardGroupSummaryPeriod {
+  type: 'range'
+  startDate: string
+  endDate: string
+  days: number | null
+}
+
+export interface KolDashboardGroupSummaryGroup {
+  id: string
+  kolId: string
+  telegramGroupId?: string | null
+  title: string
+  status: string
+  minVolumeRequired?: string | number | null
+  maxVolumeRequired?: string | number | null
+}
+
+export interface KolDashboardGroupSummaryCard {
+  value: number
+  calculation: string
+}
+
+export interface KolDashboardGroupSummary {
+  period: KolDashboardGroupSummaryPeriod
+  scope: {
+    mode: 'single_group' | 'all_groups'
+    group: KolDashboardGroupSummaryGroup | null
+  }
+  cards: {
+    totalCommission: KolDashboardGroupSummaryCard
+    warningCount: KolDashboardGroupSummaryCard
+    memberCount: KolDashboardGroupSummaryCard
+    kickedCount: KolDashboardGroupSummaryCard
+    newJoinCount: KolDashboardGroupSummaryCard
+  }
+}
+
 export interface KolRecentActivitiesQuery {
   limit?: number
 }
