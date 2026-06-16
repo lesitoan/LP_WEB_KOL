@@ -15,7 +15,7 @@ const activityIcons: Record<KolRecentActivityIcon, LucideIcon> = {
 };
 
 const severityClassNames: Record<KolRecentActivitySeverity, string> = {
-  info: "bg-sky-500/15 text-sky-400",
+  info: "bg-brand/15 text-brand",
   warning: "bg-yellow-400/15 text-yellow-300",
   success: "bg-emerald-500/15 text-emerald-400",
 };

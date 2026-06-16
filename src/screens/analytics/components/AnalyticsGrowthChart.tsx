@@ -44,9 +44,9 @@ export default function AnalyticsGrowthChart() {
                 borderRadius: 10,
               }}
             />
-            <Bar dataKey="volume" stackId="growth" fill="#0b5bd3" radius={[0, 0, 4, 4]} barSize={82} />
-            <Bar dataKey="members" stackId="growth" fill="#0ea5e9" barSize={82} />
-            <Bar dataKey="warning" stackId="growth" fill="#facc15" radius={[4, 4, 0, 0]} barSize={82} />
+            <Bar dataKey="volume" stackId="growth" fill="#9B692C" radius={[0, 0, 4, 4]} barSize={41} />
+            <Bar dataKey="members" stackId="growth" fill="#D4A74A" barSize={41} />
+            <Bar dataKey="warning" stackId="growth" fill="#F7F0A1" radius={[4, 4, 0, 0]} barSize={41} />
           </BarChart>
         </ResponsiveContainer>
       </div>

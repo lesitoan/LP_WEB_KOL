@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   ChartGantt,
@@ -15,7 +16,6 @@ import {
   UsersRound,
 } from 'lucide-react'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useAuthSession } from '@/hooks/useAuthSession'
 import { cn } from '@/lib/utils'
 
@@ -55,16 +55,6 @@ type SidebarProps = {
   onItemClick?: () => void
 }
 
-function getInitials(name?: string | null) {
-  if (!name) return 'U'
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-}
-
 export default function Sidebar({ onItemClick }: SidebarProps) {
   const pathname = usePathname()
   const { profile, logout } = useAuthSession()
@@ -101,7 +91,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
                     <Icon
                       className={cn(
                         'h-[18px] w-[18px] shrink-0',
-                        isActive ? 'text-brand-blue-500' : 'text-[#9a9a9a]',
+                        isActive ? 'text-brand' : 'text-[#9a9a9a]',
                       )}
                       strokeWidth={1.8}
                     />
@@ -116,11 +106,13 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
 
       <div className="border-t border-[#202020] pt-4">
         <div className="flex items-center gap-3">
-          <Avatar className="h-9 w-9 border border-brand-blue-500/40 bg-brand-blue-800">
-            <AvatarFallback className="bg-brand-blue-500 text-xs font-semibold text-white">
-              {getInitials(profile?.name)}
-            </AvatarFallback>
-          </Avatar>
+          <Image
+            src="/images/avatar_default.png"
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 rounded-full border border-brand/40 object-cover"
+          />
 
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-semibold leading-5 text-white">

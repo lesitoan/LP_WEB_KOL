@@ -86,7 +86,7 @@ export default function TierSummaryCard() {
             </div>
             {nextTier ? (
               <p className="mt-4 text-lg font-medium text-zinc-200">
-                Bạn còn <span className="text-sky-400">{membersNeeded}</span> active members để lên hạng{" "}
+                Bạn còn <span className="text-brand">{membersNeeded}</span> active members để lên hạng{" "}
                 <span className="font-bold text-yellow-300">{nextTier.name}</span>
               </p>
             ) : (

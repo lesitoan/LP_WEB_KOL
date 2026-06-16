@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { LogOut, Menu, Star } from 'lucide-react'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -78,9 +78,10 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="grid h-10 w-10 place-items-center rounded-full bg-brand-blue-900 transition-colors hover:bg-brand-blue-800">
-              <Avatar className="h-9 w-9 border border-brand-blue-500/40">
-                <AvatarFallback className="bg-brand-blue-500 text-xs font-semibold text-white">
+            <button className="grid h-10 w-10 place-items-center rounded-full bg-brand/15 transition-colors hover:bg-brand/25">
+              <Avatar className="h-9 w-9 border border-brand/40">
+                <AvatarImage src="/images/avatar_default.png" alt="" />
+                <AvatarFallback className="bg-brand text-xs font-semibold text-primary-foreground">
                   {getInitials(profile?.name)}
                 </AvatarFallback>
               </Avatar>

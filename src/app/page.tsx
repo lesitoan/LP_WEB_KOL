@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
+import PartnerScreen from '@/screens/partner'
 
 export default function Page() {
-  redirect("/dashboard");
+  return <PartnerScreen />
 }
 

@@ -78,7 +78,7 @@ export default function OverviewSection() {
       <h2 className="mb-5 text-base font-semibold text-foreground">Chỉ số tổng quan</h2>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_2fr]">
-        <div className="min-h-[228px] rounded-md bg-[linear-gradient(135deg,#0f2945_0%,#12385b_46%,#0ea5e9_140%)] p-6 shadow-[inset_-28px_-28px_70px_rgba(14,165,233,0.18)]">
+        <div className="min-h-[228px] rounded-md bg-[url('/images/dashboard/hero_bg_gradient.png')] bg-cover bg-center p-6">
           <div className="flex h-full flex-col justify-center">
             <div className="mb-7 flex items-center gap-4">
               <span className="grid h-10 w-10 place-items-center rounded-full">
@@ -101,7 +101,7 @@ export default function OverviewSection() {
             return (
               <article key={metric.key} className="rounded-md bg-[#1f1f1f] p-6">
                 <div className="mb-6 flex items-center gap-3">
-                  <Icon className="h-7 w-7 text-sky-400" />
+                  <Icon className="h-7 w-7 text-brand" />
                   <h3 className="text-sm font-medium uppercase text-zinc-400">{metric.title}</h3>
                 </div>
                 <div className="flex flex-wrap items-end justify-between gap-3">

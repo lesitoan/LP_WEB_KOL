@@ -1,5 +1,4 @@
 import AnalyticsMembersTableSkeleton from "@/components/skeletons/analytics/AnalyticsMembersTableSkeleton"
-import { UsersRound } from "lucide-react"
 import { groupRows } from "../constants"
 import { useFakeAnalyticsLoading } from "./useFakeAnalyticsLoading"
 
@@ -29,9 +28,11 @@ export default function AnalyticsMembersTable() {
               <tr key={row.name}>
                 <td className="py-3 ">
                   <div className="flex items-center gap-3">
-                    <span className="grid h-9 w-9 place-items-center rounded-full bg-sky-700/80">
-                      <UsersRound className="h-5 w-5 text-sky-300" />
-                    </span>
+                    <img
+                      src="/images/avatar_default.png"
+                      alt=""
+                      className="h-9 w-9 shrink-0 rounded-full object-cover"
+                    />
                     <span className="font-medium text-foreground">{row.name}</span>
                   </div>
                 </td>

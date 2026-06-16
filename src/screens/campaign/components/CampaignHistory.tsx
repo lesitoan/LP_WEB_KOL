@@ -64,7 +64,7 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
     <div className="flex-shrink-0 w-[85%] md:w-auto md:flex-1 bg-[#171717] rounded-[20px] overflow-hidden border border-white/5 flex flex-col snap-start">
 
       {/* ── Nửa trên (Header màu xanh) ── */}
-      <div className="relative pt-5 px-5 pb-8 bg-gradient-to-r from-[#003E8F] via-[#006AF5] to-[#2F89FF]">
+      <div className="relative pt-5 px-5 pb-8 bg-gradient-to-r from-[#3A3514] via-[#8F8128] to-brand">
 
         <div className="absolute left-0 top-5 w-[4px] h-[38px] bg-[#FFD000] rounded-r-sm shadow-[1px_0_4px_rgba(255,208,0,0.3)]" />
 

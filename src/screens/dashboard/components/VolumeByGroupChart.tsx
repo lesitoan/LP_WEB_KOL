@@ -78,7 +78,7 @@ export default function VolumeByGroupChart() {
             />
             <Line type="monotone" dataKey="vip" stroke="#f4f4f5" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
             <Line type="monotone" dataKey="gold" stroke="#facc15" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-            <Line type="monotone" dataKey="silver" stroke="#0ea5e9" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+            <Line type="monotone" dataKey="silver" stroke="hsl(var(--brand))" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
