@@ -3,9 +3,23 @@ import { useFormContext } from 'react-hook-form';
 import type { CreateCampaignFormValues } from './schema';
 import FormInput from './FormInput';
 import FormSelect from './FormSelect';
+import { useGetGroupsQuery } from '@/services/api/groupsApi';
 
 export default function StepOne() {
   const { register, formState: { errors } } = useFormContext<CreateCampaignFormValues>();
+
+  // Lấy danh sách nhóm của KOL
+  const { data: groupsData, isLoading: isGroupsLoading } = useGetGroupsQuery({ page: 1, limit: 100 });
+  const groupsList = groupsData?.items || [];
+
+  const groupOptions = [
+    { label: "Toàn bộ nhóm", value: "ALL_GROUPS" },
+    { label: "─── Chọn nhóm cụ thể ───", value: "divider", disabled: true },
+    ...groupsList.map((g) => ({
+      label: g.title,
+      value: g.id,
+    })),
+  ];
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -52,9 +66,10 @@ export default function StepOne() {
         />
         <FormSelect 
           label="Phạm vi áp dụng"
-          options={[{ label: "Chọn nhóm", value: "Chọn nhóm" }]}
-          {...register("scopeType")}
-          error={errors.scopeType?.message}
+          options={groupOptions}
+          {...register("telegramGroupId")}
+          error={errors.telegramGroupId?.message}
+          disabled={isGroupsLoading}
         />
       </div>
     </div>

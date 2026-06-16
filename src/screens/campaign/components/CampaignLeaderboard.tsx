@@ -12,9 +12,13 @@ function getPrize(rank: number, rewards: CampaignReward[]): string | undefined {
 }
 
 // Format volume VNĐ
-function formatVND(volumeStr: string | number): string {
+function formatVND(volumeStr: string | number, forceFullFormat: boolean = false): string {
   const usd = typeof volumeStr === "string" ? parseFloat(volumeStr || "0") : volumeStr;
   const vnd = usd * 25000;
+  
+  if (forceFullFormat) {
+    return `${Math.round(vnd).toLocaleString("vi-VN")} VNĐ`;
+  }
   
   const viFormatter = new Intl.NumberFormat("vi-VN", {
     maximumFractionDigits: 1,
@@ -65,52 +69,13 @@ const getHeightClass = (rank: number) => {
   }
 };
 
-const getBgGrad = (rank: number) => {
-  switch (rank) {
-    case 1: return "from-[#FFD255]/25 via-[#FFD255]/5 to-transparent to-60%";
-    case 2: return "from-[#FFF6DF]/25 via-[#FFF6DF]/5 to-transparent to-60%";
-    case 3: return "from-[#FF9655]/25 via-[#FF9655]/5 to-transparent to-50%";
-    default: return "from-transparent to-transparent";
-  }
-};
-
-const getTopHighlight = (rank: number) => {
-  switch (rank) {
-    case 1: return "from-transparent via-[#FFD255]/90 to-transparent"; 
-    case 2: return "from-transparent via-[#FFF6DF]/90 to-transparent";   
-    case 3: return "from-transparent via-[#FF9655]/90 to-transparent"; 
-    default: return "from-transparent via-white/50 to-transparent";
-  }
-};
-
 const HexagonBadge = ({ rank }: { rank: number }) => {
-  const theme = getRankTheme(rank);
   return (
-    <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
-      <svg className="absolute inset-0 w-full h-full drop-shadow-md" viewBox="0 0 100 100">
-        <defs>
-          <linearGradient id={`baseGrad-${rank}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={theme.main}>
-              <animate attributeName="stop-opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite" />
-            </stop>
-            <stop offset="30%" stopColor={theme.main} stopOpacity="0.15" />
-            <stop offset="70%" stopColor={theme.main} stopOpacity="0.15" />
-            <stop offset="100%" stopColor={theme.main}>
-              <animate attributeName="stop-opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite" />
-            </stop>
-          </linearGradient>
-          <linearGradient id={`textGrad-${rank}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFFFFF" />
-            <stop offset="100%" stopColor={theme.dark} />
-          </linearGradient>
-        </defs>
-        <polygon points="50 5, 89 27.5, 89 72.5, 50 95, 11 72.5, 11 27.5" fill="#1C1C1E" stroke="transparent" strokeWidth="1" />
-        <polygon points="50 5, 89 27.5, 89 72.5, 50 95, 11 72.5, 11 27.5" fill="transparent" stroke={`url(#baseGrad-${rank})`} strokeWidth="3.5" strokeLinejoin="round" />
-        <text x="50" y="50" textAnchor="middle" dominantBaseline="central" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="800" fontSize="40px" fill={`url(#textGrad-${rank})`}>
-          {rank}
-        </text>
-      </svg>
-    </div>
+    <img
+      src={`/images/campaign/Badge_${rank}.png`}
+      alt={`Badge ${rank}`}
+      className="w-12 h-12 object-contain shrink-0"
+    />
   );
 };
 
@@ -119,17 +84,20 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
   const prize = getPrize(entry.rank, rewards);
   const borderGrad = getBorderGrad(entry.rank);
   const heightClass = getHeightClass(entry.rank);
-  const bgGrad = getBgGrad(entry.rank);
-  const highlightGrad = getTopHighlight(entry.rank);
 
   return (
     <div className={`relative flex-1 min-w-[220px] p-[1.75px] rounded-[18px] bg-gradient-to-b ${borderGrad} transition-all duration-300 ${heightClass}`}>
-      <div className={`relative overflow-hidden h-full bg-[#1C1C1E] bg-gradient-to-b ${bgGrad} rounded-[16px] p-5 flex flex-col justify-between`}>
-        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[65%] h-[1px] bg-gradient-to-r ${highlightGrad}`}></div>
-        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[45%] h-[5px] bg-gradient-to-r ${highlightGrad} blur-[4px] opacity-70`}></div>
+      <div className="relative overflow-hidden h-full bg-[#1C1C1E] rounded-[16px] p-5 flex flex-col justify-between">
+        
+        {/* Vệt sáng highlight */}
+        <img
+          src={`/images/campaign/highlightGrad_${entry.rank}.png`}
+          alt=""
+          className="absolute top-0 left-0 w-full h-auto pointer-events-none select-none z-0"
+        />
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="relative z-10 flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <DefaultAvatar />
             <div>
@@ -140,7 +108,7 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
           <HexagonBadge rank={entry.rank} />
         </div>
 
-        <div>
+        <div className="relative z-10">
           {/* Divider */}
           <div className="h-px w-full bg-white/5 mb-4" />
 
@@ -233,7 +201,7 @@ export default function CampaignLeaderboard({ leaderboard, rewards }: Props) {
               {/* Tổng tích lũy */}
               <div className="flex items-center justify-start gap-2 shrink-0">
                 <span className="font-geist-mono font-bold text-[13px] md:text-[14px] text-white whitespace-nowrap">
-                  {formatVND(entry.usdVolume)}
+                  {formatVND(entry.usdVolume, true)}
                 </span>
               </div>
             </div>

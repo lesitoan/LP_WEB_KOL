@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 
 interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
-  options: { label: string; value: string }[];
+  options: { label: string; value: string; disabled?: boolean }[];
   bg?: string;
   error?: string;
 }
@@ -31,7 +31,7 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(({
         >
           <option value="" disabled hidden>Chọn giá trị</option>
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</option>
           ))}
         </select>
 

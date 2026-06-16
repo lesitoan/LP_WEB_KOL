@@ -7,7 +7,7 @@ export const createCampaignSchema = z.object({
   startAt: z.string().min(1, "Vui lòng chọn thời gian bắt đầu"),
   endAt: z.string().min(1, "Vui lòng chọn thời gian kết thúc"),
   rankingType: z.string().min(1, "Vui lòng chọn tiêu chí"),
-  scopeType: z.string().min(1, "Vui lòng chọn phạm vi"),
+  telegramGroupId: z.string().min(1, "Vui lòng chọn phạm vi áp dụng"),
 
   // STEP 2
   rewardType: z.string().min(1, "Vui lòng chọn loại phần thưởng"),
@@ -15,7 +15,8 @@ export const createCampaignSchema = z.object({
   rank2: z.string().min(1, "Vui lòng nhập số tiền hạng 2"),
   rank3: z.string().min(1, "Vui lòng nhập số tiền hạng 3"),
   announceFrequency: z.string().min(1, "Vui lòng chọn thông báo"),
-  announceDayOfWeek: z.string().min(1, "Vui lòng chọn ngày"),
+  announceDayOfWeek: z.string().optional(),
+  announceTime: z.string().optional(),
 })
 // CUSTOM VALIDATION (Cross-field)
 .refine((data) => {
@@ -28,6 +29,24 @@ export const createCampaignSchema = z.object({
 }, {
   message: "Ngày kết thúc phải sau ngày bắt đầu",
   path: ["endAt"],
+})
+.refine((data) => {
+  if (data.announceFrequency === "Thông báo hằng tuần" && !data.announceDayOfWeek) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Vui lòng chọn ngày thông báo",
+  path: ["announceDayOfWeek"]
+})
+.refine((data) => {
+  if (["Thông báo hằng ngày", "Thông báo hằng tuần"].includes(data.announceFrequency) && !data.announceTime) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Vui lòng chọn thời gian thông báo",
+  path: ["announceTime"]
 });
 
 export type CreateCampaignFormValues = z.infer<typeof createCampaignSchema>;
