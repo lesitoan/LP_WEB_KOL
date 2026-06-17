@@ -9,12 +9,6 @@ interface Props {
   campaigns: CampaignData[];
 }
 
-// Format ngày ISO thành "tháng 3"
-function formatMonthLabel(isoDate: string): string {
-  const date = new Date(isoDate);
-  return `tháng ${date.getMonth() + 1}`;
-}
-
 // Format VNĐ
 function formatVND(volumeStr: string | number): string {
   const usd = typeof volumeStr === "string" ? parseFloat(volumeStr || "0") : volumeStr;
@@ -174,7 +168,7 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
   };
 
   return (
-    <div className="relative flex-shrink-0 w-[85%] md:w-auto md:flex-1 bg-[#171717] rounded-[20px] overflow-hidden border border-white/5 flex flex-col snap-start">
+    <div className="relative flex-shrink-0 w-full max-w-[380px] mx-auto min-[576px]:mx-0 min-[576px]:w-[380px] lg:max-w-none lg:w-auto bg-[#171717] rounded-[20px] overflow-hidden border border-white/5 flex flex-col snap-start">
 
       {/* Nửa trên */}
       <div className={`relative pt-5 px-5 pb-8 ${cfg.gradient}`}>
@@ -184,7 +178,7 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
         <div className="flex justify-between items-start pl-2">
           <div className="flex-1 mr-3">
             <p className="text-[12px] font-medium text-white/80 mb-0.5 tracking-wide line-clamp-1">
-              {campaign.name} {formatMonthLabel(campaign.startAt)}
+              {campaign.name}
             </p>
           </div>
 
@@ -205,13 +199,13 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
         <div className="flex justify-between items-start">
           <div>
             <p className="text-[11px] text-[#8B8B93] mb-1.5">Participants</p>
-            <p className="font-geist-mono font-bold text-[14px] text-white">
+            <p className="font-bold text-[14px] text-white">
               {campaign.participantCount ?? "—"}
             </p>
           </div>
           <div>
             <p className="text-[11px] text-[#8B8B93] mb-1.5">Tổng</p>
-            <p className="font-geist-mono font-bold text-[14px] text-white">
+            <p className="font-bold text-[14px] text-white">
               {campaign.totalVolumeUsd != null
                 ? formatVND(campaign.totalVolumeUsd)
                 : "—"}
@@ -219,7 +213,7 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
           </div>
           <div>
             <p className="text-[11px] text-[#8B8B93] mb-1.5">{countdownLabel}</p>
-            <p className="font-geist-mono font-bold text-[14px] text-white">
+            <p className="font-bold text-[14px] text-white">
               {liveCountdown}
             </p>
           </div>
@@ -267,7 +261,7 @@ export default function CampaignHistory({ campaigns }: Props) {
         Các chiến dịch đã tạo
       </h3>
 
-      <div className="flex lg:grid lg:grid-cols-3 gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+      <div className="flex flex-col min-[576px]:flex-row lg:grid lg:grid-cols-3 gap-4 min-[576px]:overflow-x-auto pb-4 min-[576px]:snap-x min-[576px]:snap-mandatory scrollbar-hide">
         {campaigns.map((campaign) => (
           <HistoryCard key={campaign.id} campaign={campaign} />
         ))}

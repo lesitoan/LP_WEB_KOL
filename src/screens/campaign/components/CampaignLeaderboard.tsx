@@ -54,17 +54,17 @@ const getRankTheme = (rank: number) => {
 
 const getBorderGrad = (rank: number) => {
   switch (rank) {
-    case 1: return "from-[#FFD255] via-[#FFD255]/30 to-transparent";
-    case 2: return "from-[#FFF6DF] via-[#FFF6DF]/30 to-transparent";
-    case 3: return "from-[#FF9655] via-[#FF9655]/30 to-transparent"
+    case 1: return "from-[#FFD255] via-[#FFD255]/30 to-[#FFD255]/10";
+    case 2: return "from-[#FFF6DF] via-[#FFF6DF]/30 to-[#FFF6DF]/10";
+    case 3: return "from-[#FF9655] via-[#FF9655]/30 to-[#FF9655]/10";
   }
 };
 
 const getHeightClass = (rank: number) => {
   switch (rank) {
-    case 1: return "h-[190px] md:h-[210px]";
-    case 2: return "h-[165px] md:h-[185px]";
-    case 3: return "h-[145px] md:h-[165px]";
+    case 1: return "h-[155px] min-[576px]:h-[190px] md:h-[210px]";
+    case 2: return "h-[155px] min-[576px]:h-[165px] md:h-[185px]";
+    case 3: return "h-[155px] min-[576px]:h-[145px] md:h-[165px]";
     default: return "h-auto";
   }
 };
@@ -87,7 +87,7 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
 
   return (
     <div className={`relative flex-1 min-w-[220px] p-[1.75px] rounded-[18px] bg-gradient-to-b ${borderGrad} transition-all duration-300 ${heightClass}`}>
-      <div className="relative overflow-hidden h-full bg-[#1C1C1E] rounded-[16px] p-5 flex flex-col justify-between">
+      <div className="relative overflow-hidden h-full bg-[#1C1C1E] rounded-[16px] p-4 sm:p-5 flex flex-col justify-start">
         
         {/* Vệt sáng highlight */}
         <img
@@ -97,12 +97,12 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
         />
 
         {/* Header */}
-        <div className="relative z-10 flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+        <div className="relative z-10 flex items-center justify-between mb-3 sm:mb-4">
+          <div className="flex items-center gap-2 md:gap-3">
             <DefaultAvatar />
             <div>
-              <p className="text-[14px] font-semibold text-white">{entry.telegramUsername}</p>
-              <p className="text-[12px] text-[#8B8B93] mt-0.5">UID: {entry.lpexUid}</p>
+              <p className="text-[13px] sm:text-[14px] font-semibold text-white">{entry.telegramUsername}</p>
+              <p className="text-[11px] sm:text-[12px] text-[#8B8B93] mt-0.5">UID: {entry.lpexUid}</p>
             </div>
           </div>
           <HexagonBadge rank={entry.rank} />
@@ -110,19 +110,19 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
 
         <div className="relative z-10">
           {/* Divider */}
-          <div className="h-px w-full bg-white/5 mb-4" />
+          <div className="h-px w-full bg-white/5 mb-3 sm:mb-4" />
 
           {/* Stats */}
-          <div className="flex justify-between items-end">
-            <div>
-              <p className="text-[11px] text-[#8B8B93] mb-1.5">Tổng tích lũy</p>
-              <p className="font-geist-mono font-bold text-[16px] text-white">{formatVND(entry.usdVolume)}</p>
+          <div className="flex justify-between items-end gap-2">
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-[11px] text-[#8B8B93] mb-1 sm:mb-1.5 truncate">Tổng tích lũy</p>
+              <p className="font-bold text-[14px] sm:text-[16px] text-white truncate">{formatVND(entry.usdVolume)}</p>
             </div>
             {prize && (
-              <div className="flex flex-col items-start text-left">
-                <p className="text-[11px] text-[#8B8B93] mb-1.5">Phần thưởng</p>
-                <div className="flex items-center font-bold text-[15px] text-white whitespace-nowrap">
-                  <img src="/images/campaign/Ic_filled_bitcoin-circle-1.png" alt="USDT" className="w-[18px] h-[18px] mr-1.5 shrink-0" />
+              <div className="flex flex-col items-start text-left shrink-0">
+                <p className="text-[10px] sm:text-[11px] text-[#8B8B93] mb-1 sm:mb-1.5 truncate">Phần thưởng</p>
+                <div className="flex items-center font-bold text-[13px] sm:text-[15px] text-white whitespace-nowrap">
+                  <img src="/images/campaign/Ic_filled_bitcoin-circle-1.png" alt="USDT" className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] mr-1 sm:mr-1.5 shrink-0" />
                   {prize}
                 </div>
               </div>
@@ -139,14 +139,20 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
 export default function CampaignLeaderboard({ leaderboard, rewards }: Props) {
   const safeLeaderboard = Array.isArray(leaderboard) ? leaderboard : [];
 
-  // Tách top 3 (podium) và sắp xếp theo thứ tự: Rank 2, Rank 1, Rank 3
+  // Tách top 3: Sắp xếp theo thứ tự 1, 2, 3 để hiển thị theo chiều dọc trên mobile
   const rawPodium = safeLeaderboard.filter((e) => e.rank <= 3);
-  const podium = [...rawPodium].sort((a, b) => {
-    const order: Record<number, number> = { 2: 1, 1: 2, 3: 3 };
-    return (order[a.rank] || 99) - (order[b.rank] || 99);
-  });
+  const podium = [...rawPodium].sort((a, b) => a.rank - b.rank);
 
   const rest = safeLeaderboard.filter((e) => e.rank > 3);
+
+  const getPodiumOrderClass = (rank: number) => {
+    switch (rank) {
+      case 1: return "min-[576px]:order-2";
+      case 2: return "min-[576px]:order-1";
+      case 3: return "min-[576px]:order-3";
+      default: return "";
+    }
+  };
 
   if (safeLeaderboard.length === 0) {
     return (
@@ -159,9 +165,12 @@ export default function CampaignLeaderboard({ leaderboard, rewards }: Props) {
   return (
     <div>
       {/* Podium Top 3 */}
-      <div className="flex gap-3 mb-6 items-end overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+      <div className="flex flex-col min-[576px]:flex-row gap-3 mb-6 items-stretch min-[576px]:items-end min-[576px]:overflow-x-auto pb-2 min-[576px]:snap-x min-[576px]:snap-mandatory scrollbar-hide">
         {podium.map((entry) => (
-          <div key={entry.rank} className="snap-start shrink-0 w-[82%] sm:w-[55%] md:w-auto md:flex-1 md:min-w-[200px]">
+          <div 
+            key={entry.rank} 
+            className={`snap-start shrink-0 w-full max-w-[340px] mx-auto min-[576px]:mx-0 min-[576px]:w-[340px] lg:max-w-none lg:w-auto lg:flex-1 lg:min-w-[220px] ${getPodiumOrderClass(entry.rank)}`}
+          >
             <PodiumCard entry={entry} rewards={rewards} />
           </div>
         ))}
@@ -185,7 +194,7 @@ export default function CampaignLeaderboard({ leaderboard, rewards }: Props) {
               className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-3 md:py-3.5 hover:bg-white/5 transition-colors cursor-pointer"
             >
               {/* Thứ hạng */}
-              <div className="text-[13px] md:text-[14px] font-geist-mono font-semibold text-white">
+              <div className="text-[13px] md:text-[14px] font-semibold text-white">
                 {entry.rank}
               </div>
 
@@ -200,7 +209,7 @@ export default function CampaignLeaderboard({ leaderboard, rewards }: Props) {
 
               {/* Tổng tích lũy */}
               <div className="flex items-center justify-start gap-2 shrink-0">
-                <span className="font-geist-mono font-bold text-[13px] md:text-[14px] text-white whitespace-nowrap">
+                <span className="font-bold text-[13px] md:text-[14px] text-white whitespace-nowrap">
                   {formatVND(entry.usdVolume, true)}
                 </span>
               </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createCampaignSchema, type CreateCampaignFormValues } from './schema';
@@ -15,6 +16,7 @@ interface Props {
 export default function CreateCampaignModal({ isOpen, onClose }: Props) {
   const [step, setStep] = useState<1 | 2>(1);
   const [createCampaign, { isLoading }] = useCreateCampaignMutation();
+  const [mounted, setMounted] = useState(false);
 
   // 1. Khởi tạo Form với Zod Resolver và Default Values
   const methods = useForm<CreateCampaignFormValues>({
@@ -24,7 +26,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
       description: "",
       startAt: "",
       endAt: "",
-      rankingType: "Volume giao dịch",
+      rankingType: "TOP_VOLUME",
       telegramGroupId: "ALL_GROUPS",
       rewardType: "Tiền thưởng",
       rank1: "",
@@ -38,6 +40,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
   });
 
   useEffect(() => {
+    setMounted(true);
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -50,7 +53,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen, methods]);
 
-  if (!isOpen) return null;
+  if (!mounted || !isOpen) return null;
 
   // 2. Xử lý khi bấm nút "Tiếp tục" ở Bước 1
   const handleNext = async (e: React.MouseEvent) => {
@@ -141,7 +144,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm px-4 pt-20 sm:pt-0 overflow-y-auto">
       <div 
         className="bg-[#1A1A1A] border border-white/5 rounded-2xl w-full max-w-[640px] flex flex-col shadow-2xl overflow-hidden animate-fade-in-up"
@@ -203,6 +206,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
           </form>
         </FormProvider>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
