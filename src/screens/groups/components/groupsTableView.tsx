@@ -181,7 +181,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     },
     {
       id: 'grace',
-      header: 'Ân hạn',
+      header: 'Gia hạn',
       cell: (group) => formatGracePeriodInDays(group),
     },
     {

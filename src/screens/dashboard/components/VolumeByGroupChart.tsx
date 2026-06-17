@@ -19,7 +19,7 @@ const legendFormatter = (value: string) => {
     silver: "Silver Group",
   };
 
-  return <span className="text-sm font-normal text-zinc-200">{labels[value] ?? value}</span>;
+  return <span className="text-[10px] font-normal text-zinc-200 md:text-sm">{labels[value] ?? value}</span>;
 };
 
 export default function VolumeByGroupChart() {
@@ -73,8 +73,9 @@ export default function VolumeByGroupChart() {
               verticalAlign="top"
               align="right"
               iconType="circle"
+              iconSize={10}
               formatter={legendFormatter}
-              wrapperStyle={{ paddingBottom: 18 }}
+              wrapperStyle={{ paddingBottom: 18, fontSize: 10 }}
             />
             <Line type="monotone" dataKey="vip" stroke="#f4f4f5" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
             <Line type="monotone" dataKey="gold" stroke="#facc15" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />

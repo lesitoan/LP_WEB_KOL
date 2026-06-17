@@ -3,18 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import {
-  ChartGantt,
-  DollarSign,
-  Home,
-  Layers,
-  Lightbulb,
-  LogOut,
-  Settings,
-  Star,
-  Trophy,
-  UsersRound,
-} from 'lucide-react'
+import { LogOut } from 'lucide-react'
 
 import { useAuthSession } from '@/hooks/useAuthSession'
 import { cn } from '@/lib/utils'
@@ -23,36 +12,84 @@ const navSections = [
   {
     label: 'Vận hành',
     items: [
-      { id: 'home', label: 'Tổng quan', href: '/dashboard', icon: Home },
-      { id: 'members', label: 'Cộng đồng', href: '/members', icon: UsersRound },
-      { id: 'insights', label: 'Insights', href: '/insights', icon: Lightbulb },
-      { id: 'campaign', label: 'Chiến dịch', href: '/campaign', icon: Trophy },
+      {
+        id: 'home',
+        label: 'Tổng quan',
+        href: '/dashboard',
+        icon: '/images/sidebar/home_icon.svg',
+        activeIcon: '/images/sidebar/avtive/home_icon_active.svg',
+      },
+      {
+        id: 'members',
+        label: 'Cộng đồng',
+        href: '/members',
+        icon: '/images/sidebar/member_nav_icon.svg',
+        activeIcon: '/images/sidebar/avtive/member_nav_icon_active.svg',
+      },
+      {
+        id: 'insights',
+        label: 'Insights',
+        href: '/insights',
+        icon: '/images/sidebar/insights_icon.svg',
+        activeIcon: '/images/sidebar/avtive/insights_icon_active.svg',
+      },
+      {
+        id: 'campaign',
+        label: 'Chiến dịch',
+        href: '/campaign',
+        icon: '/images/sidebar/campaign_icon.svg',
+        activeIcon: '/images/sidebar/avtive/campaign_icon_active.svg',
+      },
     ],
   },
-  //   {
-  //   label: 'Doanh thu',
-  //   items: [
-  //     // { id: 'cashback', label: 'Cashback', href: '/cashback', icon: DollarSign },
-  //   ],
-  // },
   {
     label: 'Phát triển',
     items: [
-      { id: 'tier', label: 'Tier & Quyền lợi', href: '/tier', icon: Star },
-      { id: 'analytics', label: 'Phân tích', href: '/analytics', icon: ChartGantt },
+      {
+        id: 'tier',
+        label: 'Tier & Quyền lợi',
+        href: '/tier',
+        icon: '/images/sidebar/tier_nav_icon.svg',
+        activeIcon: '/images/sidebar/avtive/tier_nav_icon_active.svg',
+      },
+      {
+        id: 'analytics',
+        label: 'Phân tích',
+        href: '/analytics',
+        icon: '/images/sidebar/analytics_icon.svg',
+        activeIcon: '/images/sidebar/avtive/analytics_icon_active.svg',
+      },
     ],
   },
   {
     label: 'Hệ thống',
     items: [
-      { id: 'groups', label: 'Cài đặt nhóm', href: '/groups', icon: Layers },
-      // { id: 'settings', label: 'Cài đặt hệ thống', href: '/settings', icon: Settings },
+      {
+        id: 'groups',
+        label: 'Cài đặt nhóm',
+        href: '/groups',
+        icon: '/images/sidebar/group_icon.svg',
+        activeIcon: '/images/sidebar/avtive/group_icon_active.svg',
+      },
     ],
   },
 ]
 
 type SidebarProps = {
   onItemClick?: () => void
+}
+
+function SidebarIcon({ src }: { src: string }) {
+  return (
+    <Image
+      src={src}
+      alt=""
+      width={24}
+      height={24}
+      aria-hidden="true"
+      className="h-6 w-6 shrink-0 object-contain"
+    />
+  )
 }
 
 export default function Sidebar({ onItemClick }: SidebarProps) {
@@ -70,7 +107,6 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
 
             <div className="space-y-1">
               {section.items.map((item) => {
-                const Icon = item.icon
                 const isActive =
                   item.id === 'groups'
                     ? pathname.startsWith('/groups')
@@ -88,13 +124,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
                         : 'text-[#8f8f8f] hover:bg-[#171717] hover:text-white',
                     )}
                   >
-                    <Icon
-                      className={cn(
-                        'h-[18px] w-[18px] shrink-0',
-                        isActive ? 'text-brand' : 'text-[#9a9a9a]',
-                      )}
-                      strokeWidth={1.8}
-                    />
+                    <SidebarIcon src={isActive ? item.activeIcon : item.icon} />
                     <span className="min-w-0 truncate">{item.label}</span>
                   </Link>
                 )
@@ -119,7 +149,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
               {profile?.name ?? 'Unknown User'}
             </div>
             <div className="truncate text-sm font-normal leading-4 text-[#e0e0e0]">
-              {profile?.email ?? '—'}
+              {profile?.email ?? '-'}
             </div>
           </div>
 

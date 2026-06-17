@@ -3,6 +3,36 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { growthData } from "../constants"
 import { useFakeAnalyticsLoading } from "./useFakeAnalyticsLoading"
 
+const growthLegendItems = [
+  { label: "Future", color: "#F7F0A1" },
+  { label: "Spot", color: "#D4A74A" },
+  { label: "Copy Trade", color: "#9B692C" },
+]
+
+function formatVndAxis(value: number) {
+  if (value === 0) return "0"
+  return `${Math.round(value)}M`
+}
+
+function formatVndTooltip(value: number) {
+  return `${Math.round(value).toLocaleString("vi-VN")} triệu VNĐ`
+}
+
+function renderLeftAlignedYAxisTick({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
+  return (
+    <text
+      x={Math.max(0, (x ?? 0) - 58)}
+      y={y}
+      dy={4}
+      fill="hsl(var(--muted-foreground))"
+      fontSize={11}
+      textAnchor="start"
+    >
+      {formatVndAxis(Number(payload?.value ?? 0))}
+    </text>
+  )
+}
+
 export default function AnalyticsGrowthChart() {
   const isLoading = useFakeAnalyticsLoading()
 
@@ -11,13 +41,26 @@ export default function AnalyticsGrowthChart() {
   }
 
   return (
-    <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
-      <h2 className="mb-4 text-base font-medium">
+    <section className="rounded-[14px] border border-border bg-[#171717] px-6 py-4 sm:py-5">
+      <h2 className="mb-3 text-base font-medium">
         So sánh tốc độ tăng trưởng volume (theo nhóm)
       </h2>
-      <div className="h-[290px]">
+      <div className="relative h-[290px]">
+        <div className="absolute left-0 top-0 text-left text-[11px] font-medium text-muted-foreground">(VNĐ)</div>
+        <div className="absolute right-0 top-1 z-10 flex flex-wrap items-center justify-end gap-x-3 gap-y-1.5 text-xs font-normal text-foreground sm:gap-x-5 sm:gap-y-2 sm:text-sm">
+          {growthLegendItems.map((item) => (
+            <div key={item.label} className="inline-flex items-center gap-1.5 sm:gap-2">
+              <span
+                className="h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"
+                style={{ backgroundColor: item.color }}
+                aria-hidden="true"
+              />
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={growthData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+          <BarChart data={growthData} margin={{ top: 30, right: 0, left: 0, bottom: 0 }}>
             <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.8} />
             <XAxis
               dataKey="name"
@@ -32,9 +75,11 @@ export default function AnalyticsGrowthChart() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              width={42}
+              width={58}
               className="text-[11px]"
               stroke="hsl(var(--muted-foreground))"
+              tickFormatter={(value) => formatVndAxis(Number(value))}
+              tick={renderLeftAlignedYAxisTick}
             />
             <Tooltip
               cursor={{ fill: "rgba(255,255,255,0.04)" }}
@@ -43,6 +88,10 @@ export default function AnalyticsGrowthChart() {
                 border: "1px solid hsl(var(--border))",
                 borderRadius: 10,
               }}
+              formatter={(value: number, name: string) => [
+                formatVndTooltip(value),
+                name === "warning" ? "Future" : name === "members" ? "Spot" : "Copy Trade",
+              ]}
             />
             <Bar dataKey="volume" stackId="growth" fill="#9B692C" radius={[0, 0, 4, 4]} barSize={41} />
             <Bar dataKey="members" stackId="growth" fill="#D4A74A" barSize={41} />

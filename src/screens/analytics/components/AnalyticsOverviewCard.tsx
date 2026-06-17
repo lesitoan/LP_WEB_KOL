@@ -17,12 +17,7 @@ function formatCount(value: number | undefined) {
 }
 
 function formatCommission(value: number | undefined) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(Number(value ?? 0));
+  return Math.round(Number(value ?? 0)).toLocaleString("vi-VN");
 }
 
 function StatCard({
@@ -84,7 +79,7 @@ export default function AnalyticsOverviewCard() {
               </span>
             </div>
             <div className="text-[36px] font-bold leading-none tracking-tight text-foreground sm:text-[40px]">
-              {formatCommission(cards?.totalCommission.value)}
+              {formatCommission(cards?.totalCommission.value)} <span className="text-[32px] font-medium">VNĐ</span>
             </div>
           </div>
         </div>

@@ -62,7 +62,7 @@ export default function TierSummaryCard() {
             </div>
 
             <div className="min-w-0">
-              <div className="truncate text-[36px] font-bold uppercase leading-none tracking-normal text-yellow-100">
+              <div className="truncate bg-[linear-gradient(90deg,#FCF19D_0%,#DAA440_100%)] bg-clip-text text-[36px] font-bold uppercase leading-none tracking-normal text-transparent">
                 {currentTierName}
               </div>
               <p className="mt-4 text-xl font-medium text-zinc-300">Tier hiện tại</p>
@@ -71,7 +71,7 @@ export default function TierSummaryCard() {
 
           <div className="min-w-0">
             <div className="mb-4 text-xl font-semibold">
-              <span className="text-yellow-300">{activeMemberCount}</span>
+              <span className="text-[#F7F0A1]">{activeMemberCount}</span>
               {nextTier ? (
                 <span className="text-foreground"> / {nextTierTarget} members</span>
               ) : (
@@ -80,14 +80,17 @@ export default function TierSummaryCard() {
             </div>
             <div className="h-2 rounded-full bg-surface-4">
               <div
-                className="h-full rounded-full bg-yellow-400 shadow-[0_0_16px_rgba(250,204,21,0.55)] transition-all duration-500"
+                className="h-full rounded-full bg-[#D4A74A] transition-all duration-500"
                 style={{ width: `${progressPercent}%`, minWidth: progressPercent > 0 ? 4 : 0 }}
               />
             </div>
             {nextTier ? (
-              <p className="mt-4 text-lg font-medium text-zinc-200">
+              <p className="mt-4 text-base font-medium text-zinc-200">
                 Bạn còn <span className="text-brand">{membersNeeded}</span> active members để lên hạng{" "}
-                <span className="font-bold text-yellow-300">{nextTier.name}</span>
+                <span className="font-bold text-[#F7F0A1]">
+                  {nextTier.name?.toUpperCase()}
+                  {nextTier.commissionRatePct ? ` - ${nextTier.commissionRatePct}% HOA HỒNG` : ""}
+                </span>
               </p>
             ) : (
               <p className="mt-4 text-base font-medium text-zinc-300">Bạn đang ở tier cao nhất</p>

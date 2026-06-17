@@ -42,7 +42,7 @@ export default function AttentionActivities() {
         Hoạt động cần chú ý
       </h2>
 
-      <div className="grid grid-cols-[64px_1fr_64px] gap-3 border-b border-transparent pb-3 text-xs text-zinc-400 lg:grid-cols-[52px_1fr_58px] xl:grid-cols-[64px_1fr_64px]">
+      <div className="grid grid-cols-[48px_1fr_54px] gap-2 border-b border-transparent pb-3 text-[11px] text-zinc-400 md:grid-cols-[64px_1fr_64px] md:gap-3 md:text-xs lg:grid-cols-[52px_1fr_58px] xl:grid-cols-[64px_1fr_64px]">
         <span>Thời gian</span>
         <span>Chi tiết hoạt động</span>
         <span className="sr-only">Hành động</span>
@@ -62,25 +62,25 @@ export default function AttentionActivities() {
             return (
               <div
                 key={`${activity.occurredAt}-${activity.type}-${activity.title}`}
-                className="grid grid-cols-[64px_1fr_64px] items-center gap-3 border-b border-border py-3 last:border-b-0 lg:grid-cols-[52px_1fr_58px] lg:gap-2 xl:grid-cols-[64px_1fr_64px] xl:gap-3"
+                className="grid grid-cols-[48px_1fr_54px] items-center gap-2 border-b border-border py-3 last:border-b-0 md:grid-cols-[64px_1fr_64px] md:gap-3 lg:grid-cols-[52px_1fr_58px] lg:gap-2 xl:grid-cols-[64px_1fr_64px] xl:gap-3"
               >
-                <div className="text-base text-zinc-300 lg:text-sm xl:text-base">
+                <div className="text-xs text-zinc-300 md:text-base lg:text-sm xl:text-base">
                   {formatActivityTime(activity.occurredAt)}
                 </div>
-                <div className="flex min-w-0 items-center gap-3 lg:gap-2 xl:gap-3">
+                <div className="flex min-w-0 items-center gap-2 md:gap-3 lg:gap-2 xl:gap-3">
                   <span
-                    className={`grid h-7 w-7 shrink-0 place-items-center rounded-full ${severityClassNames[activity.severity]}`}
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full md:h-7 md:w-7 ${severityClassNames[activity.severity]}`}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
                   </span>
-                  <p className="truncate text-base font-normal text-zinc-100 lg:text-sm xl:text-base">
+                  <p className="truncate text-xs font-normal text-zinc-100 md:text-base lg:text-sm xl:text-base">
                     {activity.title}
                   </p>
                 </div>
                 <button
                   type="button"
                   title={activity.description}
-                  className="inline-flex h-7 items-center justify-center gap-1 rounded-full bg-surface-3 px-3 text-xs text-zinc-100 transition-colors hover:bg-surface-4 lg:px-2 xl:px-3"
+                  className="inline-flex h-7 items-center justify-center gap-1 rounded-full bg-surface-3 px-2 text-[11px] text-zinc-100 transition-colors hover:bg-surface-4 md:px-3 md:text-xs lg:px-2 xl:px-3"
                 >
                   <Eye className="h-3.5 w-3.5" />
                   Xem

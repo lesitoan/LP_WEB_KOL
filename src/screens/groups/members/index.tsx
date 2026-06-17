@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ArrowDown, ArrowLeft, ArrowUp, ArrowUpDown } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import TableFilterBar, {
@@ -40,15 +40,10 @@ function formatDate(dateIso: string) {
   return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString('vi-VN')
 }
 
-function formatUsdVolume(value: string) {
+function formatVndVolume(value: string) {
   const parsed = Number(value)
-  if (Number.isNaN(parsed)) return value
-  return parsed.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  })
+  if (Number.isNaN(parsed)) return value || '0 VNĐ'
+  return `${Math.round(parsed).toLocaleString('vi-VN')} VNĐ`
 }
 
 function normalizeStatus(value: string | null | undefined) {
@@ -239,15 +234,14 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
         onClick={() => setSort(field, isActive && sortOrder === 'asc' ? 'desc' : 'asc')}
       >
         <span>{title}</span>
-        {isActive ? (
-          sortOrder === 'asc' ? (
-            <ArrowUp className="w-3 h-3 shrink-0" aria-hidden="true" />
-          ) : (
-            <ArrowDown className="w-3 h-3 shrink-0" aria-hidden="true" />
-          )
-        ) : (
-          <ArrowUpDown className="w-3 h-3 shrink-0 opacity-70" aria-hidden="true" />
-        )}
+        <Image
+          src="/images/icons/arrow_up_down_icon.svg"
+          alt=""
+          width={8}
+          height={12}
+          aria-hidden="true"
+          className={`h-3 w-2 shrink-0 ${isActive ? 'opacity-100' : 'opacity-70'}`}
+        />
       </button>
     )
   }
@@ -334,9 +328,9 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     },
     {
       id: 'volume',
-      header: renderSortableHeader('Volume (USD)', 'usdVolume'),
+      header: renderSortableHeader('Volume (VNĐ)', 'usdVolume'),
       cellClassName: 'font-geist-mono font-medium',
-      cell: (member) => formatUsdVolume(member.usdVolume),
+      cell: (member) => formatVndVolume(member.usdVolume),
     },
   ]
   const tableColumns = columns.map((column) => ({

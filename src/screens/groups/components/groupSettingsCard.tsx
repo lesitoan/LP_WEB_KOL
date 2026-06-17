@@ -190,7 +190,7 @@ export function GroupSettingsCard({
         </MetricRow>
         <MetricRow label="Số lượng TV">{group.memberCount ?? 0}</MetricRow>
         <MetricRow label="Cảnh báo">{group.warningCountBeforeKick} lần</MetricRow>
-        <MetricRow label="Ân hạn">{formatGracePeriodInDays(group)}</MetricRow>
+        <MetricRow label="Gia hạn">{formatGracePeriodInDays(group)}</MetricRow>
         <MetricRow label="Auto-kick">
           <TogglePill enabled={group.autoKickEnabled} />
         </MetricRow>

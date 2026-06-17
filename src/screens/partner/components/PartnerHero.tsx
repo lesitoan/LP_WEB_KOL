@@ -36,7 +36,13 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
       <div className="pointer-events-none absolute -left-28 top-0 h-80 w-80 rounded-full bg-brand/20 blur-[120px]" />
       <div className="relative">
         <h1 className="max-w-xl text-6xl font-semibold leading-[78px] max-lg:text-5xl max-md:leading-[58px]">
+          Hãy biến cộng đồng của bạn thành{" "}
+          <span className="bg-[linear-gradient(90deg,#FFF6B8_0%,#FFFFFF_58%,#E8C878_100%)] bg-clip-text text-transparent">
+            thu nhập bền vững
+          </span>
+          <span className="hidden">
           Hãy biến cộng đồng của bạn thành thu nhập bền vững
+          </span>
         </h1>
         <p className="mt-6 max-w-lg text-2xl font-medium max-lg:text-xl leading-9 text-[#bdbdbd]">
           Sử dụng công cụ minh hoạ bên cạnh để xem thu nhập tiềm năng theo quy mô cộng đồng của bạn.
@@ -59,22 +65,22 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
           .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none !important;
             appearance: none !important;
-            width: 16px !important;
-            height: 16px !important;
+            width: 24px !important;
+            height: 24px !important;
             border-radius: 50% !important;
-            background: #ffef3c !important;
-            border: 2.5px solid #ffffff !important;
+            background: #FFD000 !important;
+            border: 2px solid #ffffff !important;
             cursor: pointer !important;
-            box-shadow: 0 0 10px rgba(255, 239, 60, 0.5) !important;
+            box-shadow: none !important;
           }
           .custom-range::-moz-range-thumb {
-            width: 16px !important;
-            height: 16px !important;
+            width: 24px !important;
+            height: 24px !important;
             border-radius: 50% !important;
-            background: #ffef3c !important;
-            border: 2.5px solid #ffffff !important;
+            background: #FFD000 !important;
+            border: 2px solid #ffffff !important;
             cursor: pointer !important;
-            box-shadow: 0 0 10px rgba(255, 239, 60, 0.5) !important;
+            box-shadow: none !important;
           }
         `}</style>
         <div className="relative h-full w-full rounded-[21px] bg-[#0f0f0f] px-8 py-10 max-md:px-5 max-md:py-6 space-y-6 overflow-hidden">
@@ -84,7 +90,7 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
             style={{ backgroundImage: 'url("/images/partner/Ellipse.png")' }}
           />
 
-          <div className="relative space-y-8">
+          <div className="relative">
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-4 text-xl font-semibold max-md:text-lg max-md:font-medium">
                 <div className="flex items-center gap-2">
@@ -104,9 +110,9 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
                   step="10"
                   value={members}
                   onChange={(e) => setMembers(Number(e.target.value))}
-                  className="custom-range w-full h-1.5 bg-white/15 rounded-full appearance-none cursor-pointer outline-none focus:outline-none"
+                  className="custom-range w-full h-2 bg-white/15 rounded-full appearance-none cursor-pointer outline-none focus:outline-none"
                   style={{
-                    background: `linear-gradient(to right, #ffef3c 0%, #ffef3c ${((members - 10) / 4990) * 100}%, rgba(255,255,255,0.15) ${((members - 10) / 4990) * 100}%, rgba(255,255,255,0.15) 100%)`
+                    background: `linear-gradient(to right, #D4A74A 0%, #D4A74A ${((members - 10) / 4990) * 100}%, rgba(255,255,255,0.15) ${((members - 10) / 4990) * 100}%, rgba(255,255,255,0.15) 100%)`
                   }}
                 />
               </div>
@@ -121,14 +127,14 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
                 </span>
               </div>
             </div>
-            <div className="rounded-lg bg-[linear-gradient(180deg,rgba(247,240,161,0.24),rgba(0,0,0,0.78))] px-6 py-7 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+            <div className="mt-14 rounded-lg bg-[url('/images/partner/hero_bg.png')] bg-cover bg-center px-6 py-7 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
               <p className="text-lg font-normal text-white/80">Thu nhập tiềm năng mỗi tháng</p>
               <div className="mt-3 text-5xl max-xl:text-4xl max-lg:text-3xl font-bold text-white transition-all duration-200">
                 ~{new Intl.NumberFormat('vi-VN').format(Math.round(estimatedIncome))}
                 <span className="text-3xl max-lg:text-2xl max-md:text-xl font-normal text-white">/ tháng</span>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-3 text-center max-lg:grid-cols-2">
+            <div className="mt-8 grid grid-cols-4 gap-3 text-center max-lg:grid-cols-2">
               {tiers.map((tier) => {
                 const isActive = tier.name === activeTierName
                 return (
@@ -155,7 +161,7 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
                 )
               })}
             </div>
-            <p className="text-center text-base font-medium leading-5 text-[#8f8f8f]">
+            <p className="mt-8 text-center text-base font-medium leading-5 text-[#8f8f8f]">
               Số minh hoạ - giả định mỗi thành viên đóng góp 500.000 VNĐ phí/tháng. Thu nhập thực tế phụ thuộc hoạt động cộng đồng.
             </p>
           </div>

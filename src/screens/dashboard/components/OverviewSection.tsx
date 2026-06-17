@@ -21,13 +21,13 @@ const fallbackMetricOrder: KolDashboardMetricKey[] = ["referral", "deposit", "tr
 function formatMetricValue(metric: KolDashboardMetricCard) {
   const value = Number(metric.value ?? 0);
 
-  if (metric.unit === "USD") {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(value);
-  }
+  // if (metric.unit === "USD") {
+  //   return new Intl.NumberFormat("en-US", {
+  //     style: "currency",
+  //     currency: "USD",
+  //     maximumFractionDigits: 0,
+  //   }).format(value);
+  // }
 
   return new Intl.NumberFormat("vi-VN", {
     maximumFractionDigits: 2,
