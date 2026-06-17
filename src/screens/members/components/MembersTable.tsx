@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -127,6 +127,7 @@ export default function MembersTable() {
     telegramStatusFilter,
     lpexUserStatusFilter,
     eligibilityStatusFilter,
+    inactiveDaysFilter,
     query,
     sortBy,
     sortOrder,
@@ -137,11 +138,16 @@ export default function MembersTable() {
     setCountryCodeInput,
     setTelegramStatusFilter,
     setLpexUserStatusFilter,
-    setEligibilityStatusFilter,
+    setMemberTypeFilter,
   } = useMembersFilters();
 
+  const warningEligibilityStatuses = eligibilityStatusFilter.split(",");
   const selectedMemberType =
-    eligibilityStatusFilter === "FINAL_WARNING" ? "warning" : activeMemberType;
+    warningEligibilityStatuses.includes("FINAL_WARNING") || warningEligibilityStatuses.includes("WARNING")
+      ? "warning"
+      : inactiveDaysFilter === 14
+        ? "inactive_2_weeks"
+        : activeMemberType;
 
   const { data, isLoading, isFetching, error } = useGetMembersQuery(query, {
     refetchOnMountOrArgChange: true,
@@ -452,7 +458,7 @@ export default function MembersTable() {
                 }`}
                 onClick={() => {
                   setActiveMemberType(tab.value);
-                  setEligibilityStatusFilter(tab.value === "warning" ? "FINAL_WARNING" : "");
+                  setMemberTypeFilter(tab.value);
                 }}
               >
                 <span>{tab.label}</span>
