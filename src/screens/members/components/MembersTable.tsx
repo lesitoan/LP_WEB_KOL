@@ -1,8 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { DataTable, type DataTableColumn } from "@/components/ui/dataTable";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import countries from 'i18n-iso-countries';
@@ -26,17 +25,12 @@ function formatDate(dateIso: string) {
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("vi-VN");
 }
 
-function formatUsdVolume(value: string) {
+function formatVndVolume(value: string) {
   const parsed = Number(value);
 
-  if (Number.isNaN(parsed)) return value || "$0";
+  if (Number.isNaN(parsed)) return value || "0 VNĐ";
 
-  return parsed.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
+  return `${Math.round(parsed).toLocaleString("vi-VN")} VNĐ`;
 }
 
 function truncateGroupTitle(title: string | null | undefined, maxLength = 10) {
@@ -66,12 +60,6 @@ function formatLpexUserStatusValue(status: string) {
   }
 }
 
-function formatTelegramMembershipState(status: string | null | undefined) {
-  const normalizedStatus = normalizeStatus(status);
-  const option = TELEGRAM_STATUS.find((item) => item.value === normalizedStatus);
-  return option?.label ?? "Không xác định";
-}
-
 function getMemberProgressConfig(status: MemberItem["memberProgressStatus"]) {
   switch (status) {
     case "KYC_COMPLETED":
@@ -85,15 +73,6 @@ function getMemberProgressConfig(status: MemberItem["memberProgressStatus"]) {
       return { label: "Chưa KYC", steps: 1, labelClassName: "text-muted-foreground", textClassName: "text-base" };
   }
 }
-
-function normalizeStatus(value: string | null | undefined) {
-  return (value ?? "UNKNOWN").trim().toUpperCase();
-}
-
-const TELEGRAM_STATUS = [
-  { value: "ACTIVE", label: "Đang tham gia" },
-  { value: "INACTIVE", label: "Đã rời" },
-];
 
 const LPEX_USER_STATUS = [
   { value: "ACTIVE", label: "Hoạt động" },
@@ -124,9 +103,9 @@ export default function MembersTable() {
     limit,
     searchInput,
     countryCodeInput,
-    telegramStatusFilter,
     lpexUserStatusFilter,
     eligibilityStatusFilter,
+    inactiveDaysFilter,
     query,
     sortBy,
     sortOrder,
@@ -135,13 +114,17 @@ export default function MembersTable() {
     setSort,
     setSearchInput,
     setCountryCodeInput,
-    setTelegramStatusFilter,
     setLpexUserStatusFilter,
-    setEligibilityStatusFilter,
+    setMemberTypeFilter,
   } = useMembersFilters();
 
+  const warningEligibilityStatuses = eligibilityStatusFilter.split(",");
   const selectedMemberType =
-    eligibilityStatusFilter === "FINAL_WARNING" ? "warning" : activeMemberType;
+    warningEligibilityStatuses.includes("FINAL_WARNING") || warningEligibilityStatuses.includes("WARNING")
+      ? "warning"
+      : inactiveDaysFilter === 14
+        ? "inactive_2_weeks"
+        : activeMemberType;
 
   const { data, isLoading, isFetching, error } = useGetMembersQuery(query, {
     refetchOnMountOrArgChange: true,
@@ -174,13 +157,8 @@ export default function MembersTable() {
   const selectFilters: SelectFilterConfig[] = useMemo(
     () => [
       {
-        key: "telegramStatus",
-        label: "Trạng thái telegram",
-        options: TELEGRAM_STATUS,
-      },
-      {
         key: "lpexUserStatus",
-        label: "Trạng thái SCEX",
+        label: "Trạng thái",
         options: LPEX_USER_STATUS,
       },
       // {
@@ -196,8 +174,7 @@ export default function MembersTable() {
     const chips: ActiveFilterChip[] = [];
 
     for (const filter of selectFilters) {
-      const selectedValue =
-        filter.key === "telegramStatus" ? telegramStatusFilter : lpexUserStatusFilter;
+      const selectedValue = lpexUserStatusFilter;
       if (!selectedValue) continue;
 
       const selectedOption = filter.options.find((option) => option.value === selectedValue);
@@ -211,7 +188,7 @@ export default function MembersTable() {
     }
 
     return chips;
-  }, [lpexUserStatusFilter, selectFilters, telegramStatusFilter]);
+  }, [lpexUserStatusFilter, selectFilters]);
 
   const renderSortableHeader = (
     title: string,
@@ -226,15 +203,14 @@ export default function MembersTable() {
         onClick={() => setSort(field, isActive && sortOrder === "asc" ? "desc" : "asc")}
       >
         <span>{title}</span>
-        {isActive ? (
-          sortOrder === "asc" ? (
-            <ArrowUp className="w-3 h-3 shrink-0" aria-hidden="true" />
-          ) : (
-            <ArrowDown className="w-3 h-3 shrink-0" aria-hidden="true" />
-          )
-        ) : (
-          <ArrowUpDown className="w-3 h-3 shrink-0 opacity-70" aria-hidden="true" />
-        )}
+        <Image
+          src="/images/icons/arrow_up_down_icon.svg"
+          alt=""
+          width={8}
+          height={12}
+          aria-hidden="true"
+          className={`h-3 w-2 shrink-0 ${isActive ? "opacity-100" : "opacity-70"}`}
+        />
       </button>
     );
   };
@@ -242,7 +218,7 @@ export default function MembersTable() {
   const columns: DataTableColumn<MemberItem>[] = [
     {
       id: "member",
-      header: renderSortableHeader("Member", "telegramUsername"),
+      header: "Thành viên",
       cell: (member) => (
         <div className="flex items-center gap-3">
           <Image
@@ -344,11 +320,11 @@ export default function MembersTable() {
       id: "volume",
       header: renderSortableHeader("Volume 30D", "usdVolume"),
       cellClassName: "font-medium text-base",
-      cell: (member) => formatUsdVolume(member.usdVolume),
+      cell: (member) => formatVndVolume(member.usdVolume),
     },
     {
       id: "status",
-      header: "Trạng thái SCEX",
+      header: "Trạng thái",
       cell: (member) => (
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusClass(
@@ -358,24 +334,6 @@ export default function MembersTable() {
           {formatLpexUserStatusValue(member.lpexUserStatus || "unknown")}
         </span>
       ),
-    },
-    {
-      id: "telegramStatus",
-      header: "Trạng thái telegram",
-      cell: (member) => (
-        <span
-          className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusClass(
-            member.telegramStatus || "unknown",
-          )}`}
-        >
-          {formatTelegramMembershipState(member.telegramStatus)}
-        </span>
-      ),
-    },
-    {
-      id: "registeredAt",
-      header: renderSortableHeader("Ngày đăng ký", "createdAt"),
-      cell: (member) => <span className="text-base">{formatDate(member.registeredAtLpex || member.createdAt)}</span>,
     },
     {
       id: "verification",
@@ -417,21 +375,11 @@ export default function MembersTable() {
           setCountryCodeInput(value);
         }}
         onSelectFilter={(key, value) => {
-          if (key === "telegramStatus") {
-            setTelegramStatusFilter(value);
-            return;
-          }
-
           if (key === "lpexUserStatus") {
             setLpexUserStatusFilter(value);
           }
         }}
         onRemoveChip={(key) => {
-          if (key === "telegramStatus") {
-            setTelegramStatusFilter("");
-            return;
-          }
-
           if (key === "lpexUserStatus") {
             setLpexUserStatusFilter("");
           }
@@ -452,7 +400,7 @@ export default function MembersTable() {
                 }`}
                 onClick={() => {
                   setActiveMemberType(tab.value);
-                  setEligibilityStatusFilter(tab.value === "warning" ? "FINAL_WARNING" : "");
+                  setMemberTypeFilter(tab.value);
                 }}
               >
                 <span>{tab.label}</span>

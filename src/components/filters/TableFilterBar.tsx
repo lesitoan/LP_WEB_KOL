@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { Check, ChevronDown, Filter } from 'lucide-react'
+import Image from 'next/image'
+import { Check, ChevronDown } from 'lucide-react'
 
 export type FilterOption = {
   value: string
@@ -83,7 +84,7 @@ export default function TableFilterBar({
         {textFilters.map((textFilter) => (
           <div
             key={textFilter.key}
-            className={`h-[34px] bg-surface-2 border border-border rounded-lg px-3 flex items-center gap-2 text-[13px] text-muted-foreground ${
+            className={`h-[34px] bg-surface-2 border border-border rounded-lg px-3 flex items-center gap-2 text-sm font-normal text-muted-foreground ${
               textFilter.widthClassName ?? 'min-w-[220px] w-[320px]'
             }`}
           >
@@ -100,7 +101,7 @@ export default function TableFilterBar({
               <path d="m21 21-4.3-4.3" />
             </svg>
             <input
-              className="bg-transparent w-full text-foreground outline-none placeholder:text-muted-foreground"
+              className="bg-transparent w-full text-sm font-normal text-foreground outline-none placeholder:text-muted-foreground"
               value={textValues[textFilter.key] ?? ''}
               onChange={(event) => onTextChange(textFilter.key, event.target.value)}
               placeholder={textFilter.placeholder}
@@ -131,14 +132,14 @@ export default function TableFilterBar({
         <div className="relative">
           <button
             type="button"
-            className="inline-flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-3 hover:text-foreground disabled:opacity-60"
+            className="inline-flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 text-sm font-normal text-foreground transition-colors hover:bg-surface-3 disabled:opacity-60"
             onClick={() => {
               setIsMenuOpen((prev) => !prev)
               setActiveFilterKey(null)
             }}
             disabled={disabled}
           >
-            <Filter className="h-3.5 w-3.5" />
+            <Image src="/images/icons/filter_icon.svg" alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0" />
             Bộ lọc
           </button>
 
@@ -155,7 +156,7 @@ export default function TableFilterBar({
                         type="button"
                         className={`w-full text-left px-2.5 py-2 rounded-md text-sm transition-colors flex items-center justify-between ${
                           isActive
-                            ? 'bg-surface-3 text-foreground font-medium'
+                            ? 'bg-surface-3 text-foreground font-normal'
                             : 'text-muted-foreground hover:bg-surface-2 hover:text-foreground'
                         }`}
                         onClick={() => setActiveFilterKey((prev) => (prev === filter.key ? null : filter.key))}

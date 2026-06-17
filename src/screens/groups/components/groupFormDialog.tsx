@@ -304,7 +304,7 @@ export function GroupFormDialog({
                 </Field>
 
                 <Field orientation="vertical" className="rounded-lg border border-[#2A2A2A] bg-[#131313] p-3">
-                  <FieldLabel className="text-xs font-semibold text-[#D7D7D7]">Thời gian ân hạn (ngày)</FieldLabel>
+                  <FieldLabel className="text-xs font-semibold text-[#D7D7D7]">Thời gian gia hạn (ngày)</FieldLabel>
                   <Controller
                     control={control}
                     name="gracePeriodDays"

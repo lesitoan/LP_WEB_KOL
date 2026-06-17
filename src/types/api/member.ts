@@ -51,6 +51,7 @@ export interface ListMembersQuery {
   lpexUserStatus?: string
   groupId?: string
   eligibilityStatus?: string
+  inactiveDays?: number
   membershipState?: string
   includeGroups?: boolean
 }

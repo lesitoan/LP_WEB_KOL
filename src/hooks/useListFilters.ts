@@ -25,7 +25,7 @@ type UseListFiltersOptions<TQuery, TViewMode extends string> = {
   initialState: ListFiltersState<TQuery, TViewMode>
   debounceMs?: number
   parseFromSearchParams: (searchParams: SearchParamsLike) => ListFiltersState<TQuery, TViewMode>
-  serializeToSearchParams: (state: ListFiltersState<TQuery, TViewMode>) => URLSearchParams
+  serializeToSearchParams: (state: ListFiltersState<TQuery, TViewMode>) => URLSearchParams | string
   applySearchToQuery: (query: TQuery, searchInput: string) => TQuery
 }
 
@@ -109,7 +109,9 @@ export function useListFilters<TQuery, TViewMode extends string>({
     }
 
     const nextParams = serializeToSearchParams(state)
-    const current = searchParams.toString()
+    const current = window.location.search.startsWith('?')
+      ? window.location.search.slice(1)
+      : searchParams.toString()
     const next = nextParams.toString()
 
     if (current !== next) {

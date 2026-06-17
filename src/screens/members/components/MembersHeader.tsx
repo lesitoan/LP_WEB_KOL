@@ -184,8 +184,10 @@ export default function MembersHeader() {
   const [triggerGetMembers, { isFetching }] = useLazyGetMembersQuery();
   const { data: profile } = useGetCurrentUserQuery();
 
-  const queryFromUrl = useMemo<ListMembersQuery>(
-    () => ({
+  const queryFromUrl = useMemo<ListMembersQuery>(() => {
+    const inactiveDays = Number(searchParams.get("inactiveDays") || "");
+
+    return {
       page: Math.max(1, Number(searchParams.get("page") || "1") || 1),
       limit: Math.min(100, Math.max(1, Number(searchParams.get("limit") || "20") || 20)),
       search: searchParams.get("search")?.trim() || undefined,
@@ -194,6 +196,7 @@ export default function MembersHeader() {
       lpexUserStatus: searchParams.get("lpexUserStatus")?.trim() || undefined,
       groupId: searchParams.get("groupId")?.trim() || undefined,
       eligibilityStatus: searchParams.get("eligibilityStatus")?.trim().toUpperCase() || undefined,
+      inactiveDays: Number.isInteger(inactiveDays) && inactiveDays > 0 ? inactiveDays : undefined,
       membershipState: searchParams.get("membershipState")?.trim().toUpperCase() || undefined,
       includeGroups:
         searchParams.get("includeGroups") === "1" || searchParams.get("includeGroups") === "true"
@@ -201,9 +204,8 @@ export default function MembersHeader() {
           : searchParams.get("includeGroups") === "0" || searchParams.get("includeGroups") === "false"
             ? false
             : undefined,
-    }),
-    [searchParams],
-  );
+    };
+  }, [searchParams]);
 
   const handleExportExcel = async () => {
     try {

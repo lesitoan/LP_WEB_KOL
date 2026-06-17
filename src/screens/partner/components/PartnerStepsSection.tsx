@@ -42,10 +42,10 @@ export default function PartnerStepsSection({ steps }: PartnerStepsSectionProps)
           })}
         </div>
         <div>
-          <h3 className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-4xl max-lg:text-2xl font-medium leading-tight text-transparent">
+          <h3 className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-[40px] max-lg:text-2xl font-medium leading-tight text-transparent">
             Chỉ cần bắt đầu từ con số 0
             <br />
-            Vẫn có ngay 30% hoa hồng
+            Vẫn có ngay <span className="font-semibold bg-[linear-gradient(90deg,#FFF6B8_0%,#FFFFFF_58%,#E8C878_100%)] bg-clip-text text-transparent" >30% hoa hồng</span>
           </h3>
           <p className="mt-5 text-2xl max-lg:text-xl font-normal eading-6 text-[#bdbdbd]">
             Bạn chưa cần cộng đồng lớn hay điều kiện nào. Đăng ký, mời bạn bè, rồi leo hạng dần - hoa hồng tăng theo quy mô.
@@ -54,7 +54,7 @@ export default function PartnerStepsSection({ steps }: PartnerStepsSectionProps)
             href="/login"
             className="mt-7 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-semibold text-primary-foreground shadow-[0_4px_20px_rgba(247,240,161,0.15)] transition-all duration-300 hover:scale-[1.01] hover:bg-brand-bright"
           >
-            Đăng ký ngay - Hoa hồng liền tay
+            ĐĂNG KÝ NGAY - HOA HỒNG LIỀN TAY
             <span className="grid h-4 w-4 place-items-center rounded-full bg-black text-brand">
               <ArrowUpRight className="h-3 w-3 stroke-[3]" />
             </span>

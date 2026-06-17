@@ -18,6 +18,7 @@ const INITIAL_QUERY: ListMembersQuery = {
   groupId: undefined,
   membershipState: undefined,
   eligibilityStatus: undefined,
+  inactiveDays: undefined,
   includeGroups: true,
 }
 
@@ -35,6 +36,7 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
   const telegramStatus = searchParams.get('telegramStatus')?.trim().toLowerCase() || ''
   const lpexUserStatus = searchParams.get('lpexUserStatus')?.trim().toLowerCase() || ''
   const eligibilityStatus = searchParams.get('eligibilityStatus')?.trim().toUpperCase() || ''
+  const inactiveDaysRaw = Number(searchParams.get('inactiveDays') || '')
   const sortByRaw = searchParams.get('sortBy')?.trim()
   const sortOrderRaw = searchParams.get('sortOrder')?.trim()
 
@@ -57,6 +59,7 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
       groupId: undefined,
       membershipState: undefined,
       eligibilityStatus: eligibilityStatus || undefined,
+      inactiveDays: Number.isInteger(inactiveDaysRaw) && inactiveDaysRaw > 0 ? inactiveDaysRaw : undefined,
       includeGroups: true,
     },
     viewMode: 'list' as MembersFiltersViewMode,
@@ -99,7 +102,11 @@ function serializeToSearchParams(state: {
   }
 
   if (state.query.eligibilityStatus) {
-    params.set('eligibilityStatus', state.query.eligibilityStatus.toLowerCase())
+    params.set('eligibilityStatus', state.query.eligibilityStatus)
+  }
+
+  if (state.query.inactiveDays !== undefined) {
+    params.set('inactiveDays', String(state.query.inactiveDays))
   }
 
   return params
@@ -137,6 +144,7 @@ export function useMembersFilters() {
       telegramStatusFilter: state.query.telegramStatus ?? '',
       lpexUserStatusFilter: state.query.lpexUserStatus ?? '',
       eligibilityStatusFilter: state.query.eligibilityStatus ?? '',
+      inactiveDaysFilter: state.query.inactiveDays,
       query: state.query,
       sortBy: state.query.sortBy ?? 'createdAt',
       sortOrder: state.query.sortOrder ?? 'desc',
@@ -172,6 +180,13 @@ export function useMembersFilters() {
         ...state.query,
         page: 1,
         eligibilityStatus: eligibilityStatus || undefined,
+      }),
+    setMemberTypeFilter: (memberType: 'all' | 'inactive_2_weeks' | 'warning') =>
+      setQuery({
+        ...state.query,
+        page: 1,
+        eligibilityStatus: memberType === 'warning' ? 'FINAL_WARNING,WARNING' : undefined,
+        inactiveDays: memberType === 'inactive_2_weeks' ? 14 : undefined,
       }),
     setSort: (sortBy: "telegramUsername" | "usdVolume" | "createdAt", sortOrder: "asc" | "desc") =>
       setQuery({

@@ -16,6 +16,7 @@ export const membersApi = api.injectEndpoints({
         lpexUserStatus,
         groupId,
         eligibilityStatus,
+        inactiveDays,
         membershipState,
         includeGroups,
       }) => {
@@ -56,6 +57,10 @@ export const membersApi = api.injectEndpoints({
           params.set('eligibilityStatus', eligibilityStatus)
         }
 
+        if (inactiveDays !== undefined) {
+          params.set('inactiveDays', String(inactiveDays))
+        }
+
         if (membershipState) {
           params.set('membershipState', membershipState)
         }
@@ -65,7 +70,11 @@ export const membersApi = api.injectEndpoints({
         }
 
         return {
-          url: apiV1Path(`/kol/members?${params.toString()}`),
+          url: apiV1Path(
+            `/kol/members?${params
+              .toString()
+              .replace(/eligibilityStatus=FINAL_WARNING%2CWARNING/g, 'eligibilityStatus=FINAL_WARNING,WARNING')}`,
+          ),
           method: 'GET',
         }
       },
