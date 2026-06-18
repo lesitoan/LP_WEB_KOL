@@ -22,7 +22,7 @@ export function AddGroupDialog({ onAdd, defaultOpen = false, open, onOpenChange 
       open={open}
       onOpenChange={onOpenChange}
       trigger={(
-        <Button>
+        <Button className="text-base font-semibold">
           <Plus className="mr-2 h-4 w-4" />
           Thêm nhóm mới
         </Button>

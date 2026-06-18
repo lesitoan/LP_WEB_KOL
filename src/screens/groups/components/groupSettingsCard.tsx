@@ -6,9 +6,9 @@ import { Gift, MoreHorizontal, Trash2, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { formatVnd } from '@/lib/formatMoney'
 import type { GroupItem, UpdateGroupBody } from '@/types/api'
 import { EditGroupDialog } from './editGroupDialog'
-import { GroupLogoBadge } from './groupLogoBadge'
 import { GroupSummaryDialog } from './groupSummaryDialog'
 
 interface GroupSettingsCardProps {
@@ -22,10 +22,6 @@ function truncateDescription(value: string | null, maxLength = 32) {
   const description = (value || '').trim()
   if (!description) return 'Mô tả về group'
   return description.length > maxLength ? `${description.slice(0, maxLength)}...` : description
-}
-
-function formatVolumeRange(group: GroupItem) {
-  return `${group.minVolumeRequired}-${group.maxVolumeRequired}`
 }
 
 function formatGracePeriodInDays(group: GroupItem) {
@@ -44,27 +40,29 @@ function formatGracePeriodInDays(group: GroupItem) {
 function TogglePill({ enabled }: { enabled: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-        enabled ? 'bg-emerald-500/15 text-emerald-400' : 'bg-white/10 text-muted-foreground'
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-normal ${
+        enabled ? 'bg-[#003F27] text-[#15C982]' : 'bg-[#2B2B2B] text-[#D7D7D7]'
       }`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-emerald-400' : 'bg-muted-foreground'}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-[#15C982]' : 'bg-[#D7D7D7]'}`} />
       {enabled ? 'Bật' : 'Tắt'}
     </span>
   )
 }
 
-function MetricRow({
+function MetricBlock({
   label,
   children,
+  className,
 }: {
   label: string
   children: React.ReactNode
+  className?: string
 }) {
   return (
-    <div className="flex min-h-6 items-center justify-between gap-3 text-[12px]">
-      <span className="text-muted-foreground">{label}</span>
-      <div className="text-right font-medium text-foreground">{children}</div>
+    <div className={`min-w-0 ${className || ''}`}>
+      <p className="text-xs font-normal text-[#A5A5A5]">{label}</p>
+      <div className="mt-2 break-words text-base font-normal text-[#F4F4F4]">{children}</div>
     </div>
   )
 }
@@ -92,21 +90,16 @@ export function GroupSettingsCard({
   }
 
   return (
-    <article className="relative overflow-visible rounded-xl border border-[#4A4A4A] bg-[#171717] p-4 shadow-sm">
-      <div className="absolute left-0 top-7 h-8 w-1 rounded-r-full bg-[#FFCC00]" />
-
-      <div className="mb-4 flex items-start justify-between gap-3 border-b border-[#3D3D3D] pb-4">
-        <div className="flex min-w-0 items-start gap-3">
-          <GroupLogoBadge iconKey={group.iconKey} title={group.title} className="h-8 w-9" textClassName="text-sm" />
-          <div className="min-w-0">
+    <article className="relative overflow-visible rounded-[20px] sm:rounded-[28px] border border-[#4A4A4A] bg-[#171717] p-4 sm:p-6 shadow-sm">
+      <div className="mb-6 sm:mb-8 flex items-center justify-between gap-1.5 sm:gap-4">
+        <div className="min-w-0 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
-                <h3 className="truncate text-sm font-semibold text-foreground">{group.title || 'Tên group'}</h3>
+                <h3 className="truncate text-base font-normal text-[#F4F4F4]">{group.title || 'Tên group'}</h3>
               </TooltipTrigger>
               <TooltipContent>{group.title || 'Tên group'}</TooltipContent>
             </Tooltip>
-            <p className="mt-1 truncate text-xs text-muted-foreground">{truncateDescription(group.description)}</p>
-          </div>
+            <p className="truncate text-sm font-normal text-[#A5A5A5]">{truncateDescription(group.description)}</p>
         </div>
 
         <div className="relative shrink-0">
@@ -114,7 +107,7 @@ export function GroupSettingsCard({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg bg-[#28282880] hover:bg-[#333333]"
+            className="h-9 w-9 rounded-lg bg-[#282828] text-[#F4F4F4] hover:bg-[#333333] hover:text-white"
             onClick={() => setActionsOpen((open) => !open)}
             aria-label="Mở hành động"
           >
@@ -122,7 +115,7 @@ export function GroupSettingsCard({
           </Button>
 
           {actionsOpen ? (
-            <div className="absolute right-0 top-10 z-20 flex items-center gap-1 rounded-lg border border-border bg-[#222222] p-1 shadow-xl">
+            <div className="absolute right-0 top-11 z-20 flex items-center gap-1 rounded-lg border border-border bg-[#222222] p-1 shadow-xl">
               <GroupSummaryDialog groupId={group.id} />
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -172,31 +165,33 @@ export function GroupSettingsCard({
         </div>
       </div>
 
-      <div className="space-y-2.5">
-        <MetricRow label="Ngưỡng volume">{formatVolumeRange(group)}</MetricRow>
-        <MetricRow label="Trạng thái">
-          <span className="inline-flex items-center gap-2">
-            <Switch
-              className="scale-90"
-              checked={isActive}
-              disabled={isUpdatingStatus}
-              onCheckedChange={(checked) => {
-                void handleToggleStatus(checked)
-              }}
-              aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
-            />
-            {isActive ? 'Bật' : 'Tắt'}
-          </span>
-        </MetricRow>
-        <MetricRow label="Số lượng TV">{group.memberCount ?? 0}</MetricRow>
-        <MetricRow label="Cảnh báo">{group.warningCountBeforeKick} lần</MetricRow>
-        <MetricRow label="Gia hạn">{formatGracePeriodInDays(group)}</MetricRow>
-        <MetricRow label="Auto-kick">
+      <div className="flex min-h-[72px] sm:min-h-[84px] items-center justify-between gap-2 sm:gap-4 rounded-xl border border-[#2A2A2A] px-3 py-2 sm:px-4 sm:py-3">
+        <span className="text-xs font-normal text-[#A5A5A5]">Trạng thái</span>
+        <span className="inline-flex items-center gap-3 text-base font-normal text-[#F4F4F4]">
+          <Switch
+            className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+            checked={isActive}
+            disabled={isUpdatingStatus}
+            onCheckedChange={(checked) => {
+              void handleToggleStatus(checked)
+            }}
+            aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
+          />
+          {isActive ? 'Bật' : 'Tắt'}
+        </span>
+      </div>
+
+      <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-4">
+        <MetricBlock label="Volume (VNĐ)">{`${formatVnd(group.minVolumeRequired)} - ${formatVnd(group.maxVolumeRequired)}`}</MetricBlock>
+        <MetricBlock label="Số lượng TV" className="text-right flex flex-col items-end">{group.memberCount ?? 0}</MetricBlock>
+        <MetricBlock label="Cảnh báo">{group.warningCountBeforeKick} lần</MetricBlock>
+        <MetricBlock label="Ân hạn" className="text-right flex flex-col items-end">{formatGracePeriodInDays(group)}</MetricBlock>
+        <MetricBlock label="Auto-kick">
           <TogglePill enabled={group.autoKickEnabled} />
-        </MetricRow>
-        <MetricRow label="Rejoin">
+        </MetricBlock>
+        <MetricBlock label="Rejoin" className="text-right flex flex-col items-end">
           <TogglePill enabled={group.rejoinEnabled} />
-        </MetricRow>
+        </MetricBlock>
       </div>
     </article>
   )

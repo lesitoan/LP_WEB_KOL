@@ -12,7 +12,7 @@ type GroupsItemViewProps = {
 
 export function GroupsItemView({ groups, onUpdateGroup, onToggleGroupStatus, onDeleteGroup }: GroupsItemViewProps) {
   return (
-    <div className="grid items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
+    <div className="grid items-start gap-3 sm:gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {groups.map((group) => (
         <GroupSettingsCard
           key={group.id}

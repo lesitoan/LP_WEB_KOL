@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import type { ReactNode } from "react";
 import { DataTableSkeleton } from "@/components/skeletons/DataTableSkeleton";
@@ -133,48 +133,69 @@ export function DataTable<T>({
   className,
   pagination,
 }: DataTableProps<T>) {
+  const gridTemplateColumns = `repeat(${columns.length}, max-content)`
+
   return (
      <div className={className ?? "bg-[#171717] border border-border rounded-[14px] overflow-hidden"}>
       <div className={`${TABLE_SCROLL_VIEWPORT_CLASS} border-t border-[#303030] bg-[#171717]`}>
-        <table className="w-full border-collapse min-w-[980px] bg-[#171717]">
-          <thead className="bg-[#171717]">
-            <tr className="bg-[#171717]">
+        <table
+          className="grid w-full min-w-[980px] border-collapse justify-between bg-[#171717]"
+          style={{ gridTemplateColumns }}
+        >
+          <thead className="contents">
+            <tr className="contents">
+              <th
+                aria-hidden="true"
+                colSpan={columns.length}
+                className="sticky top-0 z-10 bg-[#171717] p-0"
+                style={{ gridColumn: '1 / -1', gridRow: 1 }}
+              />
               {columns.map((column, columnIndex) => (
                 <th
                   key={column.id}
-                  className={`sticky top-0 z-10 bg-[#171717] px-3 py-3 text-left text-xs font-semibold text-muted-foreground normal-case tracking-normal whitespace-nowrap ${
-                    columnIndex === columns.length - 1 ? 'pr-4 text-right' : ''
+                  className={`sticky top-0 z-20 bg-[#171717] px-3 py-3 text-left text-xs font-semibold text-muted-foreground normal-case tracking-normal whitespace-nowrap ${
+                    columnIndex === 0 ? 'pl-3' : ''
+                  } ${
+                    columnIndex === columns.length - 1 ? 'justify-self-end pr-4 text-right' : ''
                   } ${
                     column.headerClassName ?? ""
                   }`}
+                  style={{ gridColumn: columnIndex + 1, gridRow: 1 }}
                 >
                   {column.header}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="contents">
             {isLoading ? (
-              <tr>
-                <td colSpan={columns.length} className="p-6">
+              <tr className="contents">
+                <td colSpan={columns.length} className="p-6" style={{ gridColumn: '1 / -1', gridRow: 2 }}>
                   <DataTableSkeleton columnsCount={columns.length} loadingContent={loadingContent} />
                 </td>
               </tr>
             ) : data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="px-6 py-24 text-center text-sm text-muted-foreground">
+              <tr className="contents">
+                <td
+                  colSpan={columns.length}
+                  className="px-6 py-24 text-center text-sm text-muted-foreground"
+                  style={{ gridColumn: '1 / -1', gridRow: 2 }}
+                >
                   {emptyContent ?? "Không có dữ liệu"}
                 </td>
               </tr>
             ) : (
               data.map((row, rowIndex) => (
-                <tr key={rowKey(row, rowIndex)} className="hover:bg-surface-2 transition-colors">
+                <tr key={rowKey(row, rowIndex)} className="group contents">
                   {columns.map((column, columnIndex) => (
                     <td
                       key={column.id}
                       className={`px-3 py-4 text-[13px] whitespace-nowrap ${
-                        columnIndex === columns.length - 1 ? 'pr-4 text-right' : ''
+                        columnIndex === 0 ? 'pl-3' : ''
+                      } ${
+                        columnIndex === columns.length - 1 ? 'justify-self-end pr-4 text-right' : ''
                       } ${column.cellClassName ?? ""}`}
+                      style={{ gridColumn: columnIndex + 1, gridRow: rowIndex + 2 }}
                     >
                       {column.cell(row)}
                     </td>

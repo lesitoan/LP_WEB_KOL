@@ -1,4 +1,10 @@
+'use client'
+
 import Image from 'next/image'
+import { useMemo } from 'react'
+import { TierComparisonTableSkeleton } from '@/components/skeletons/TierComparisonTableSkeleton'
+import { useGetKolTiersQuery } from '@/services/api/tierApi'
+import type { KolTier } from '@/types/api'
 import type { PartnerTier } from '../constants'
 import PartnerTierCard from './PartnerTierCard'
 
@@ -6,7 +12,51 @@ type PartnerTierSectionProps = {
   tiers: PartnerTier[]
 }
 
+function formatMembersRange(tier: KolTier) {
+  if (tier.maxActiveMembers === null) {
+    return `${tier.minActiveMembers}+ thành viên`
+  }
+
+  return `${tier.minActiveMembers} - ${tier.maxActiveMembers} thành viên`
+}
+
+function formatCommissionRate(value: string) {
+  const rate = Number(value)
+
+  if (Number.isNaN(rate)) {
+    return value
+  }
+
+  return `${rate.toLocaleString('vi-VN', { maximumFractionDigits: 2 })}%`
+}
+
+function mapApiTierToPartnerTier(tier: KolTier, staticTiers: PartnerTier[]): PartnerTier {
+  const fallbackTier = staticTiers.find(
+    (item) => item.name.toUpperCase() === tier.name.toUpperCase() || item.name.toUpperCase() === tier.code.toUpperCase(),
+  )
+  const features = [...(tier.features ?? [])].sort((a, b) => a.sortOrder - b.sortOrder)
+
+  return {
+    name: tier.name,
+    members: formatMembersRange(tier),
+    rate: formatCommissionRate(tier.commissionRatePct),
+    icon: fallbackTier?.icon ?? staticTiers[0].icon,
+    isCurrent: fallbackTier?.isCurrent,
+    features: features.filter((feature) => feature.isIncluded).map((feature) => feature.label),
+    disabled: features.filter((feature) => !feature.isIncluded).map((feature) => feature.label),
+  }
+}
+
 export default function PartnerTierSection({ tiers }: PartnerTierSectionProps) {
+  const { data: apiTiers, isLoading, error } = useGetKolTiersQuery()
+  const displayTiers = useMemo(() => {
+    if (!apiTiers?.length) return []
+
+    return [...apiTiers]
+      .sort((a, b) => a.minActiveMembers - b.minActiveMembers)
+      .map((tier) => mapApiTierToPartnerTier(tier, tiers))
+  }, [apiTiers, tiers])
+
   return (
     <section className="relative overflow-hidden bg-[url('/images/partner/Benefit_bg.png')] bg-cover bg-center px-5 py-10 animate-fade-in">
       <div className="relative mx-auto max-w-[1320px]">
@@ -23,11 +73,19 @@ export default function PartnerTierSection({ tiers }: PartnerTierSectionProps) {
               đối tác
             </span>
           </h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {tiers.map((tier) => (
-              <PartnerTierCard key={tier.name} tier={tier} />
-            ))}
-          </div>
+          {isLoading ? (
+            <TierComparisonTableSkeleton />
+          ) : error || displayTiers.length === 0 ? (
+            <div className="rounded-xl bg-[#171717] px-6 py-12 text-center text-xl font-medium text-muted-foreground max-sm:text-lg">
+              Không có dữ liệu
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {displayTiers.map((tier) => (
+                <PartnerTierCard key={tier.name} tier={tier} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

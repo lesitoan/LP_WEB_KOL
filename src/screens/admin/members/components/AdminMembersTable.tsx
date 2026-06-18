@@ -76,6 +76,7 @@ export function AdminMembersTable({ members, isFetching, emptyContent, paginatio
       header: 'SCEX',
       cell: (member) => (
         <span className={`inline-flex items-center rounded-full border px-2 py-[3px] text-[11.5px] font-medium ${statusClassName(member.lpexUserStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0 mr-1" />
           {formatLpexStatus(member.lpexUserStatus)}
         </span>
       ),
@@ -85,6 +86,7 @@ export function AdminMembersTable({ members, isFetching, emptyContent, paginatio
       header: 'Telegram',
       cell: (member) => (
         <span className={`inline-flex items-center rounded-full border px-2 py-[3px] text-[11.5px] font-medium ${statusClassName(member.telegramStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0 mr-1" />
           {formatTelegramStatus(member.telegramStatus)}
         </span>
       ),

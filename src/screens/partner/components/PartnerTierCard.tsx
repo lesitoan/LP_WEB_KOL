@@ -12,13 +12,20 @@ const getTierIconSrc = (tierName: string) => `/images/tier_icons/${tierName.toUp
 export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
   const isActive = Boolean(tier.isCurrent)
 
+  const gradientBorder =
+    'linear-gradient(135deg, #FCF19D 0%, rgba(252,241,157,0.3) 30%, rgba(252,241,157,0.3) 70%, #FCF19D 100%)'
+
   return (
-    <article
-      className={cn(
-        'group relative flex h-full flex-col rounded-xl border p-5 max-sm:px-3 max-sm:py-4 shadow-[0_0_15px_rgba(247,240,161,0.03)] transition-all duration-300 hover:-translate-y-1 hover:border-[#b7ad61] hover:bg-[#28271f] hover:shadow-[0_0_20px_rgba(247,240,161,0.15)]',
-        isActive ? 'border-[#7f7948] bg-[#28271f]' : 'border-[#d8cf73] bg-[#151515]',
-      )}
+    <div
+      className="h-full rounded-[12px] p-px transition-all duration-300 hover:-translate-y-1"
+      style={{ background: gradientBorder }}
     >
+      <article
+        className={cn(
+          'group relative flex h-full flex-col rounded-[11px] p-5 max-sm:px-3 max-sm:py-4 shadow-[0_0_15px_rgba(247,240,161,0.03)] transition-all duration-300 hover:bg-[#28271f] hover:shadow-[0_0_20px_rgba(247,240,161,0.15)]',
+          isActive ? 'bg-[#28271f]' : 'bg-[#151515]',
+        )}
+      >
       <div className="border-b border-[#d8cf73]/25 pb-4 transition-colors duration-300 group-hover:border-[#d8cf73]/45">
         <div className="flex items-center gap-3">
           <span
@@ -69,5 +76,6 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
         ))}
       </div>
     </article>
+    </div>
   )
 }

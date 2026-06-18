@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useMemo } from 'react'
 import Image from 'next/image'
@@ -15,6 +15,7 @@ import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
 import { useGetGroupMembersQuery } from '@/services/api/groupsApi'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { toast } from '@/hooks/useToast'
+import { formatVnd } from '@/lib/formatMoney'
 import type { MemberItem, MembersPagination } from '@/types/api'
 import { useGroupMembersFilters } from '../hooks/useGroupMembersFilters'
 
@@ -38,12 +39,6 @@ function fullName(member: MemberItem) {
 function formatDate(dateIso: string) {
   const date = new Date(dateIso)
   return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString('vi-VN')
-}
-
-function formatVndVolume(value: string) {
-  const parsed = Number(value)
-  if (Number.isNaN(parsed)) return value || '0 VNĐ'
-  return `${Math.round(parsed).toLocaleString('vi-VN')} VNĐ`
 }
 
 function normalizeStatus(value: string | null | undefined) {
@@ -114,6 +109,24 @@ function getLpexStatusClass(status: string | null | undefined) {
       return 'bg-muted/[0.12] text-muted-foreground border border-muted/20'
     default:
       return 'bg-warning/[0.12] text-warning border border-warning/20'
+  }
+}
+
+function getEligibilityStatusClass(status: string | null | undefined) {
+  switch (normalizeStatus(status)) {
+    case 'ELIGIBLE':
+      return 'bg-success/[0.12] text-success border border-success/20'
+    case 'WARNING':
+    case 'PENDING_VERIFICATION':
+      return 'bg-warning/[0.12] text-warning border border-warning/20'
+    case 'FINAL_WARNING':
+    case 'KICKED':
+    case 'BLOCKED_REJOIN':
+      return 'bg-destructive/[0.12] text-destructive border border-destructive/20'
+    case 'MANUAL_HOLD':
+      return 'bg-info/[0.12] text-info border border-info/20'
+    default:
+      return 'bg-muted text-muted-foreground border border-border'
   }
 }
 
@@ -278,6 +291,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       header: 'Trạng thái SCEX',
       cell: (member) => (
         <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getLpexStatusClass(member.lpexUserStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatLpexStatusLabel(member.lpexUserStatus)}
         </span>
       ),
@@ -287,6 +301,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       header: 'Trạng thái telegram',
       cell: (member) => (
         <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getTelegramStatusClass(member.telegramStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatTelegramStatusLabel(member.telegramStatus)}
         </span>
       ),
@@ -295,7 +310,8 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'eligibilityStatus',
       header: 'Trạng thái thành viên',
       cell: (member) => (
-        <span className="inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal bg-info/[0.12] text-info border border-info/20">
+        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getEligibilityStatusClass(member.eligibilityStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatEligibilityStatusLabel(member.eligibilityStatus)}
         </span>
       ),
@@ -330,7 +346,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'volume',
       header: renderSortableHeader('Volume (VNĐ)', 'usdVolume'),
       cellClassName: 'font-geist-mono font-medium',
-      cell: (member) => formatVndVolume(member.usdVolume),
+      cell: (member) => `${formatVnd(member.usdVolume)}`,
     },
   ]
   const tableColumns = columns.map((column) => ({
@@ -420,7 +436,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
               isDisabled: isFetching,
               summaryText:
                 pagination.totalItems > 0
-                  ? `Hiển thị ${startIndex}-${endIndex} / ${pagination.totalItems} thành viên`
+                  ? `Hiển thị ${startIndex}-${endIndex} / ${pagination.totalItems}`
                   : 'Chưa có dữ liệu thành viên',
             }}
           />

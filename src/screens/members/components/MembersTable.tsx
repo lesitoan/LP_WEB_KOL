@@ -8,6 +8,7 @@ import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import type { ActiveFilterChip, SelectFilterConfig } from "@/components/filters/TableFilterBar";
 import { toast } from "@/hooks/useToast";
+import { formatVnd } from "@/lib/formatMoney";
 import { useGetMembersQuery } from "@/services/api/membersApi";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
 import type { MemberItem } from "@/types/api";
@@ -23,14 +24,6 @@ function formatDate(dateIso: string) {
   if (!dateIso) return "—";
   const date = new Date(dateIso);
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("vi-VN");
-}
-
-function formatVndVolume(value: string) {
-  const parsed = Number(value);
-
-  if (Number.isNaN(parsed)) return value || "0 VNĐ";
-
-  return `${Math.round(parsed).toLocaleString("vi-VN")} VNĐ`;
 }
 
 function truncateGroupTitle(title: string | null | undefined, maxLength = 10) {
@@ -63,14 +56,14 @@ function formatLpexUserStatusValue(status: string) {
 function getMemberProgressConfig(status: MemberItem["memberProgressStatus"]) {
   switch (status) {
     case "KYC_COMPLETED":
-      return { label: "Đã KYC", steps: 2, labelClassName: "text-success", textClassName: "text-base" };
+      return { label: "Đã KYC", steps: 2, labelClassName: "text-[#12B76A]", textClassName: "text-base" };
     case "DEPOSIT_COMPLETED":
       return { label: "Đã deposit", steps: 3, labelClassName: "text-[#FFD000]", textClassName: "text-base" };
     case "TRADE_COMPLETED":
-      return { label: "Đã giao dịch", steps: 4, labelClassName: "text-info", textClassName: "text-base" };
+      return { label: "Đã giao dịch", steps: 4, labelClassName: "text-[#00A4FF]", textClassName: "text-base" };
     case "NOT_KYC":
     default:
-      return { label: "Chưa KYC", steps: 1, labelClassName: "text-muted-foreground", textClassName: "text-base" };
+      return { label: "Chưa KYC", steps: 1, labelClassName: "text-[#A8A8A9]", textClassName: "text-base" };
   }
 }
 
@@ -320,7 +313,7 @@ export default function MembersTable() {
       id: "volume",
       header: renderSortableHeader("Volume 30D", "usdVolume"),
       cellClassName: "font-medium text-base",
-      cell: (member) => formatVndVolume(member.usdVolume),
+      cell: (member) => `${formatVnd(member.usdVolume)} VNĐ`,
     },
     {
       id: "status",
@@ -331,6 +324,7 @@ export default function MembersTable() {
             member.lpexUserStatus || "unknown",
           )}`}
         >
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatLpexUserStatusValue(member.lpexUserStatus || "unknown")}
         </span>
       ),
@@ -440,7 +434,7 @@ export default function MembersTable() {
             isDisabled: isFetching,
             summaryText:
               totalItems > 0
-                ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems} members`
+                ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems}`
                 : "Chưa có dữ liệu member",
           }}
         />

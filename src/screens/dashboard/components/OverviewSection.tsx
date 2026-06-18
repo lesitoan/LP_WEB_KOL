@@ -2,6 +2,7 @@
 
 import { Triangle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { formatVnd } from "@/lib/formatMoney";
 import { cn } from "@/lib/utils";
 import { useGetKolDashboardSummaryQuery } from "@/services/api/dashboardApi";
 import type { KolDashboardMetricKey, KolDashboardTrendSummary } from "@/types/api";
@@ -29,6 +30,14 @@ function formatNumber(value: number | undefined) {
   return new Intl.NumberFormat("vi-VN", {
     maximumFractionDigits: 2,
   }).format(Number(value ?? 0));
+}
+
+function formatMetricValue(metric: OverviewMetricCard) {
+  if (metric.key === "deposit" || metric.key === "trade") {
+    return `${formatVnd(metric.trend?.current)}`;
+  }
+
+  return formatNumber(metric.trend?.current);
 }
 
 function formatTrend(trend: KolDashboardTrendSummary | undefined) {
@@ -84,7 +93,7 @@ export default function OverviewSection() {
               <span className="text-sm font-medium uppercase text-white">Tổng số hoa hồng</span>
             </div>
             <div className="text-[40px] font-bold leading-tight tracking-normal text-white md:text-[40px]">
-              {formatNumber(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
+              {formatVnd(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
             </div>
           </div>
         </div>
@@ -106,7 +115,7 @@ export default function OverviewSection() {
                   <h3 className="text-sm font-medium uppercase text-zinc-400">{metric.title}</h3>
                 </div>
                 <div className="flex flex-wrap items-end justify-between gap-3">
-                  <div className="text-[32px] font-bold leading-none text-white">{formatNumber(metric.trend?.current)}</div>
+                  <div className="text-[32px] font-bold leading-none text-white">{formatMetricValue(metric)}</div>
                   <div
                     className={cn(
                       "inline-flex items-center gap-1 text-sm font-normal",

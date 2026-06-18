@@ -12,8 +12,13 @@ const googleSansFlex = Google_Sans_Flex({
 });
 
 export const metadata: Metadata = {
-  title: "Manager Dashboard",
-  description: "Next.js port of the lovable-next-app dashboard",
+  title: "SCEX Manager",
+  description: "SCEX Manager",
+  icons: {
+    icon: "/images/favicon.png",
+    shortcut: "/images/favicon.png",
+    apple: "/images/favicon.png",
+  },
 };
 
 export default function RootLayout({

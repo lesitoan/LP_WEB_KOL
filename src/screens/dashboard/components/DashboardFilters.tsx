@@ -49,7 +49,7 @@ export default function DashboardFilters() {
               "h-10 rounded-full px-4 text-base font-medium text-muted-foreground transition-all",
               "hover:bg-surface-2 hover:text-foreground",
               selectedSegment === segment.value &&
-                "border border-white bg-surface-3 text-foreground shadow-[0_0_0_1px_hsl(var(--border))]",
+                "bg-surface-3 text-foreground",
             )}
           >
             {segment.label}

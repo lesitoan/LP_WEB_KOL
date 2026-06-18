@@ -126,9 +126,23 @@ export interface KolRecentActivitiesQuery {
 
 export type KolRecentActivityType =
   | 'member_registrations_today'
+  | 'member_join_group'
+  | 'member_rejoin_group'
   | 'member_low_volume_warning'
+  | 'member_kicked_low_volume'
+  | 'member_rejoin_eligible'
+  | 'member_rejoin_blocked'
   | 'commission_cycle_summary'
   | 'cashback_ready_to_claim'
+  | 'group_created'
+  | 'group_updated'
+  | 'group_status_updated'
+  | 'group_deleted'
+  | 'group_benefit_created'
+  | 'group_benefit_updated'
+  | 'group_benefit_deleted'
+  | 'campaign_created'
+  | 'campaign_updated'
 
 export type KolRecentActivityIcon = 'up' | 'warning' | 'dollar' | 'gift'
 export type KolRecentActivitySeverity = 'info' | 'warning' | 'success'

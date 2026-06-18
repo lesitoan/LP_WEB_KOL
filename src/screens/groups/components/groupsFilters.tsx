@@ -71,23 +71,31 @@ export function GroupsFilters({
           <Button
             type="button"
             size="sm"
-            variant={viewMode === "table" ? "default" : "outline"}
-            className="h-8 text-xs"
+            variant="ghost"
+            className={`h-10 rounded-[100px] border-0 px-4 sm:px-7 text-base font-medium shadow-none has-[>svg]:px-3 sm:has-[>svg]:px-5 ${
+              viewMode === "table"
+                ? "bg-[#282828] text-white hover:bg-[#282828] hover:text-white"
+                : "bg-transparent text-[#D7D7D7] hover:bg-[#282828] hover:text-white"
+            }`}
             onClick={() => onViewModeChange("table")}
             disabled={isFetching}
           >
-            <Table2 className="mr-1.5 h-3.5 w-3.5" />
+            <Table2 className="mr-2 h-3.5 w-3.5" />
             Bảng
           </Button>
           <Button
             type="button"
             size="sm"
-            variant={viewMode === "item" ? "default" : "outline"}
-            className="h-8 text-xs"
+            variant="ghost"
+            className={`h-10 rounded-[100px] border-0 px-3 sm:px-[18px] text-base font-medium shadow-none has-[>svg]:px-3 sm:has-[>svg]:px-[18px] ${
+              viewMode === "item"
+                ? "bg-[#282828] text-white hover:bg-[#282828] hover:text-white"
+                : "bg-transparent text-[#D7D7D7] hover:bg-[#282828] hover:text-white"
+            }`}
             onClick={() => onViewModeChange("item")}
             disabled={isFetching}
           >
-            <LayoutGrid className="mr-1.5 h-3.5 w-3.5" />
+            <LayoutGrid className="mr-2 h-3.5 w-3.5" />
             Item
           </Button>
         </div>

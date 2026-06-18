@@ -1,24 +1,11 @@
 "use client";
 
-import { Bell, DollarSign, Eye, Gift, TrendingUp, type LucideIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useGetKolRecentActivitiesQuery } from "@/services/api/dashboardApi";
-import type { KolRecentActivityIcon, KolRecentActivitySeverity } from "@/types/api";
 import { AttentionActivitiesSkeleton } from "@/components/skeletons/dashboard/AttentionActivitiesSkeleton";
-
-const activityIcons: Record<KolRecentActivityIcon, LucideIcon> = {
-  up: TrendingUp,
-  warning: Bell,
-  dollar: DollarSign,
-  gift: Gift,
-};
-
-const severityClassNames: Record<KolRecentActivitySeverity, string> = {
-  info: "bg-brand/15 text-brand",
-  warning: "bg-yellow-400/15 text-yellow-300",
-  success: "bg-emerald-500/15 text-emerald-400",
-};
+import { getAttentionActivityConfig, getAttentionActivityHref } from "../constants";
 
 function formatActivityTime(value: string) {
   const date = new Date(value);
@@ -34,6 +21,7 @@ function formatActivityTime(value: string) {
 }
 
 export default function AttentionActivities() {
+  const router = useRouter();
   const { data: activities = [], isLoading, isFetching, error } = useGetKolRecentActivitiesQuery({ limit: 5 });
 
   return (
@@ -57,7 +45,8 @@ export default function AttentionActivities() {
       ) : (
         <div>
           {activities.map((activity) => {
-            const Icon = activityIcons[activity.icon];
+            const activityConfig = getAttentionActivityConfig(activity.type);
+            const Icon = activityConfig.icon;
 
             return (
               <div
@@ -69,7 +58,7 @@ export default function AttentionActivities() {
                 </div>
                 <div className="flex min-w-0 items-center gap-2 md:gap-3 lg:gap-2 xl:gap-3">
                   <span
-                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full md:h-7 md:w-7 ${severityClassNames[activity.severity]}`}
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full md:h-7 md:w-7 ${activityConfig.iconClassName}`}
                   >
                     <Icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
                   </span>
@@ -80,6 +69,7 @@ export default function AttentionActivities() {
                 <button
                   type="button"
                   title={activity.description}
+                  onClick={() => router.push(getAttentionActivityHref(activity.type, activity.metadata))}
                   className="inline-flex h-7 items-center justify-center gap-1 rounded-full bg-surface-3 px-2 text-[11px] text-zinc-100 transition-colors hover:bg-surface-4 md:px-3 md:text-xs lg:px-2 xl:px-3"
                 >
                   <Eye className="h-3.5 w-3.5" />
