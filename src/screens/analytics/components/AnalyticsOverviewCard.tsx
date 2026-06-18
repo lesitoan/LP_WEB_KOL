@@ -2,7 +2,7 @@
 
 import AnalyticsOverviewCardSkeleton from "@/components/skeletons/analytics/AnalyticsOverviewCardSkeleton"
 import { cn } from "@/lib/utils";
-import { useGetKolDashboardGroupSummaryQuery } from "@/services/api/dashboardApi";
+import { useGetKolDashboardStatsQuery } from "@/services/api/dashboardApi";
 import { useSearchParams } from "next/navigation";
 
 const defaultDateRange = {
@@ -46,7 +46,7 @@ export default function AnalyticsOverviewCard() {
   const to = searchParams.get("to") || defaultDateRange.to;
   const isInvalidRange = Boolean(from && to && to < from);
   const requestedGroupId = searchParams.get("groupId");
-  const { data, isLoading, isFetching } = useGetKolDashboardGroupSummaryQuery(
+  const { data, isLoading, isFetching } = useGetKolDashboardStatsQuery(
     {
       startDate: from,
       endDate: to,
@@ -58,8 +58,6 @@ export default function AnalyticsOverviewCard() {
   if (isLoading) {
     return <AnalyticsOverviewCardSkeleton />;
   }
-
-  const cards = data?.cards;
 
   return (
     <section className={cn("mb-5 rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5", isFetching && "opacity-80")}>
@@ -79,16 +77,16 @@ export default function AnalyticsOverviewCard() {
               </span>
             </div>
             <div className="text-[36px] font-bold leading-none tracking-tight text-foreground sm:text-[40px]">
-              {formatCommission(cards?.totalCommission.value)} <span className="text-[32px] font-medium">VNĐ</span>
+              {formatCommission(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
             </div>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <StatCard iconSrc="/images/analytics/warning_icon.svg" label="Số đang bị cảnh báo" value={formatCount(cards?.warningCount.value)} />
-          <StatCard iconSrc="/images/analytics/total_members_icon.svg" label="Số lượng members" value={formatCount(cards?.memberCount.value)} />
-          <StatCard iconSrc="/images/analytics/kick_member_icon.svg" label="Số bị kick" value={formatCount(cards?.kickedCount.value)} />
-          <StatCard iconSrc="/images/analytics/join_icon.svg" label="Số tham gia mới" value={formatCount(cards?.newJoinCount.value)} />
+          <StatCard iconSrc="/images/analytics/warning_icon.svg" label="Số đang bị cảnh báo" value={formatCount(data?.warningMemberCount)} />
+          <StatCard iconSrc="/images/analytics/total_members_icon.svg" label="Số lượng members" value={formatCount(data?.referralCount)} />
+          <StatCard iconSrc="/images/analytics/kick_member_icon.svg" label="Số bị kick" value={formatCount(data?.kickedMemberCount)} />
+          <StatCard iconSrc="/images/analytics/join_icon.svg" label="Số tham gia mới" value={formatCount(data?.newJoinCount)} />
         </div>
       </div>
     </section>

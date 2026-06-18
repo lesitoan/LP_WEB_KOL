@@ -5,10 +5,10 @@ import type {
   ChartPoint,
   CommissionGrowthSummary,
   DashboardStats,
-  KolDashboardGroupSummary,
   KolDashboardGroupSummaryQuery,
   KolDashboardSummary,
   KolDashboardSummaryQuery,
+  KolDashboardStats,
   KolRecentActivitiesQuery,
   KolRecentActivityItem,
   MemberMonthlyJoinsData,
@@ -62,7 +62,7 @@ export const dashboardApi = api.injectEndpoints({
       providesTags: ['Dashboard'],
     }),
 
-    getKolDashboardGroupSummary: builder.query<KolDashboardGroupSummary, KolDashboardGroupSummaryQuery | void>({
+    getKolDashboardStats: builder.query<KolDashboardStats, KolDashboardGroupSummaryQuery | void>({
       query: (params) => {
         const searchParams = new URLSearchParams()
 
@@ -81,13 +81,13 @@ export const dashboardApi = api.injectEndpoints({
         const queryString = searchParams.toString()
 
         return {
-          url: `${apiV1Path('/kol/dashboard/group-summary')}${queryString ? `?${queryString}` : ''}`,
+          url: `${apiV1Path('/kol/dashboard/stats')}${queryString ? `?${queryString}` : ''}`,
           method: 'GET',
         }
       },
-      transformResponse: (payload: ApiResponse<KolDashboardGroupSummary>) => {
+      transformResponse: (payload: ApiResponse<KolDashboardStats>) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
-          throw new Error(extractApiErrorMessage(payload, 'KhĂ´ng thá»ƒ táº£i tá»•ng quan nhĂ³m'))
+          throw new Error(extractApiErrorMessage(payload, 'Không thể tải thống kê dashboard'))
         }
 
         return payload.data
@@ -202,7 +202,7 @@ export const dashboardApi = api.injectEndpoints({
 })
 
 export const {
-  useGetKolDashboardGroupSummaryQuery,
+  useGetKolDashboardStatsQuery,
   useGetKolDashboardSummaryQuery,
   useGetKolRecentActivitiesQuery,
   // useGetMemberOverviewStatsQuery,

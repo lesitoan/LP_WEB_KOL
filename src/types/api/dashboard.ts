@@ -47,14 +47,40 @@ export interface KolDashboardPeriodComparison {
     | null
 }
 
+export interface KolDashboardComparisonRange {
+  startDate: string
+  endDate: string
+}
+
+export interface KolDashboardTrendSummary {
+  current: number
+  previous: number
+  delta: number
+  growthPercentage: number
+}
+
 export interface KolDashboardSummary {
-  heroCard: KolDashboardMetricCard
-  metricCards: KolDashboardMetricCard[]
-  periodComparison: KolDashboardPeriodComparison
+  commission: number
+  comparisonPeriod: {
+    current: KolDashboardComparisonRange
+    previous: KolDashboardComparisonRange
+  }
+  referralTrend: KolDashboardTrendSummary
+  kycTrend: KolDashboardTrendSummary
+  depositTrend: KolDashboardTrendSummary
+  tradeTrend: KolDashboardTrendSummary
 }
 
 export interface KolDashboardGroupSummaryQuery extends KolDashboardSummaryQuery {
   groupId?: string
+}
+
+export interface KolDashboardStats {
+  referralCount: number
+  commission: number
+  warningMemberCount: number
+  kickedMemberCount: number
+  newJoinCount: number
 }
 
 export interface KolDashboardGroupSummaryPeriod {
