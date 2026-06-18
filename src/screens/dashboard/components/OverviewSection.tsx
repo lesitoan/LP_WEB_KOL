@@ -2,10 +2,9 @@
 
 import { Triangle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useGetKolDashboardSummaryQuery } from "@/services/api/dashboardApi";
-import type { KolDashboardMetricCard, KolDashboardMetricKey } from "@/types/api";
+import type { KolDashboardMetricKey, KolDashboardTrendSummary } from "@/types/api";
 import { defaultDateRange } from "../constants";
 import { OverviewSkeleton } from "@/components/skeletons/dashboard/OverviewSkeleton";
 
@@ -16,35 +15,33 @@ const metricIconSrcs: Record<Exclude<KolDashboardMetricKey, "commission">, strin
   kyc: "/images/dashboard/overview/kyc_icon.svg",
 };
 
-const fallbackMetricOrder: KolDashboardMetricKey[] = ["referral", "deposit", "trade", "kyc"];
+type OverviewMetricKey = Exclude<KolDashboardMetricKey, "commission">;
 
-function formatMetricValue(metric: KolDashboardMetricCard) {
-  const value = Number(metric.value ?? 0);
-
-  // if (metric.unit === "USD") {
-  //   return new Intl.NumberFormat("en-US", {
-  //     style: "currency",
-  //     currency: "USD",
-  //     maximumFractionDigits: 0,
-  //   }).format(value);
-  // }
-
-  return new Intl.NumberFormat("vi-VN", {
-    maximumFractionDigits: 2,
-  }).format(value);
+interface OverviewMetricCard {
+  key: OverviewMetricKey;
+  title: string;
+  trend: KolDashboardTrendSummary | undefined;
 }
 
-function formatTrend(metric: KolDashboardMetricCard) {
-  if (typeof metric.growthPercentage !== "number" || !metric.comparisonLabel) {
+const fallbackMetricOrder: OverviewMetricKey[] = ["referral", "deposit", "trade", "kyc"];
+
+function formatNumber(value: number | undefined) {
+  return new Intl.NumberFormat("vi-VN", {
+    maximumFractionDigits: 2,
+  }).format(Number(value ?? 0));
+}
+
+function formatTrend(trend: KolDashboardTrendSummary | undefined) {
+  if (!trend || typeof trend.growthPercentage !== "number") {
     return "Chưa có dữ liệu kỳ trước";
   }
 
-  const sign = metric.growthPercentage > 0 ? "+" : "";
+  const sign = trend.growthPercentage > 0 ? "+" : "";
   const value = new Intl.NumberFormat("vi-VN", {
     maximumFractionDigits: 1,
-  }).format(metric.growthPercentage);
+  }).format(trend.growthPercentage);
 
-  return `${sign}${value}% ${metric.comparisonLabel}`;
+  return `${sign}${value}% so với kỳ trước`;
 }
 
 export default function OverviewSection() {
@@ -64,13 +61,14 @@ export default function OverviewSection() {
     return <OverviewSkeleton />;
   }
 
-  const heroCard = data?.heroCard;
-  const metricCards =
-    data?.metricCards?.length
-      ? [...data.metricCards].sort(
-          (a, b) => fallbackMetricOrder.indexOf(a.key) - fallbackMetricOrder.indexOf(b.key),
-        )
-      : [];
+  const metricCards = ([
+    { key: "referral", title: "Lượt giới thiệu", trend: data?.referralTrend },
+    { key: "deposit", title: "Nạp tiền", trend: data?.depositTrend },
+    { key: "trade", title: "Giao dịch", trend: data?.tradeTrend },
+    { key: "kyc", title: "KYC", trend: data?.kycTrend },
+  ] satisfies OverviewMetricCard[]).sort(
+    (a, b) => fallbackMetricOrder.indexOf(a.key) - fallbackMetricOrder.indexOf(b.key),
+  );
 
   return (
     <section className={cn("mb-4 rounded-[14px] bg-surface-2 p-5 md:p-6", isFetching && "opacity-80")}>
@@ -83,18 +81,19 @@ export default function OverviewSection() {
               <span className="grid h-10 w-10 place-items-center rounded-full">
                 <img src="/images/bitcoin_logo.png" alt="" className="h-10 w-10 object-contain" />
               </span>
-              <span className="text-sm font-medium uppercase text-white">{heroCard?.title ?? "Tổng số hoa hồng"}</span>
+              <span className="text-sm font-medium uppercase text-white">Tổng số hoa hồng</span>
             </div>
             <div className="text-[40px] font-bold leading-tight tracking-normal text-white md:text-[40px]">
-              {heroCard ? formatMetricValue(heroCard) : "0"}
+              {formatNumber(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
             </div>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           {metricCards.map((metric) => {
-            const isDown = metric.trend === "down";
-            const isNeutral = metric.trend === "neutral" || metric.trend === null;
+            const delta = metric.trend?.delta ?? 0;
+            const isDown = delta < 0;
+            const isNeutral = delta === 0;
 
             return (
               <article key={metric.key} className="rounded-md bg-[#1f1f1f] p-6">
@@ -107,7 +106,7 @@ export default function OverviewSection() {
                   <h3 className="text-sm font-medium uppercase text-zinc-400">{metric.title}</h3>
                 </div>
                 <div className="flex flex-wrap items-end justify-between gap-3">
-                  <div className="text-[32px] font-bold leading-none text-white">{formatMetricValue(metric)}</div>
+                  <div className="text-[32px] font-bold leading-none text-white">{formatNumber(metric.trend?.current)}</div>
                   <div
                     className={cn(
                       "inline-flex items-center gap-1 text-sm font-normal",
@@ -117,7 +116,7 @@ export default function OverviewSection() {
                     {!isNeutral ? (
                       <Triangle className={cn("h-3 w-3 fill-current", isDown && "rotate-180")} aria-hidden="true" />
                     ) : null}
-                    {formatTrend(metric)}
+                    {formatTrend(metric.trend)}
                   </div>
                 </div>
               </article>
