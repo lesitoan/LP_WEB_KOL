@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
+import { formatVnd } from '@/lib/formatMoney'
 import type { PartnerTier } from '../constants'
 
 type PartnerHeroProps = {
@@ -130,7 +131,7 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
             <div className="mt-14 rounded-lg bg-[url('/images/partner/hero_bg.png')] bg-cover bg-center px-6 py-7 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
               <p className="text-lg font-normal text-white/80">Thu nhập tiềm năng mỗi tháng</p>
               <div className="mt-3 text-5xl max-xl:text-4xl max-lg:text-3xl font-bold text-white transition-all duration-200">
-                ~{new Intl.NumberFormat('vi-VN').format(Math.round(estimatedIncome))}
+                ~{formatVnd(estimatedIncome)}
                 <span className="text-3xl max-lg:text-2xl max-md:text-xl font-normal text-white">/ tháng</span>
               </div>
             </div>
