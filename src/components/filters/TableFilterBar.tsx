@@ -84,7 +84,7 @@ export default function TableFilterBar({
         {textFilters.map((textFilter) => (
           <div
             key={textFilter.key}
-            className={`h-[34px] bg-surface-2 border border-border rounded-lg px-3 flex items-center gap-2 text-sm font-normal text-muted-foreground ${
+            className={`h-10 bg-surface-2 border border-border rounded-lg px-3 flex items-center gap-2 text-sm font-normal text-muted-foreground ${
               textFilter.widthClassName ?? 'min-w-[220px] w-[320px]'
             }`}
           >
@@ -114,7 +114,7 @@ export default function TableFilterBar({
         {activeFilterChips.map((chip) => (
           <span
             key={chip.key}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-brand/35 bg-brand/15 text-[11.5px] font-medium text-brand"
+            className="inline-flex h-10 items-center gap-1.5 rounded-full border border-brand/35 bg-brand/15 px-2.5 text-[11.5px] font-medium text-brand"
           >
             {chip.label}: {chip.valueLabel}
             <button
@@ -132,7 +132,7 @@ export default function TableFilterBar({
         <div className="relative">
           <button
             type="button"
-            className="inline-flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 text-sm font-normal text-foreground transition-colors hover:bg-surface-3 disabled:opacity-60"
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 text-sm font-normal text-foreground transition-colors hover:bg-surface-3 disabled:opacity-60"
             onClick={() => {
               setIsMenuOpen((prev) => !prev)
               setActiveFilterKey(null)
@@ -144,7 +144,7 @@ export default function TableFilterBar({
           </button>
 
           {isMenuOpen ? (
-            <div className="absolute left-0 top-8 z-50 rounded-xl border border-border bg-surface-1 shadow-xl p-3 min-w-[260px] max-w-[min(92vw,360px)]">
+            <div className="absolute left-0 top-11 z-50 rounded-xl border border-border bg-surface-1 shadow-xl p-3 min-w-[260px] max-w-[min(92vw,360px)]">
               <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">Bộ lọc chính</div>
               <div className="space-y-1">
                 {selectFilters.map((filter) => {

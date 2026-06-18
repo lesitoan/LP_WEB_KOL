@@ -9,7 +9,7 @@ type GroupLogoBadgeProps = {
 
 function getGroupInitial(title?: string | null) {
   const normalizedTitle = title?.trim()
-  return normalizedTitle ? normalizedTitle.charAt(0).toUpperCase() : '?'
+  return normalizedTitle ? normalizedTitle.charAt(0).toUpperCase() : 'G'
 }
 
 export function GroupLogoBadge({ iconKey, title, className = 'h-9 w-10', textClassName = 'text-base' }: GroupLogoBadgeProps) {

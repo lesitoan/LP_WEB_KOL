@@ -49,7 +49,7 @@ export function GroupsListContainer({
     isDisabled: isFetching,
     summaryText:
       totalItems > 0
-        ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems} groups`
+        ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems}`
         : "Chưa có dữ liệu group",
     onPageChange: (page: number) => onQueryChange({ ...query, page }),
     onLimitChange: (limit: number) => onQueryChange({ ...query, page: 1, limit }),

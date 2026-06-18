@@ -440,7 +440,7 @@ export default function MembersTable() {
             isDisabled: isFetching,
             summaryText:
               totalItems > 0
-                ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems} members`
+                ? `Hiển thị ${startIndex}-${endIndex} / ${totalItems}`
                 : "Chưa có dữ liệu member",
           }}
         />

@@ -79,7 +79,7 @@ function GroupStatusSwitch({
   return (
     <span className="inline-flex items-center gap-2">
       <Switch
-        className="h-5 w-9 border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-4 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+        className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
@@ -151,7 +151,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
         return (
           <span className="inline-flex items-center gap-2">
           <Switch
-            className="h-5 w-9 border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-4 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+            className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
             checked={isActive}
             disabled={isUpdating}
             onCheckedChange={(checked) => {
@@ -159,14 +159,14 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
             }}
             aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
           />
-          <span className="text-xs font-normal text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
+          <span className="text-base font-normal text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
           </span>
         )
       },
     },
     {
       id: 'volume',
-      header: 'Volume (USD)',
+      header: 'Volume (VNĐ)',
       cell: (group) => formatVolumeRange(group),
     },
     {
@@ -232,7 +232,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-destructive"
+            className="h-8 w-8"
             onClick={() => onDeleteGroup(group.id, group.title)}
           >
             <Trash2 className="h-4 w-4" />

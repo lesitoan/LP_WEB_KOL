@@ -420,7 +420,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
               isDisabled: isFetching,
               summaryText:
                 pagination.totalItems > 0
-                  ? `Hiển thị ${startIndex}-${endIndex} / ${pagination.totalItems} thành viên`
+                  ? `Hiển thị ${startIndex}-${endIndex} / ${pagination.totalItems}`
                   : 'Chưa có dữ liệu thành viên',
             }}
           />
