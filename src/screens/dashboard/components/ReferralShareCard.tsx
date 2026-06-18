@@ -1,6 +1,7 @@
 "use client";
 
-import { Copy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CircleCheck, Copy } from "lucide-react";
 import { referralUrl } from "../constants";
 
 const shareChannels = [
@@ -8,15 +9,24 @@ const shareChannels = [
   { label: "Telegram", src: "/images/social_logo/telegram.png" },
   { label: "X (Twitter)", src: "/images/social_logo/x.png" },
   { label: "WhatsApp", src: "/images/social_logo/whatsapp.png" },
-  { label: "Reddit", src: "/images/social_logo/reddit.png" },
+  { label: "Zalo", src: "/images/social_logo/zalo.png" },
 ];
 
 export default function ReferralShareCard() {
+  const [copied, setCopied] = useState(false);
   const shortUrl = `${referralUrl.slice(0, 14)}...${referralUrl.slice(-4)}`;
+
+  useEffect(() => {
+    if (!copied) return;
+
+    const timeoutId = window.setTimeout(() => setCopied(false), 1600);
+    return () => window.clearTimeout(timeoutId);
+  }, [copied]);
 
   const copyReferralUrl = async () => {
     if (!navigator.clipboard) return;
     await navigator.clipboard.writeText(referralUrl);
+    setCopied(true);
   };
 
   return (
@@ -38,10 +48,21 @@ export default function ReferralShareCard() {
           <button
             type="button"
             onClick={copyReferralUrl}
-            className="inline-flex min-w-0 items-center gap-2 text-zinc-100 transition-colors hover:text-yellow-200"
+            className={`inline-flex min-w-0 items-center gap-2 transition-colors ${
+              copied ? "text-[#15C982]" : "text-zinc-100 hover:text-yellow-200"
+            }`}
           >
-            <span className="truncate">{shortUrl}</span>
-            <Copy className="h-4 w-4 shrink-0" />
+            {copied ? (
+              <>
+                <CircleCheck className="h-4 w-4 shrink-0 text-[#15C982]" />
+                <span className="font-semibold">Copied</span>
+              </>
+            ) : (
+              <>
+                <span className="truncate">{shortUrl}</span>
+                <Copy className="h-4 w-4 shrink-0" />
+              </>
+            )}
           </button>
         </div>
 

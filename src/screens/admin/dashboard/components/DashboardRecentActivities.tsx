@@ -30,6 +30,7 @@ export default function DashboardRecentActivities({ isLoading, errorMessage, act
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{adminActivityIconLabel[activity.icon]}</span>
                     <span className={`inline-flex items-center rounded-full border px-2 py-[2px] text-[11px] font-medium ${activitySeverityClassName(activity.severity)}`}>
+                      <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0 mr-1" />
                       {adminActivitySeverityLabel[activity.severity]}
                     </span>
                   </div>

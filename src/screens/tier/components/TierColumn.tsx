@@ -1,9 +1,9 @@
-import { Check, Coins } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { KolTier, KolTierFeature } from '@/types/api'
 
 const TIER_CARD_BORDER = '#FCF19D'
-const TIER_CARD_BORDER_SOFT = 'rgba(252, 241, 157, 0.58)'
+
 const TIER_CHECK = '#DAA440'
 const TIER_CURRENT_BG =
   'linear-gradient(180deg, rgba(252, 241, 157, 0.12) 0%, rgba(252, 241, 157, 0.07) 100%), #29291f'
@@ -70,14 +70,23 @@ type TierColumnProps = {
 export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
   const options = getTierOptions(tier)
 
+  const gradientBorder =
+    'linear-gradient(135deg, #FCF19D 0%, rgba(252,241,157,0.3) 30%, rgba(252,241,157,0.3) 70%, #FCF19D 100%)'
+
+  const innerBg = isCurrent ? TIER_CURRENT_BG : '#171717'
+
   return (
-    <article
-      className={cn(
-        'flex h-full flex-col rounded-[8px] border p-4 sm:p-5',
-        isCurrent ? 'shadow-[0_0_0_1px_rgba(252,241,157,0.18)]' : 'bg-[#171717]',
-      )}
-      style={{ borderColor: TIER_CARD_BORDER_SOFT, background: isCurrent ? TIER_CURRENT_BG : undefined }}
+    <div
+      className="h-full rounded-[12px] p-px"
+      style={{ background: gradientBorder }}
     >
+      <article
+        className={cn(
+          'flex h-full flex-col rounded-[11px] p-4 sm:p-5',
+          isCurrent ? 'shadow-[0_0_0_1px_rgba(252,241,157,0.18)]' : '',
+        )}
+        style={{ background: innerBg }}
+      >
       <div className="border-b border-white/20 pb-4">
         <div className="flex items-center gap-3">
           <img
@@ -99,14 +108,20 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
 
       <div className="border-b border-white/20 py-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#343434] text-white">
-            <Coins className="h-[18px] w-[18px]" strokeWidth={2.2} />
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10">
+            <img
+              src="/images/partner/commission_icon.svg"
+              alt="Hoa hồng"
+              className="h-[18px] w-4"
+            />
           </span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold leading-none text-foreground">
-              {tier.commissionRatePct}%
-            </span>
-            <span className="text-sm font-medium text-[#BDBDBD]">Hoa hồng</span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <span className="text-2xl font-bold leading-none text-foreground">
+                {tier.commissionRatePct}%
+              </span>
+              <span className="text-sm font-medium text-[#BDBDBD]">Hoa hồng</span>
+            </div>
           </div>
         </div>
       </div>
@@ -140,5 +155,6 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
         </div>
       ) : null}
     </article>
+    </div>
   )
 }

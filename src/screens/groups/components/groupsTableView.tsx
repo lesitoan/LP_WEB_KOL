@@ -49,6 +49,7 @@ function ToggleStatusBadge({ enabled }: { enabled: boolean }) {
   const statusVariant = enabled ? getStatusVariant('active').cssClass : getStatusVariant('inactive').cssClass
   return (
     <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusVariant}`}>
+      <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
       {enabled ? 'Bật' : 'Tắt'}
     </span>
   )

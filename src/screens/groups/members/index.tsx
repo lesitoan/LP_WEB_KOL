@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useMemo } from 'react'
 import Image from 'next/image'
@@ -114,6 +114,24 @@ function getLpexStatusClass(status: string | null | undefined) {
       return 'bg-muted/[0.12] text-muted-foreground border border-muted/20'
     default:
       return 'bg-warning/[0.12] text-warning border border-warning/20'
+  }
+}
+
+function getEligibilityStatusClass(status: string | null | undefined) {
+  switch (normalizeStatus(status)) {
+    case 'ELIGIBLE':
+      return 'bg-success/[0.12] text-success border border-success/20'
+    case 'WARNING':
+    case 'PENDING_VERIFICATION':
+      return 'bg-warning/[0.12] text-warning border border-warning/20'
+    case 'FINAL_WARNING':
+    case 'KICKED':
+    case 'BLOCKED_REJOIN':
+      return 'bg-destructive/[0.12] text-destructive border border-destructive/20'
+    case 'MANUAL_HOLD':
+      return 'bg-info/[0.12] text-info border border-info/20'
+    default:
+      return 'bg-muted text-muted-foreground border border-border'
   }
 }
 
@@ -278,6 +296,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       header: 'Trạng thái SCEX',
       cell: (member) => (
         <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getLpexStatusClass(member.lpexUserStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatLpexStatusLabel(member.lpexUserStatus)}
         </span>
       ),
@@ -287,6 +306,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       header: 'Trạng thái telegram',
       cell: (member) => (
         <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getTelegramStatusClass(member.telegramStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatTelegramStatusLabel(member.telegramStatus)}
         </span>
       ),
@@ -295,7 +315,8 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'eligibilityStatus',
       header: 'Trạng thái thành viên',
       cell: (member) => (
-        <span className="inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal bg-info/[0.12] text-info border border-info/20">
+        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getEligibilityStatusClass(member.eligibilityStatus)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatEligibilityStatusLabel(member.eligibilityStatus)}
         </span>
       ),

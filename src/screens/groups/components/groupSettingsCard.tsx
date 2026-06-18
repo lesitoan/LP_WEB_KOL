@@ -56,12 +56,14 @@ function TogglePill({ enabled }: { enabled: boolean }) {
 function MetricBlock({
   label,
   children,
+  className,
 }: {
   label: string
   children: React.ReactNode
+  className?: string
 }) {
   return (
-    <div className="min-w-0">
+    <div className={`min-w-0 ${className || ''}`}>
       <p className="text-xs font-normal text-[#A5A5A5]">{label}</p>
       <div className="mt-2 break-words text-base font-normal text-[#F4F4F4]">{children}</div>
     </div>
@@ -91,9 +93,9 @@ export function GroupSettingsCard({
   }
 
   return (
-    <article className="relative overflow-visible rounded-[28px] border border-[#4A4A4A] bg-[#171717] p-6 shadow-sm">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <div className="min-w-0">
+    <article className="relative overflow-visible rounded-[20px] sm:rounded-[28px] border border-[#4A4A4A] bg-[#171717] p-4 sm:p-6 shadow-sm">
+      <div className="mb-6 sm:mb-8 flex items-center justify-between gap-1.5 sm:gap-4">
+        <div className="min-w-0 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <h3 className="truncate text-base font-normal text-[#F4F4F4]">{group.title || 'Tên group'}</h3>
@@ -166,7 +168,7 @@ export function GroupSettingsCard({
         </div>
       </div>
 
-      <div className="flex min-h-[84px] items-center justify-between gap-4 rounded-xl border border-[#2A2A2A] px-2 py-3">
+      <div className="flex min-h-[72px] sm:min-h-[84px] items-center justify-between gap-2 sm:gap-4 rounded-xl border border-[#2A2A2A] px-3 py-2 sm:px-4 sm:py-3">
         <span className="text-xs font-normal text-[#A5A5A5]">Trạng thái</span>
         <span className="inline-flex items-center gap-3 text-base font-normal text-[#F4F4F4]">
           <Switch
@@ -182,15 +184,15 @@ export function GroupSettingsCard({
         </span>
       </div>
 
-      <div className="mt-8 grid grid-cols-[max-content_max-content] justify-between gap-y-4">
+      <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-4">
         <MetricBlock label="Volume (VNĐ)">{formatVolumeRange(group)}</MetricBlock>
-        <MetricBlock label="Số lượng TV">{group.memberCount ?? 0}</MetricBlock>
+        <MetricBlock label="Số lượng TV" className="text-right flex flex-col items-end">{group.memberCount ?? 0}</MetricBlock>
         <MetricBlock label="Cảnh báo">{group.warningCountBeforeKick} lần</MetricBlock>
-        <MetricBlock label="Ân hạn">{formatGracePeriodInDays(group)}</MetricBlock>
+        <MetricBlock label="Ân hạn" className="text-right flex flex-col items-end">{formatGracePeriodInDays(group)}</MetricBlock>
         <MetricBlock label="Auto-kick">
           <TogglePill enabled={group.autoKickEnabled} />
         </MetricBlock>
-        <MetricBlock label="Rejoin">
+        <MetricBlock label="Rejoin" className="text-right flex flex-col items-end">
           <TogglePill enabled={group.rejoinEnabled} />
         </MetricBlock>
       </div>

@@ -63,14 +63,14 @@ function formatLpexUserStatusValue(status: string) {
 function getMemberProgressConfig(status: MemberItem["memberProgressStatus"]) {
   switch (status) {
     case "KYC_COMPLETED":
-      return { label: "Đã KYC", steps: 2, labelClassName: "text-success", textClassName: "text-base" };
+      return { label: "Đã KYC", steps: 2, labelClassName: "text-[#12B76A]", textClassName: "text-base" };
     case "DEPOSIT_COMPLETED":
       return { label: "Đã deposit", steps: 3, labelClassName: "text-[#FFD000]", textClassName: "text-base" };
     case "TRADE_COMPLETED":
-      return { label: "Đã giao dịch", steps: 4, labelClassName: "text-info", textClassName: "text-base" };
+      return { label: "Đã giao dịch", steps: 4, labelClassName: "text-[#00A4FF]", textClassName: "text-base" };
     case "NOT_KYC":
     default:
-      return { label: "Chưa KYC", steps: 1, labelClassName: "text-muted-foreground", textClassName: "text-base" };
+      return { label: "Chưa KYC", steps: 1, labelClassName: "text-[#A8A8A9]", textClassName: "text-base" };
   }
 }
 
@@ -331,6 +331,7 @@ export default function MembersTable() {
             member.lpexUserStatus || "unknown",
           )}`}
         >
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
           {formatLpexUserStatusValue(member.lpexUserStatus || "unknown")}
         </span>
       ),

@@ -93,7 +93,7 @@ export function GroupsListContainer({
           />
         ) : (
           <>
-            <div className="p-3 sm:p-5">
+            <div className="p-2 sm:p-5">
               <GroupsItemView
                 groups={groups}
                 onUpdateGroup={onUpdateGroup}

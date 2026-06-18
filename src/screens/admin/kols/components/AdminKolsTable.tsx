@@ -58,6 +58,7 @@ export function AdminKolsTable({
       header: 'Trạng thái',
       cell: (kol) => (
         <span className={`inline-flex items-center rounded-full border px-2 py-[3px] text-[11.5px] font-medium ${kolStatusClassName(kol.status)}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0 mr-1" />
           {adminKolStatusLabel[kol.status]}
         </span>
       ),

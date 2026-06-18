@@ -42,8 +42,15 @@ export default function TierSummaryCard() {
   const progressPercent =
     nextTier && nextTierTarget > 0 ? Math.max(0, Math.min(100, (activeMemberCount / nextTierTarget) * 100)) : 100;
 
+  const gradientBorder =
+    'linear-gradient(180deg, #FFF9B3 0%, #FFEF3C 20%, #748B00 45%, #748B00 55%, #FFEF3C 80%, #FFF9B3 100%)';
+
   return (
-    <section className="relative mb-4 overflow-hidden rounded-[14px] border-2 border-yellow-200 bg-surface-2 p-5 shadow-[10px_0_24px_rgba(250,255,0,0.16)] md:p-6">
+    <div
+      className="mb-4 rounded-[16px] p-1"
+      style={{ background: gradientBorder }}
+    >
+      <section className="relative overflow-hidden rounded-[12px] bg-surface-2 p-5 md:p-6">
       <div className="pointer-events-none absolute inset-y-0 left-0 w-44 bg-gradient-to-r from-black via-black/70 to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-44 bg-gradient-to-l from-black via-black/70 to-transparent" />
 
@@ -104,5 +111,6 @@ export default function TierSummaryCard() {
         </div>
       </div>
     </section>
+    </div>
   );
 }

@@ -1,4 +1,5 @@
-import { Copy, Send, ShieldAlert } from 'lucide-react'
+import { ShieldAlert } from 'lucide-react'
+import Image from 'next/image'
 
 import { Button } from '@/components/ui/button'
 import type { Insight } from '@/types/insights'
@@ -52,18 +53,30 @@ export default function InsightCard({ insight }: InsightCardProps) {
           <Button
             type="button"
             onClick={handleCopy}
-            className="h-9 rounded-md bg-brand px-4 text-sm font-medium text-primary-foreground hover:bg-brand-dim"
+            className="h-9 rounded-md bg-brand px-4 text-[14px] font-semibold text-primary-foreground hover:bg-brand-dim"
           >
-            <Copy className="h-4 w-4" strokeWidth={1.8} />
+            <Image
+              src="/images/icons/copy_icon.svg"
+              alt=""
+              width={16}
+              height={16}
+              className="h-4 w-4 shrink-0"
+            />
             Copy & biên tập
           </Button>
           <Button
             type="button"
             variant="secondary"
-            className="h-9 rounded-md bg-white px-4 text-[13px] font-medium text-[#242424] hover:bg-[#e8e8e8]"
+            className="h-9 rounded-md bg-white px-4 text-[14px] font-semibold text-[#242424] hover:bg-[#e8e8e8]"
           >
-            <Send className="h-4 w-4" strokeWidth={1.8} />
-            Forward
+            <Image
+              src="/images/icons/send_icon.svg"
+              alt=""
+              width={16}
+              height={16}
+              className="h-4 w-4 shrink-0"
+            />
+            Chuyển tiếp
           </Button>
         </div>
       </div>
