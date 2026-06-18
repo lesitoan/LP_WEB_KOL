@@ -15,6 +15,7 @@ import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
 import { useGetGroupMembersQuery } from '@/services/api/groupsApi'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import { toast } from '@/hooks/useToast'
+import { formatVnd } from '@/lib/formatMoney'
 import type { MemberItem, MembersPagination } from '@/types/api'
 import { useGroupMembersFilters } from '../hooks/useGroupMembersFilters'
 
@@ -38,12 +39,6 @@ function fullName(member: MemberItem) {
 function formatDate(dateIso: string) {
   const date = new Date(dateIso)
   return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString('vi-VN')
-}
-
-function formatVndVolume(value: string) {
-  const parsed = Number(value)
-  if (Number.isNaN(parsed)) return value || '0 VNĐ'
-  return `${Math.round(parsed).toLocaleString('vi-VN')} VNĐ`
 }
 
 function normalizeStatus(value: string | null | undefined) {
@@ -351,7 +346,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       id: 'volume',
       header: renderSortableHeader('Volume (VNĐ)', 'usdVolume'),
       cellClassName: 'font-geist-mono font-medium',
-      cell: (member) => formatVndVolume(member.usdVolume),
+      cell: (member) => `${formatVnd(member.usdVolume)}`,
     },
   ]
   const tableColumns = columns.map((column) => ({

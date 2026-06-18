@@ -6,6 +6,7 @@ import { Gift, MoreHorizontal, Trash2, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { formatVnd } from '@/lib/formatMoney'
 import type { GroupItem, UpdateGroupBody } from '@/types/api'
 import { EditGroupDialog } from './editGroupDialog'
 import { GroupSummaryDialog } from './groupSummaryDialog'
@@ -21,10 +22,6 @@ function truncateDescription(value: string | null, maxLength = 32) {
   const description = (value || '').trim()
   if (!description) return 'Mô tả về group'
   return description.length > maxLength ? `${description.slice(0, maxLength)}...` : description
-}
-
-function formatVolumeRange(group: GroupItem) {
-  return `${group.minVolumeRequired} - ${group.maxVolumeRequired}`
 }
 
 function formatGracePeriodInDays(group: GroupItem) {
@@ -185,7 +182,7 @@ export function GroupSettingsCard({
       </div>
 
       <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-4">
-        <MetricBlock label="Volume (VNĐ)">{formatVolumeRange(group)}</MetricBlock>
+        <MetricBlock label="Volume (VNĐ)">{`${formatVnd(group.minVolumeRequired)} - ${formatVnd(group.maxVolumeRequired)}`}</MetricBlock>
         <MetricBlock label="Số lượng TV" className="text-right flex flex-col items-end">{group.memberCount ?? 0}</MetricBlock>
         <MetricBlock label="Cảnh báo">{group.warningCountBeforeKick} lần</MetricBlock>
         <MetricBlock label="Ân hạn" className="text-right flex flex-col items-end">{formatGracePeriodInDays(group)}</MetricBlock>

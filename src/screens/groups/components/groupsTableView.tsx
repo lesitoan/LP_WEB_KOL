@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { DataTable, type DataTablePagination, type DataTableColumn } from '@/components/ui/dataTable'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { formatVnd } from '@/lib/formatMoney'
 import type { GroupItem, UpdateGroupBody } from '@/types/api'
 import { EditGroupDialog } from './editGroupDialog'
 import { GroupLogoBadge } from './groupLogoBadge'
@@ -97,9 +98,6 @@ function truncateDescription(value: string | null, maxLength = 30) {
   return description.length > maxLength ? `${description.slice(0, maxLength)}...` : description
 }
 
-function formatVolumeRange(group: GroupItem) {
-  return `${group.minVolumeRequired} - ${group.maxVolumeRequired}`
-}
 
 function formatGracePeriodInDays(group: GroupItem) {
   const rawHours =
@@ -168,7 +166,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
     {
       id: 'volume',
       header: 'Volume (VNĐ)',
-      cell: (group) => formatVolumeRange(group),
+      cell: (group) => (<span>{`${formatVnd(group.minVolumeRequired)} - ${formatVnd(group.maxVolumeRequired)}`}</span>),
     },
     {
       id: 'memberCount',

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Spinner } from '@/components/ui/spinner'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { formatVnd } from '@/lib/formatMoney'
 import { useGetGroupAccessSummaryQuery } from '@/services/api/groupsApi'
 
 type GroupSummaryDialogProps = {
@@ -116,8 +117,8 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
                         {formatGroupStatus(data.group.status)}
                       </span>
                     </p>
-                    <p className="text-[#E8E8E8]"><span className="text-xs font-normal text-[#777777]">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${data.group.minVolumeRequired.toLocaleString()} USD` : '---'}</p>
-                    <p className="text-[#E8E8E8]"><span className="text-xs font-normal text-[#777777]">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${data.group.maxVolumeRequired.toLocaleString()} USD` : '---'}</p>
+                    <p className="text-[#E8E8E8]"><span className="text-xs font-normal text-[#777777]">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${formatVnd(data.group.minVolumeRequired)} VNĐ` : '---'}</p>
+                    <p className="text-[#E8E8E8]"><span className="text-xs font-normal text-[#777777]">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${formatVnd(data.group.maxVolumeRequired)} VNĐ` : '---'}</p>
                   </div>
                 </div>
 

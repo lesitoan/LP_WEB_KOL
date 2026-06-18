@@ -1,6 +1,7 @@
 "use client";
 
 import AnalyticsOverviewCardSkeleton from "@/components/skeletons/analytics/AnalyticsOverviewCardSkeleton"
+import { formatVnd } from "@/lib/formatMoney";
 import { cn } from "@/lib/utils";
 import { useGetKolDashboardStatsQuery } from "@/services/api/dashboardApi";
 import { useSearchParams } from "next/navigation";
@@ -14,10 +15,6 @@ function formatCount(value: number | undefined) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 0,
   }).format(Number(value ?? 0));
-}
-
-function formatCommission(value: number | undefined) {
-  return Math.round(Number(value ?? 0)).toLocaleString("vi-VN");
 }
 
 function StatCard({
@@ -77,7 +74,7 @@ export default function AnalyticsOverviewCard() {
               </span>
             </div>
             <div className="text-[36px] font-bold leading-none tracking-tight text-foreground sm:text-[40px]">
-              {formatCommission(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
+              {formatVnd(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
             </div>
           </div>
         </div>

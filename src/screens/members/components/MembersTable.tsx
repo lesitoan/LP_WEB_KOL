@@ -8,6 +8,7 @@ import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import type { ActiveFilterChip, SelectFilterConfig } from "@/components/filters/TableFilterBar";
 import { toast } from "@/hooks/useToast";
+import { formatVnd } from "@/lib/formatMoney";
 import { useGetMembersQuery } from "@/services/api/membersApi";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
 import type { MemberItem } from "@/types/api";
@@ -23,14 +24,6 @@ function formatDate(dateIso: string) {
   if (!dateIso) return "—";
   const date = new Date(dateIso);
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("vi-VN");
-}
-
-function formatVndVolume(value: string) {
-  const parsed = Number(value);
-
-  if (Number.isNaN(parsed)) return value || "0 VNĐ";
-
-  return `${Math.round(parsed).toLocaleString("vi-VN")} VNĐ`;
 }
 
 function truncateGroupTitle(title: string | null | undefined, maxLength = 10) {
@@ -320,7 +313,7 @@ export default function MembersTable() {
       id: "volume",
       header: renderSortableHeader("Volume 30D", "usdVolume"),
       cellClassName: "font-medium text-base",
-      cell: (member) => formatVndVolume(member.usdVolume),
+      cell: (member) => `${formatVnd(member.usdVolume)} VNĐ`,
     },
     {
       id: "status",
