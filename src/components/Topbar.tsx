@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { LogOut, Menu } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -60,14 +61,16 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           <Menu className="h-4 w-4" strokeWidth={1.9} />
         </button>
 
-        <Image
-          src="/images/Logo.png"
-          alt="SCEX"
-          width={132}
-          height={34}
-          priority
-          className="h-auto w-[67px] object-contain sm:w-[100px]"
-        />
+        <Link href="/" aria-label="Về trang chủ" className="inline-flex items-center">
+          <Image
+            src="/images/Logo.png"
+            alt="SCEX"
+            width={132}
+            height={34}
+            priority
+            className="h-auto w-[67px] object-contain sm:w-[100px]"
+          />
+        </Link>
       </div>
 
       <div className="ml-auto flex items-center gap-3">
