@@ -5,14 +5,7 @@ import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import AdminAppLayout from '@/layouts/admin/AdminAppLayout'
 import { useAdminAuthSession } from '@/hooks/admin/useAdminAuthSession'
-
-function PageLoading() {
-  return (
-    <div className="flex min-h-screen items-center justify-center text-muted-foreground">
-      Đang tải...
-    </div>
-  )
-}
+import { PageLoading as SharedPageLoading } from '@/components/ui/pageLoading'
 
 export default function AdminDashboardLayout({
   children,
@@ -33,7 +26,7 @@ export default function AdminDashboardLayout({
   }, [authHydrated, hasToken, pathname, router])
 
   if (!mounted || !authHydrated || !hasToken || isCheckingSession) {
-    return <PageLoading />
+    return <SharedPageLoading />
   }
 
   return <AdminAppLayout>{children}</AdminAppLayout>

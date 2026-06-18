@@ -5,15 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import AppLayout from "@/layouts/AppLayout";
 import { useAuthSession } from "@/hooks/useAuthSession";
-
-// Simple loading shell while checking auth session
-function PageLoading() {
-  return (
-    <div className="flex min-h-screen items-center justify-center text-muted-foreground">
-      Loading...
-    </div>
-  );
-}
+import { PageLoading } from "@/components/ui/pageLoading";
 
 export default function DashboardRoutesLayout({
   children,
