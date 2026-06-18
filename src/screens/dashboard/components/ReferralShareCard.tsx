@@ -2,15 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CircleCheck, Copy } from "lucide-react";
-import { referralUrl } from "../constants";
-
-const shareChannels = [
-  { label: "Facebook", src: "/images/social_logo/facebook.png" },
-  { label: "Telegram", src: "/images/social_logo/telegram.png" },
-  { label: "X (Twitter)", src: "/images/social_logo/x.png" },
-  { label: "WhatsApp", src: "/images/social_logo/whatsapp.png" },
-  { label: "Zalo", src: "/images/social_logo/zalo.png" },
-];
+import { referralSharePlatforms, referralShareText, referralUrl, type SharePlatformConfig } from "../constants";
 
 export default function ReferralShareCard() {
   const [copied, setCopied] = useState(false);
@@ -27,6 +19,11 @@ export default function ReferralShareCard() {
     if (!navigator.clipboard) return;
     await navigator.clipboard.writeText(referralUrl);
     setCopied(true);
+  };
+
+  const shareReferralUrl = (platform: SharePlatformConfig) => {
+    const shareUrl = platform.buildShareUrl(referralUrl, referralShareText);
+    window.open(shareUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -71,18 +68,20 @@ export default function ReferralShareCard() {
             Chia sẻ lên mạng xã hội
           </p>
           <div className="grid grid-cols-5 gap-4 lg:gap-2 xl:gap-4">
-            {shareChannels.map((channel) => (
+            {referralSharePlatforms.map((platform) => (
               <button
-                key={channel.label}
+                key={platform.id}
                 type="button"
+                onClick={() => shareReferralUrl(platform)}
                 className="flex min-w-0 flex-col items-center gap-2 rounded-md p-1 transition-colors hover:bg-white/5"
+                aria-label={`Chia sẻ qua ${platform.label}`}
               >
                 <img
-                  src={channel.src}
-                  alt={channel.label}
+                  src={platform.iconSrc}
+                  alt={platform.label}
                   className="h-10 w-10 object-contain"
                 />
-                <span className="w-full truncate text-center text-xs text-white">{channel.label}</span>
+                <span className="w-full truncate text-center text-xs text-white">{platform.label}</span>
               </button>
             ))}
           </div>

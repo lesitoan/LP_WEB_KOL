@@ -306,6 +306,52 @@ export function getAttentionActivityHref(type: KolRecentActivityType | string, m
 
 export const referralUrl = "https://www.sc.exchange/ref/olivia-3282";
 
+export type SharePlatformConfig = {
+  id: string;
+  label: string;
+  iconSrc: string;
+  buildShareUrl: (url: string, text: string) => string;
+};
+
+const encodeShareValue = (value: string) => encodeURIComponent(value);
+
+export const referralShareText = "Tham gia SCEX cùng mình và nhận thêm ưu đãi referral!";
+
+export const referralSharePlatforms: SharePlatformConfig[] = [
+  {
+    id: "facebook",
+    label: "Facebook",
+    iconSrc: "/images/social_logo/facebook.png",
+    buildShareUrl: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeShareValue(url)}`,
+  },
+  {
+    id: "telegram",
+    label: "Telegram",
+    iconSrc: "/images/social_logo/telegram.png",
+    buildShareUrl: (url, text) =>
+      `https://t.me/share/url?url=${encodeShareValue(url)}&text=${encodeShareValue(text)}`,
+  },
+  {
+    id: "x",
+    label: "X (Twitter)",
+    iconSrc: "/images/social_logo/x.png",
+    buildShareUrl: (url, text) =>
+      `https://twitter.com/intent/tweet?url=${encodeShareValue(url)}&text=${encodeShareValue(text)}`,
+  },
+  {
+    id: "whatsapp",
+    label: "WhatsApp",
+    iconSrc: "/images/social_logo/whatsapp.png",
+    buildShareUrl: (url, text) => `https://wa.me/?text=${encodeShareValue(`${text} ${url}`)}`,
+  },
+  {
+    id: "zalo",
+    label: "Zalo",
+    iconSrc: "/images/social_logo/zalo.png",
+    buildShareUrl: (url) => `https://zalo.me/share?u=${encodeShareValue(url)}`,
+  },
+];
+
 export const commissionTotal = {
   icon: Bitcoin,
   label: "Tổng số hoa hồng",
