@@ -2,15 +2,27 @@ import type { LucideIcon } from "lucide-react";
 import {
   Bell,
   Bitcoin,
+  BadgeDollarSign,
+  BadgePlus,
+  Ban,
+  CircleCheck,
   Flag,
+  Gift,
   Landmark,
+  Pencil,
+  RotateCcw,
   Share2,
+  ShieldCheck,
   TrendingDown,
   TrendingUp,
+  Trash2,
+  UserPlus,
   UserRoundCheck,
+  UserRoundX,
   UsersRound,
   WalletCards,
 } from "lucide-react";
+import type { KolRecentActivityType } from "@/types/api";
 
 export type DashboardSegment = "all" | "spot" | "future";
 
@@ -148,6 +160,149 @@ export const attentionActivities = [
     content: "Campaign A đã kết thúc",
   },
 ];
+
+export type AttentionActivityConfig = {
+  group: "members" | "groups" | "benefits" | "cashback" | "campaign";
+  icon: LucideIcon;
+  iconClassName: string;
+  href: string | ((metadata?: Record<string, unknown>) => string);
+};
+
+export const attentionActivityConfig: Record<KolRecentActivityType, AttentionActivityConfig> = {
+  member_registrations_today: {
+    group: "members",
+    icon: UserPlus,
+    iconClassName: "bg-emerald-500/15 text-emerald-400",
+    href: "/members",
+  },
+  member_join_group: {
+    group: "members",
+    icon: UsersRound,
+    iconClassName: "bg-teal-500/15 text-teal-300",
+    href: "/members",
+  },
+  member_rejoin_group: {
+    group: "members",
+    icon: RotateCcw,
+    iconClassName: "bg-cyan-500/15 text-cyan-300",
+    href: "/members",
+  },
+  member_low_volume_warning: {
+    group: "members",
+    icon: Bell,
+    iconClassName: "bg-yellow-400/15 text-yellow-300",
+    href: "/members",
+  },
+  member_kicked_low_volume: {
+    group: "members",
+    icon: UserRoundX,
+    iconClassName: "bg-red-500/15 text-red-400",
+    href: "/members",
+  },
+  member_rejoin_eligible: {
+    group: "members",
+    icon: CircleCheck,
+    iconClassName: "bg-lime-500/15 text-lime-300",
+    href: "/members",
+  },
+  member_rejoin_blocked: {
+    group: "members",
+    icon: Ban,
+    iconClassName: "bg-rose-500/15 text-rose-400",
+    href: "/members",
+  },
+  commission_cycle_summary: {
+    group: "cashback",
+    icon: BadgeDollarSign,
+    iconClassName: "bg-brand/15 text-brand",
+    href: "/cashback",
+  },
+  cashback_ready_to_claim: {
+    group: "cashback",
+    icon: Gift,
+    iconClassName: "bg-fuchsia-500/15 text-fuchsia-300",
+    href: "/cashback",
+  },
+  group_created: {
+    group: "groups",
+    icon: BadgePlus,
+    iconClassName: "bg-blue-500/15 text-blue-300",
+    href: "/groups",
+  },
+  group_updated: {
+    group: "groups",
+    icon: Pencil,
+    iconClassName: "bg-indigo-500/15 text-indigo-300",
+    href: "/groups",
+  },
+  group_status_updated: {
+    group: "groups",
+    icon: ShieldCheck,
+    iconClassName: "bg-violet-500/15 text-violet-300",
+    href: "/groups",
+  },
+  group_deleted: {
+    group: "groups",
+    icon: Trash2,
+    iconClassName: "bg-red-500/15 text-red-400",
+    href: "/groups",
+  },
+  group_benefit_created: {
+    group: "benefits",
+    icon: Gift,
+    iconClassName: "bg-pink-500/15 text-pink-300",
+    href: (metadata) => {
+      const groupId = typeof metadata?.telegramGroupId === "string" ? metadata.telegramGroupId : "";
+      return groupId ? `/groups/${groupId}/benefits` : "/groups";
+    },
+  },
+  group_benefit_updated: {
+    group: "benefits",
+    icon: Pencil,
+    iconClassName: "bg-purple-500/15 text-purple-300",
+    href: (metadata) => {
+      const groupId = typeof metadata?.telegramGroupId === "string" ? metadata.telegramGroupId : "";
+      return groupId ? `/groups/${groupId}/benefits` : "/groups";
+    },
+  },
+  group_benefit_deleted: {
+    group: "benefits",
+    icon: Trash2,
+    iconClassName: "bg-orange-500/15 text-orange-300",
+    href: (metadata) => {
+      const groupId = typeof metadata?.telegramGroupId === "string" ? metadata.telegramGroupId : "";
+      return groupId ? `/groups/${groupId}/benefits` : "/groups";
+    },
+  },
+  campaign_created: {
+    group: "campaign",
+    icon: Flag,
+    iconClassName: "bg-amber-500/15 text-amber-300",
+    href: "/campaign",
+  },
+  campaign_updated: {
+    group: "campaign",
+    icon: Pencil,
+    iconClassName: "bg-orange-500/15 text-orange-300",
+    href: "/campaign",
+  },
+};
+
+export const fallbackAttentionActivityConfig: AttentionActivityConfig = {
+  group: "members",
+  icon: Bell,
+  iconClassName: "bg-brand/15 text-brand",
+  href: "/dashboard",
+};
+
+export function getAttentionActivityConfig(type: KolRecentActivityType | string) {
+  return attentionActivityConfig[type as KolRecentActivityType] ?? fallbackAttentionActivityConfig;
+}
+
+export function getAttentionActivityHref(type: KolRecentActivityType | string, metadata?: Record<string, unknown>) {
+  const href = getAttentionActivityConfig(type).href;
+  return typeof href === "function" ? href(metadata) : href;
+}
 
 export const referralUrl = "https://www.sc.exchange/ref/olivia-3282";
 
