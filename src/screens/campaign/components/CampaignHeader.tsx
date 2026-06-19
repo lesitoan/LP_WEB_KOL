@@ -15,7 +15,7 @@ export default function CampaignHeader({ onCreateClick }: Props) {
       </div>
       <button 
         onClick={onCreateClick}
-        className="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold bg-[#0066FF] text-white hover:bg-[#0055D4] transition-all active:scale-[0.98]"
+        className="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold bg-[#F6F0AA] text-[#000000] hover:opacity-90 transition-all active:scale-[0.98]"
       >
         <svg
           className="w-3.5 h-3.5"
