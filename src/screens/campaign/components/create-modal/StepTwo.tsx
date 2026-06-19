@@ -1,4 +1,3 @@
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { CreateCampaignFormValues } from './schema';
 import FormInput from './FormInput';
@@ -13,7 +12,7 @@ export default function StepTwo() {
   const selectedDay = watch("announceDayOfWeek");
   const selectedFrequency = watch("announceFrequency");
 
-  const showTimeInput = selectedFrequency === "Thông báo hằng ngày" || selectedFrequency === "Thông báo hằng tuần";
+  const showTimeInput = selectedFrequency === "Thông báo hằng ngày";
   const showDaysOfWeek = selectedFrequency === "Thông báo hằng tuần";
 
   return (
@@ -74,9 +73,6 @@ export default function StepTwo() {
 
         {showDaysOfWeek && (
           <div className="border-t border-white/5 pt-4">
-            <label className="block text-[13px] text-white font-semibold mb-2">
-              Ngày thông báo
-            </label>
             <div className="flex flex-wrap gap-2 sm:grid sm:grid-cols-7 sm:gap-2">
               {DAYS_OF_WEEK.map((day) => {
                 const isSelected = selectedDay === day;

@@ -9,17 +9,6 @@ import CreateCampaignModal from "./components/create-modal/CreateCampaignModal";
 import CampaignHeroBannerSkeleton from "@/components/skeletons/campaign/CampaignHeroBannerSkeleton";
 import CampaignLeaderboardSkeleton from "@/components/skeletons/campaign/CampaignLeaderboardSkeleton";
 import CampaignHistorySkeleton from "@/components/skeletons/campaign/CampaignHistorySkeleton";
-import type { LeaderboardEntry } from "@/types/api/campaign";
-
-const MOCK_LEADERBOARD: LeaderboardEntry[] = [
-  { rank: 1, lpexUid: "932347", telegramUsername: "TraderVN123", usdVolume: "84744000" },
-  { rank: 2, lpexUid: "932453", telegramUsername: "Bennie Tran", usdVolume: "44744000" },
-  { rank: 3, lpexUid: "932323", telegramUsername: "Lee Huynh", usdVolume: "4744000" },
-  { rank: 4, lpexUid: "928123", telegramUsername: "Trainer Nguyen", usdVolume: "1895.4" },
-  { rank: 5, lpexUid: "928131", telegramUsername: "Austin Ly", usdVolume: "1855.4" },
-  { rank: 6, lpexUid: "928242", telegramUsername: "Minh Correy", usdVolume: "1495.4" },
-  { rank: 7, lpexUid: "928324", telegramUsername: "Lee Huynh", usdVolume: "1095.4" },
-];
 
 export default function CampaignScreen() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -73,11 +62,7 @@ export default function CampaignScreen() {
     { skip: !activeCampaign?.id } 
   );
 
-  // Fallback to mock data for testing if API returns no leaderboard data
-  const finalLeaderboard = useMemo(() => {
-    if (leaderboardData && leaderboardData.length > 0) return leaderboardData;
-    return MOCK_LEADERBOARD;
-  }, [leaderboardData]);
+  const leaderboard = leaderboardData ?? [];
 
   // Loading states cho từng phần
   const isHeroLoading = isLoadingActive;
@@ -95,8 +80,7 @@ export default function CampaignScreen() {
         <>
           <CampaignHeroBanner 
             campaign={activeCampaign} 
-            leaderboard={finalLeaderboard}
-            // leaderboard={leaderboardData ?? []}
+            leaderboard={leaderboard}
           />
 
           {/* Leaderboard */}
@@ -105,8 +89,7 @@ export default function CampaignScreen() {
             <CampaignLeaderboardSkeleton />
           ) : (
             <CampaignLeaderboard 
-              leaderboard={finalLeaderboard} 
-              // leaderboard={leaderboardData ?? []}
+              leaderboard={leaderboard} 
               rewards={activeCampaign.rewards} 
             />
           )}

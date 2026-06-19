@@ -93,7 +93,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
         "Chỉ thông báo khi kết thúc": "END_ONLY",
       };
       const apiFrequency = frequencyMap[data.announceFrequency] || "NONE";
-      const needsTime = apiFrequency === "DAILY" || apiFrequency === "WEEKLY";
+      const needsTime = apiFrequency === "DAILY";
       const needsDay = apiFrequency === "WEEKLY";
 
       // Parse giờ:phút
@@ -103,6 +103,10 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
         const [h, m] = data.announceTime.split(":");
         announceHour = parseInt(h, 10);
         announceMinute = parseInt(m, 10);
+      } else if (needsDay) {
+        // Thông báo hằng tuần: mặc định 0h00
+        announceHour = 0;
+        announceMinute = 0;
       }
 
       // Build payload
@@ -120,8 +124,8 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
           { rankFrom: 3, rankTo: 3, label: formatLabel(data.rank3) },
         ].filter(r => r.label !== ""),
         announceFrequency: apiFrequency,
-        announceHour: needsTime ? announceHour : null,
-        announceMinute: needsTime ? announceMinute : null,
+        announceHour,
+        announceMinute,
         announceDayOfWeek: needsDay ? mapDayOfWeek(data.announceDayOfWeek) : null,
         status: "DRAFT",
       };
@@ -145,7 +149,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm px-4 pt-20 sm:pt-0 overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 py-4 overflow-y-auto">
       <div 
         className="bg-[#1A1A1A] border border-white/5 rounded-2xl w-full max-w-[640px] flex flex-col shadow-2xl overflow-hidden animate-fade-in-up"
         onClick={(e) => e.stopPropagation()}

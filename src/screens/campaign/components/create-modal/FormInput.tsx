@@ -72,7 +72,6 @@ const FormInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormInputPr
         )}
       </div>
 
-      {/* Báo lỗi màu đỏ */}
       {error && <p className="mt-1.5 text-[12px] text-red-500 font-medium animate-fade-in-up">{error}</p>}
     </div>
   );

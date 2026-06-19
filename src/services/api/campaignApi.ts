@@ -69,7 +69,7 @@ export const campaignApi = api.injectEndpoints({
       invalidatesTags: ['Campaigns'],
     }),
 
-    // PATCH /kol/campaigns/:id — Cập nhật trạng thái / thông tin chiến dịch
+    // PATCH /kol/campaigns/:id
     updateCampaign: builder.mutation<CampaignData, { id: string; body: Record<string, unknown> }>({
       query: ({ id, body }) => ({
         url: apiV1Path(`/kol/campaigns/${id}`),

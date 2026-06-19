@@ -168,10 +168,10 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
   };
 
   return (
-    <div className="relative flex-shrink-0 w-full max-w-[380px] mx-auto min-[576px]:mx-0 min-[576px]:w-[380px] lg:max-w-none lg:w-auto bg-[#171717] rounded-[20px] overflow-hidden border border-white/5 flex flex-col snap-start">
+    <div className="relative w-full bg-[#171717] rounded-[20px] overflow-hidden border border-white/5 flex flex-col">
 
       {/* Nửa trên */}
-      <div className={`relative pt-5 px-5 pb-8 ${cfg.gradient}`}>
+      <div className={`relative pt-5 px-5 pb-8 min-[576px]:px-4 lg:px-5 ${cfg.gradient}`}>
 
         <div className={`absolute left-0 top-5 w-[4px] h-[38px] ${cfg.leftBar} rounded-r-sm`} />
 
@@ -193,27 +193,27 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
       </div>
 
       {/* Nửa dưới */}
-      <div className="relative z-10 -mt-5 bg-[#171717] rounded-t-[20px] p-5 flex-1 flex flex-col justify-between">
+      <div className="relative z-10 -mt-5 bg-[#171717] rounded-t-[20px] p-5 min-[576px]:p-4 lg:p-5 flex-1 flex flex-col justify-between">
 
         {/* Stats */}
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-[11px] text-[#8B8B93] mb-1.5">Participants</p>
-            <p className="font-bold text-[14px] text-white">
+        <div className="flex justify-between items-start gap-1">
+          <div className="min-w-0">
+            <p className="text-[11px] text-[#8B8B93] mb-1.5 truncate">Participants</p>
+            <p className="font-bold text-[14px] text-white truncate">
               {campaign.participantCount ?? "—"}
             </p>
           </div>
-          <div>
-            <p className="text-[11px] text-[#8B8B93] mb-1.5">Tổng</p>
-            <p className="font-bold text-[14px] text-white">
+          <div className="min-w-0">
+            <p className="text-[11px] text-[#8B8B93] mb-1.5 truncate">Tổng</p>
+            <p className="font-bold text-[14px] text-white truncate">
               {campaign.totalVolumeUsd != null
                 ? formatVND(campaign.totalVolumeUsd)
                 : "—"}
             </p>
           </div>
-          <div>
-            <p className="text-[11px] text-[#8B8B93] mb-1.5">{countdownLabel}</p>
-            <p className="font-bold text-[14px] text-white">
+          <div className="min-w-0">
+            <p className="text-[11px] text-[#8B8B93] mb-1.5 truncate">{countdownLabel}</p>
+            <p className="font-bold text-[14px] text-white truncate">
               {liveCountdown}
             </p>
           </div>
@@ -261,7 +261,7 @@ export default function CampaignHistory({ campaigns }: Props) {
         Các chiến dịch đã tạo
       </h3>
 
-      <div className="flex flex-col min-[576px]:flex-row lg:grid lg:grid-cols-3 gap-4 min-[576px]:overflow-x-auto pb-4 min-[576px]:snap-x min-[576px]:snap-mandatory scrollbar-hide">
+      <div className="grid grid-cols-1 min-[576px]:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
         {campaigns.map((campaign) => (
           <HistoryCard key={campaign.id} campaign={campaign} />
         ))}

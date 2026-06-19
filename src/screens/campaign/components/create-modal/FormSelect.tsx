@@ -40,7 +40,6 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(({
         </svg>
       </div>
       
-      {/* Dòng text báo lỗi màu đỏ */}
       {error && <p className="mt-1.5 text-[12px] text-red-500 font-medium animate-fade-in-up">{error}</p>}
     </div>
   );

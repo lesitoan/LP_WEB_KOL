@@ -38,7 +38,7 @@ const DefaultAvatar = () => (
   <img
     src="/images/campaign/avatar.png"
     alt="Avatar"
-    className="w-[42px] h-[42px] rounded-full object-cover shrink-0"
+    className="w-[36px] h-[36px] min-[576px]:w-[22px] min-[576px]:h-[22px] lg:w-[42px] lg:h-[42px] rounded-full object-cover shrink-0"
   />
 );
 
@@ -62,9 +62,9 @@ const getBorderGrad = (rank: number) => {
 
 const getHeightClass = (rank: number) => {
   switch (rank) {
-    case 1: return "h-[155px] min-[576px]:h-[190px] md:h-[210px]";
-    case 2: return "h-[155px] min-[576px]:h-[165px] md:h-[185px]";
-    case 3: return "h-[155px] min-[576px]:h-[145px] md:h-[165px]";
+    case 1: return "h-[155px] min-[576px]:h-[135px] lg:h-[210px]";
+    case 2: return "h-[155px] min-[576px]:h-[125px] lg:h-[185px]";
+    case 3: return "h-[155px] min-[576px]:h-[115px] lg:h-[165px]";
     default: return "h-auto";
   }
 };
@@ -74,7 +74,7 @@ const HexagonBadge = ({ rank }: { rank: number }) => {
     <img
       src={`/images/campaign/Badge_${rank}.png`}
       alt={`Badge ${rank}`}
-      className="w-12 h-12 object-contain shrink-0"
+      className="w-10 h-10 min-[576px]:w-6 min-[576px]:h-6 lg:w-12 lg:h-12 object-contain shrink-0"
     />
   );
 };
@@ -86,8 +86,8 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
   const heightClass = getHeightClass(entry.rank);
 
   return (
-    <div className={`relative flex-1 min-w-[220px] p-[1.75px] rounded-[18px] bg-gradient-to-b ${borderGrad} transition-all duration-300 ${heightClass}`}>
-      <div className="relative overflow-hidden h-full bg-[#1C1C1E] rounded-[16px] p-4 sm:p-5 flex flex-col justify-start">
+    <div className={`relative w-full p-[1.75px] rounded-[18px] bg-gradient-to-b ${borderGrad} transition-all duration-300 ${heightClass}`}>
+      <div className="relative overflow-hidden h-full bg-[#1C1C1E] rounded-[16px] p-3 min-[576px]:p-2 sm:p-4 lg:p-5 flex flex-col justify-start">
         
         {/* Vệt sáng highlight */}
         <img
@@ -97,12 +97,12 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
         />
 
         {/* Header */}
-        <div className="relative z-10 flex items-center justify-between mb-3 sm:mb-4">
-          <div className="flex items-center gap-2 md:gap-3">
+        <div className="relative z-10 flex items-center justify-between mb-2 lg:mb-4">
+          <div className="flex items-center gap-1 lg:gap-3 min-w-0">
             <DefaultAvatar />
-            <div>
-              <p className="text-[13px] sm:text-[14px] font-semibold text-white">{entry.telegramUsername}</p>
-              <p className="text-[11px] sm:text-[12px] text-[#8B8B93] mt-0.5">UID: {entry.lpexUid}</p>
+            <div className="min-w-0">
+              <p className="text-[13px] min-[576px]:text-[9px] lg:text-[14px] font-semibold text-white truncate">{entry.telegramUsername}</p>
+              <p className="text-[11px] min-[576px]:text-[7px] lg:text-[12px] text-[#8B8B93] mt-0.5 truncate">UID: {entry.lpexUid}</p>
             </div>
           </div>
           <HexagonBadge rank={entry.rank} />
@@ -110,19 +110,19 @@ function PodiumCard({ entry, rewards }: { entry: LeaderboardEntry; rewards: Camp
 
         <div className="relative z-10">
           {/* Divider */}
-          <div className="h-px w-full bg-white/5 mb-3 sm:mb-4" />
+          <div className="h-px w-full bg-white/5 mb-2 lg:mb-4" />
 
           {/* Stats */}
-          <div className="flex justify-between items-end gap-2">
+          <div className="flex justify-between items-end gap-1">
             <div className="min-w-0">
-              <p className="text-[10px] sm:text-[11px] text-[#8B8B93] mb-1 sm:mb-1.5 truncate">Tổng tích lũy</p>
-              <p className="font-bold text-[14px] sm:text-[16px] text-white truncate">{formatVND(entry.usdVolume)}</p>
+              <p className="text-[10px] min-[576px]:text-[8px] lg:text-[11px] text-[#8B8B93] mb-0.5 lg:mb-1.5 truncate">Tổng tích lũy</p>
+              <p className="font-bold text-[14px] min-[576px]:text-[9px] lg:text-[16px] text-white truncate">{formatVND(entry.usdVolume)}</p>
             </div>
             {prize && (
               <div className="flex flex-col items-start text-left shrink-0">
-                <p className="text-[10px] sm:text-[11px] text-[#8B8B93] mb-1 sm:mb-1.5 truncate">Phần thưởng</p>
-                <div className="flex items-center font-bold text-[13px] sm:text-[15px] text-white whitespace-nowrap">
-                  <img src="/images/campaign/Ic_filled_bitcoin-circle-1.png" alt="USDT" className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] mr-1 sm:mr-1.5 shrink-0" />
+                <p className="text-[10px] min-[576px]:text-[8px] lg:text-[11px] text-[#8B8B93] mb-0.5 lg:mb-1.5 truncate">Phần thưởng</p>
+                <div className="flex items-center font-bold text-[13px] min-[576px]:text-[9px] lg:text-[15px] text-white whitespace-nowrap">
+                  <img src="/images/campaign/Ic_filled_bitcoin-circle-1.png" alt="USDT" className="w-[16px] h-[16px] min-[576px]:w-[10px] min-[576px]:h-[10px] lg:w-[18px] lg:h-[18px] mr-0.5 lg:mr-1.5 shrink-0" />
                   {prize}
                 </div>
               </div>
@@ -165,11 +165,11 @@ export default function CampaignLeaderboard({ leaderboard, rewards }: Props) {
   return (
     <div>
       {/* Podium Top 3 */}
-      <div className="flex flex-col min-[576px]:flex-row gap-3 mb-6 items-stretch min-[576px]:items-end min-[576px]:overflow-x-auto pb-2 min-[576px]:snap-x min-[576px]:snap-mandatory scrollbar-hide">
+      <div className="grid grid-cols-1 min-[576px]:grid-cols-3 gap-2 mb-6 items-stretch min-[576px]:items-end">
         {podium.map((entry) => (
           <div 
             key={entry.rank} 
-            className={`snap-start shrink-0 w-full max-w-[340px] mx-auto min-[576px]:mx-0 min-[576px]:w-[340px] lg:max-w-none lg:w-auto lg:flex-1 lg:min-w-[220px] ${getPodiumOrderClass(entry.rank)}`}
+            className={`w-full ${getPodiumOrderClass(entry.rank)}`}
           >
             <PodiumCard entry={entry} rewards={rewards} />
           </div>

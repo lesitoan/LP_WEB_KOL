@@ -91,12 +91,12 @@ export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
         </div>
 
         {/* Stats Block */}
-        <div className="flex flex-row items-center justify-between bg-[#1C1C1E]/90 lg:bg-[#1C1C1E]/95 backdrop-blur-md border border-white/5 rounded-[11px] py-4 px-2.5 sm:px-4 md:px-8 md:py-7 lg:px-4 lg:py-5 xl:px-8 xl:py-7 gap-2 sm:gap-4 md:gap-8 lg:gap-4 xl:gap-8 shadow-xl w-full lg:w-auto">
+        <div className="flex flex-row items-center justify-between bg-[#1C1C1E]/90 lg:bg-[#1C1C1E]/95 backdrop-blur-md border border-white/5 rounded-[11px] py-4 px-2.5 sm:px-4 md:px-4 md:py-4 lg:px-4 lg:py-5 xl:px-8 xl:py-7 gap-2 sm:gap-4 md:gap-4 lg:gap-4 xl:gap-8 shadow-xl w-full lg:w-auto">
           
           {/* Stat 1: Participants */}
           <div className="flex flex-col justify-center items-center lg:items-start shrink-0">
             <div className="flex items-center gap-1 md:gap-2 lg:gap-1.5 xl:gap-2 mb-2 lg:mb-1.5 xl:mb-3">
-              <img src="/images/campaign/Ic_filled_users-group.png" alt="Participants" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] md:w-[20px] md:h-[20px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
+              <img src="/images/campaign/Ic_filled_users-group.png" alt="Participants" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
               <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[12px] xl:text-[14px] whitespace-nowrap">Participants</p>
             </div>
             <p className="font-bold text-white leading-none truncate text-[12px] sm:text-[14px] lg:text-[16px] xl:text-[22px]">
@@ -104,12 +104,12 @@ export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
             </p>
           </div>
 
-          <div className="h-10 md:h-14 lg:h-10 xl:h-14 w-px bg-white/10 shrink-0" />
+          <div className="h-10 md:h-10 lg:h-10 xl:h-14 w-px bg-white/10 shrink-0" />
 
           {/* Stat 2: Total Volume */}
           <div className="flex flex-col justify-center items-center lg:items-start shrink-0">
             <div className="flex items-center gap-1 md:gap-2 lg:gap-1.5 xl:gap-2 mb-2 lg:mb-1.5 xl:mb-3">
-              <img src="/images/campaign/Ic_filled_bitcoin-circle.png" alt="Total Volume" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] md:w-[20px] md:h-[20px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
+              <img src="/images/campaign/Ic_filled_bitcoin-circle.png" alt="Total Volume" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
               <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[12px] xl:text-[14px] whitespace-nowrap">
                 <span className="hidden sm:inline">Tổng </span>volume
               </p>
@@ -119,12 +119,12 @@ export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
             </p>
           </div>
 
-          <div className="h-10 md:h-14 lg:h-10 xl:h-14 w-px bg-white/10 shrink-0" />
+          <div className="h-10 md:h-10 lg:h-10 xl:h-14 w-px bg-white/10 shrink-0" />
 
           {/* Stat 3: Live Countdown */}
           <div className="flex flex-col justify-center items-center lg:items-start shrink-0">
             <div className="flex items-center gap-1 md:gap-2 lg:gap-1.5 xl:gap-2 mb-2 lg:mb-1.5 xl:mb-3">
-              <img src="/images/campaign/Ic_filled_alarm-clock.png" alt="Remaining Time" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] md:w-[20px] md:h-[20px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
+              <img src="/images/campaign/Ic_filled_alarm-clock.png" alt="Remaining Time" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
               <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[12px] xl:text-[14px] whitespace-nowrap">
                 <span className="hidden sm:inline">Thời gian </span>còn lại
               </p>
