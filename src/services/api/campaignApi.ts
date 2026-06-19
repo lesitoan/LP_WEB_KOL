@@ -57,6 +57,30 @@ export const campaignApi = api.injectEndpoints({
       providesTags: (result, error, id) => [{ type: 'Campaigns', id: `${id}-leaderboard` }],
     }),
 
+    // POST /kol/campaigns (luôn DRAFT)
+    createCampaign: builder.mutation<CampaignData, Record<string, unknown>>({
+      query: (body) => ({
+        url: apiV1Path('/kol/campaigns'),
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (payload: CampaignEnvelope) =>
+        ensureData(payload, 'Không thể tạo chiến dịch'),
+      invalidatesTags: ['Campaigns'],
+    }),
+
+    // PATCH /kol/campaigns/:id
+    updateCampaign: builder.mutation<CampaignData, { id: string; body: Record<string, unknown> }>({
+      query: ({ id, body }) => ({
+        url: apiV1Path(`/kol/campaigns/${id}`),
+        method: 'PATCH',
+        body,
+      }),
+      transformResponse: (payload: CampaignEnvelope) =>
+        ensureData(payload, 'Không thể cập nhật chiến dịch'),
+      invalidatesTags: ['Campaigns'],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -65,4 +89,6 @@ export const {
   useGetCampaignsQuery,
   useGetCampaignByIdQuery,
   useGetCampaignLeaderboardQuery,
+  useCreateCampaignMutation,
+  useUpdateCampaignMutation,
 } = campaignApi

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createCampaignSchema, type CreateCampaignFormValues } from './schema';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
+import { useCreateCampaignMutation } from '@/services/api/campaignApi';
+import { toast } from '@/hooks/useToast';
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +15,8 @@ interface Props {
 
 export default function CreateCampaignModal({ isOpen, onClose }: Props) {
   const [step, setStep] = useState<1 | 2>(1);
+  const [createCampaign, { isLoading }] = useCreateCampaignMutation();
+  const [mounted, setMounted] = useState(false);
 
   // 1. Khởi tạo Form với Zod Resolver và Default Values
   const methods = useForm<CreateCampaignFormValues>({
@@ -21,19 +26,21 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
       description: "",
       startAt: "",
       endAt: "",
-      rankingType: "Volume giao dịch",
-      scopeType: "Chọn nhóm",
+      rankingType: "TOP_VOLUME",
+      telegramGroupId: "ALL_GROUPS",
       rewardType: "Tiền thưởng",
       rank1: "",
       rank2: "",
       rank3: "",
       announceFrequency: "Thông báo hằng tuần",
-      announceDayOfWeek: "",
+      announceDayOfWeek: "Thứ 2",
+      announceTime: "09:00",
     },
     mode: "onChange", 
   });
 
   useEffect(() => {
+    setMounted(true);
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -46,12 +53,12 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen, methods]);
 
-  if (!isOpen) return null;
+  if (!mounted || !isOpen) return null;
 
   // 2. Xử lý khi bấm nút "Tiếp tục" ở Bước 1
   const handleNext = async (e: React.MouseEvent) => {
     e.preventDefault();
-    const isStep1Valid = await methods.trigger(["name", "startAt", "endAt", "rankingType", "scopeType"]);
+    const isStep1Valid = await methods.trigger(["name", "startAt", "endAt", "rankingType", "telegramGroupId"]);
     
     if (isStep1Valid) {
       setStep(2);
@@ -59,13 +66,90 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
   };  
 
   // 3. Xử lý Submit toàn bộ Form ở Bước 2
-  const onSubmit = (data: CreateCampaignFormValues) => {
-    console.log("🚀 DỮ LIỆU CHUẨN BỊ GỬI API:", data);
-    // API Create Campaign
+  const onSubmit = async (data: CreateCampaignFormValues) => {
+    try {
+      // Map label phần thưởng
+      const formatLabel = (val?: string) => {
+        if (!val) return "";
+        const trimmed = val.trim();
+        return trimmed.toUpperCase().includes("USDT") ? trimmed : `${trimmed} USDT`;
+      };
+
+      // Map ngày thông báo
+      const mapDayOfWeek = (dayStr?: string): number | null => {
+        if (!dayStr) return null;
+        const map: Record<string, number> = {
+          "Chủ nhật": 0, "Thứ 2": 1, "Thứ 3": 2, "Thứ 4": 3,
+          "Thứ 5": 4, "Thứ 6": 5, "Thứ 7": 6,
+        };
+        return map[dayStr] ?? null;
+      };
+
+      // Map tần suất thông báo
+      const frequencyMap: Record<string, string> = {
+        "Không thông báo": "NONE",
+        "Thông báo hằng ngày": "DAILY",
+        "Thông báo hằng tuần": "WEEKLY",
+        "Chỉ thông báo khi kết thúc": "END_ONLY",
+      };
+      const apiFrequency = frequencyMap[data.announceFrequency] || "NONE";
+      const needsTime = apiFrequency === "DAILY";
+      const needsDay = apiFrequency === "WEEKLY";
+
+      // Parse giờ:phút
+      let announceHour: number | null = null;
+      let announceMinute: number | null = null;
+      if (needsTime && data.announceTime) {
+        const [h, m] = data.announceTime.split(":");
+        announceHour = parseInt(h, 10);
+        announceMinute = parseInt(m, 10);
+      } else if (needsDay) {
+        // Thông báo hằng tuần: mặc định 0h00
+        announceHour = 0;
+        announceMinute = 0;
+      }
+
+      // Build payload
+      const payload = {
+        name: data.name,
+        description: data.description || null,
+        rankingType: "TOP_VOLUME",
+        scopeType: data.telegramGroupId === "ALL_GROUPS" ? "ALL_GROUPS" : "SINGLE_GROUP",
+        telegramGroupId: data.telegramGroupId === "ALL_GROUPS" ? null : data.telegramGroupId,
+        startAt: `${data.startAt}T00:00:00.000Z`,
+        endAt: `${data.endAt}T23:59:59.000Z`,
+        rewards: [
+          { rankFrom: 1, rankTo: 1, label: formatLabel(data.rank1) },
+          { rankFrom: 2, rankTo: 2, label: formatLabel(data.rank2) },
+          { rankFrom: 3, rankTo: 3, label: formatLabel(data.rank3) },
+        ].filter(r => r.label !== ""),
+        announceFrequency: apiFrequency,
+        announceHour,
+        announceMinute,
+        announceDayOfWeek: needsDay ? mapDayOfWeek(data.announceDayOfWeek) : null,
+        status: "DRAFT",
+      };
+
+      await createCampaign(payload).unwrap();
+
+      toast({
+        title: "Tạo chiến dịch thành công",
+        description: "Chiến dịch đã được lưu dưới dạng bản nháp. Bạn có thể phát hành bất cứ lúc nào.",
+        variant: "success",
+      });
+      onClose();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định";
+      toast({
+        title: "Tạo chiến dịch thất bại",
+        description: message,
+        variant: "destructive",
+      });
+    }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm px-4 pt-20 sm:pt-0 overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 py-4 overflow-y-auto">
       <div 
         className="bg-[#1A1A1A] border border-white/5 rounded-2xl w-full max-w-[640px] flex flex-col shadow-2xl overflow-hidden animate-fade-in-up"
         onClick={(e) => e.stopPropagation()}
@@ -97,8 +181,9 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
                 <div className="flex items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
                   <button 
                     type="button"
+                    disabled={isLoading}
                     onClick={() => step === 1 ? onClose() : setStep(1)}
-                    className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-black bg-white hover:bg-gray-200 transition-colors active:scale-95 text-center"
+                    className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-black bg-white hover:bg-gray-200 transition-colors active:scale-95 text-center disabled:opacity-50"
                   >
                     {step === 1 ? "Huỷ" : "Quay lại bước 1"}
                   </button>
@@ -106,16 +191,17 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
                     <button 
                       type="button"
                       onClick={handleNext}
-                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-[#1C1C1E] bg-brand hover:bg-brand-dim transition-colors active:scale-95 text-center"
+                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-black bg-[#F6F0AA] hover:opacity-90 transition-colors active:scale-95 text-center"
                     >
                       Tiếp tục
                     </button>
                   ) : (
                     <button 
                       type="submit"
-                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-[#1C1C1E] bg-brand hover:bg-brand-dim transition-colors active:scale-95 text-center"
+                      disabled={isLoading}
+                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[14px] font-bold text-black bg-[#F6F0AA] hover:opacity-90 transition-colors active:scale-95 text-center disabled:opacity-50"
                     >
-                      Tạo chiến dịch
+                      {isLoading ? "Đang tạo..." : "Tạo chiến dịch"}
                     </button>
                   )}
                 </div>
@@ -124,6 +210,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
           </form>
         </FormProvider>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
