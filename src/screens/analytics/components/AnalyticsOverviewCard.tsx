@@ -3,6 +3,8 @@
 import AnalyticsOverviewCardSkeleton from "@/components/skeletons/analytics/AnalyticsOverviewCardSkeleton"
 import { formatVnd } from "@/lib/formatMoney";
 import { cn } from "@/lib/utils";
+import { useGetCurrentUserQuery } from "@/services/api/authApi";
+import { useGetKolCashbackCommissionQuery } from "@/services/api/cashbackApi";
 import { useGetKolDashboardStatsQuery } from "@/services/api/dashboardApi";
 import { useSearchParams } from "next/navigation";
 
@@ -39,25 +41,47 @@ function StatCard({
 
 export default function AnalyticsOverviewCard() {
   const searchParams = useSearchParams();
+  const {
+    data: currentUser,
+    isLoading: isCurrentUserLoading,
+    isFetching: isCurrentUserFetching,
+  } = useGetCurrentUserQuery();
+  const hasDateRangeParams = searchParams.has("from") || searchParams.has("to");
+  const isGetAllTime = searchParams.get("getalltime") === "true" || !hasDateRangeParams;
   const from = searchParams.get("from") || defaultDateRange.from;
   const to = searchParams.get("to") || defaultDateRange.to;
-  const isInvalidRange = Boolean(from && to && to < from);
+  const isInvalidRange = !isGetAllTime && Boolean(from && to && to < from);
   const requestedGroupId = searchParams.get("groupId");
+  const lpexUid = currentUser?.lpexUid?.trim();
   const { data, isLoading, isFetching } = useGetKolDashboardStatsQuery(
     {
-      startDate: from,
-      endDate: to,
+      startDate: isGetAllTime ? undefined : from,
+      endDate: isGetAllTime ? undefined : to,
       groupId: requestedGroupId ?? undefined,
     },
     { skip: isInvalidRange },
   );
+  const {
+    data: commissionData,
+    isLoading: isCommissionLoading,
+    isFetching: isCommissionFetching,
+  } = useGetKolCashbackCommissionQuery(
+    { lpexUid: lpexUid ?? "" },
+    { skip: !lpexUid },
+  );
+  const totalCommission = (commissionData?.spot.commission ?? 0) + (commissionData?.future.commission ?? 0);
+  const isInitialLoading =
+    isLoading ||
+    isCurrentUserLoading ||
+    isCurrentUserFetching ||
+    (Boolean(lpexUid) && isCommissionLoading);
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return <AnalyticsOverviewCardSkeleton />;
   }
 
   return (
-    <section className={cn("mb-5 rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5", isFetching && "opacity-80")}>
+    <section className={cn("mb-5 rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5", (isFetching || isCommissionFetching) && "opacity-80")}>
       <h2 className="mb-4 text-base font-medium">Chỉ số tổng quan nhóm</h2>
       <div className="grid gap-3 lg:grid-cols-[1.05fr_2.15fr]">
         <div className="relative overflow-hidden rounded-lg bg-[#28282880] bg-[url('/images/analytics/hero_bg_gradient.png')] bg-cover bg-center p-6">
@@ -74,7 +98,7 @@ export default function AnalyticsOverviewCard() {
               </span>
             </div>
             <div className="text-[36px] font-bold leading-none tracking-tight text-foreground sm:text-[40px]">
-              {formatVnd(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
+              {formatVnd(totalCommission)} <span className="text-[32px] font-medium">VNĐ</span>
             </div>
           </div>
         </div>

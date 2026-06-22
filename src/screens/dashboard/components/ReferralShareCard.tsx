@@ -52,7 +52,7 @@ export default function ReferralShareCard() {
             {copied ? (
               <>
                 <CircleCheck className="h-4 w-4 shrink-0 text-[#15C982]" />
-                <span className="font-semibold">Copied</span>
+                <span className="font-semibold">Đã sao chép</span>
               </>
             ) : (
               <>

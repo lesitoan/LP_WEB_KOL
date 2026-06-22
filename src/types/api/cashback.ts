@@ -39,6 +39,17 @@ export interface CashbackSummaryData {
   kolRetainedUsd: number
 }
 
+export interface KolCashbackCommissionSide {
+  volume: number
+  commission: number
+  commissionRate: number
+}
+
+export interface KolCashbackCommissionData {
+  spot: KolCashbackCommissionSide
+  future: KolCashbackCommissionSide
+}
+
 export interface MemberBrief {
   id: string
   lpexUid: string | null

@@ -30,6 +30,7 @@ type CurrentUserApiData = {
   kol?: {
     id?: string
     displayName?: string | null
+    lpexUid?: string | null
     lpexRefCode?: string | null
     code?: string | null
     currentTierId?: string | null
@@ -124,6 +125,7 @@ export const authApi = api.injectEndpoints({
           kolId: payload.data.kol?.id || undefined,
           kolCode: payload.data.kol?.code || undefined,
           kolDisplayName: payload.data.kol?.displayName || undefined,
+          lpexUid: payload.data.kol?.lpexUid || undefined,
           lpexRefCode: payload.data.kol?.lpexRefCode || undefined,
           telegramContact: payload.data.kol?.telegramContact || undefined,
           zaloContact: payload.data.kol?.zaloContact || undefined,

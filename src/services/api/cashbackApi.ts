@@ -7,6 +7,7 @@ import type {
   CashbackPayoutData,
   CashbackSummaryData,
   CashbackChartData,
+  KolCashbackCommissionData,
   CreateCashbackConfigBody,
   ListCashbackConfigsQuery,
   ListCashbackCyclePayoutsQuery,
@@ -18,6 +19,7 @@ import type {
 } from '@/types/api'
 
 type CashbackSummaryEnvelope = ApiResponse<CashbackSummaryData>
+type KolCashbackCommissionEnvelope = ApiResponse<KolCashbackCommissionData>
 type CashbackConfigEnvelope = ApiResponse<CashbackConfigData>
 type CashbackConfigsEnvelope = ApiResponse<PaginatedData<CashbackConfigData>>
 type CashbackCycleEnvelope = ApiResponse<CashbackCycleData>
@@ -74,6 +76,20 @@ export const cashbackApi = api.injectEndpoints({
         })
       },
       providesTags: ['Dashboard'],
+    }),
+
+    getKolCashbackCommission: builder.query<KolCashbackCommissionData, { lpexUid: string }>({
+      query: ({ lpexUid }) => {
+        const params = new URLSearchParams()
+        appendIfPresent(params, 'lpexUid', lpexUid)
+
+        return {
+          url: apiV1Path(`/kol/cashback/commission?${params.toString()}`),
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: KolCashbackCommissionEnvelope) => ensureData(payload, 'Không thể tải hoa hồng cashback của KOL'),
+      providesTags: ['Cashback'],
     }),
 
     listCashbackConfigs: builder.query<PaginatedData<CashbackConfigData>, ListCashbackConfigsQuery | void>({
@@ -210,6 +226,7 @@ export const cashbackApi = api.injectEndpoints({
 export const {
   useGetCashbackSummaryQuery,
   useGetCashbackCommissionChartQuery,
+  useGetKolCashbackCommissionQuery,
   useListCashbackConfigsQuery,
   useGetCashbackConfigDetailQuery,
   useCreateCashbackConfigMutation,

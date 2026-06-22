@@ -6,6 +6,7 @@ import type {
   CommissionGrowthSummary,
   DashboardStats,
   KolDashboardGroupSummaryQuery,
+  KolDashboardGroupStatsItem,
   KolDashboardSummary,
   KolDashboardSummaryQuery,
   KolDashboardStats,
@@ -88,6 +89,21 @@ export const dashboardApi = api.injectEndpoints({
       transformResponse: (payload: ApiResponse<KolDashboardStats>) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
           throw new Error(extractApiErrorMessage(payload, 'Không thể tải thống kê dashboard'))
+        }
+
+        return payload.data
+      },
+      providesTags: ['Dashboard'],
+    }),
+
+    getKolDashboardGroupStats: builder.query<KolDashboardGroupStatsItem[], void>({
+      query: () => ({
+        url: apiV1Path('/kol/dashboard/stats/groups'),
+        method: 'GET',
+      }),
+      transformResponse: (payload: ApiResponse<KolDashboardGroupStatsItem[]>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(extractApiErrorMessage(payload, 'KhĂ´ng thá»ƒ táº£i thá»‘ng kĂª dashboard theo nhĂ³m'))
         }
 
         return payload.data
@@ -203,6 +219,7 @@ export const dashboardApi = api.injectEndpoints({
 
 export const {
   useGetKolDashboardStatsQuery,
+  useGetKolDashboardGroupStatsQuery,
   useGetKolDashboardSummaryQuery,
   useGetKolRecentActivitiesQuery,
   // useGetMemberOverviewStatsQuery,
