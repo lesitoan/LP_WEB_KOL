@@ -27,6 +27,7 @@ export interface MemberItem {
     telegramMembershipState: string
     telegramMembershipStatus: string
     lastMembershipVerifiedAt: string | null
+    eligibilityStatus?: string | null
     iconKey?: string | null
   }[]
 }

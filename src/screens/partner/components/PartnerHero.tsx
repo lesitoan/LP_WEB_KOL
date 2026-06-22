@@ -132,7 +132,8 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
               <p className="text-lg font-normal text-white/80">Thu nhập tiềm năng mỗi tháng</p>
               <div className="mt-3 text-5xl max-xl:text-4xl max-lg:text-3xl font-bold text-white transition-all duration-200">
                 ~{formatVnd(estimatedIncome)}
-                <span className="text-3xl max-lg:text-2xl max-md:text-xl font-normal text-white">/ tháng</span>
+                <span className="text-3xl max-lg:text-2xl max-md:text-xl font-normal text-white"> VNĐ</span>
+                <span className="text-3xl max-lg:text-2xl max-md:text-xl font-normal text-white"> / tháng</span>
               </div>
             </div>
             <div className="mt-8 grid grid-cols-4 gap-3 text-center max-lg:grid-cols-2">

@@ -21,10 +21,7 @@ export default function AnalyticsMembersTableSkeleton() {
                   <Skeleton className="h-4 w-28" />
                 </div>
                 <Skeleton className="h-4 w-14" />
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-4 w-8" />
-                  <Skeleton className="h-5 w-14 rounded-full" />
-                </div>
+                <Skeleton className="h-4 w-8" />
                 <Skeleton className="h-4 w-8" />
                 <Skeleton className="h-4 w-8" />
               </div>

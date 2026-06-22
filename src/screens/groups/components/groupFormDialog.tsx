@@ -74,6 +74,7 @@ export function GroupFormDialog({
     register,
     handleSubmit,
     watch,
+    trigger: triggerValidation,
     reset,
     formState: { dirtyFields, errors },
   } = useForm<GroupFormValues>({
@@ -109,6 +110,10 @@ export function GroupFormDialog({
     Number.isNaN(minParsed) ||
     Number.isNaN(maxParsed) ||
     minParsed > maxParsed
+
+  useEffect(() => {
+    void triggerValidation(['minVolumeRequired', 'maxVolumeRequired'])
+  }, [minVolume, maxVolume, triggerValidation])
 
   const onSubmit = async (form: GroupFormValues) => {
     const minVolumeRequired = Number(form.minVolumeRequired)

@@ -83,6 +83,21 @@ export interface KolDashboardStats {
   newJoinCount: number
 }
 
+export interface KolDashboardStatsGroup {
+  id: string
+  telegramGroupId?: string | null
+  title: string
+  iconKey?: string | null
+  tierLabel?: string | null
+  minVolumeRequired?: string | number | null
+  maxVolumeRequired?: string | number | null
+  status: string
+}
+
+export interface KolDashboardGroupStatsItem extends KolDashboardStats {
+  group: KolDashboardStatsGroup
+}
+
 export interface KolDashboardGroupSummaryPeriod {
   type: 'range'
   startDate: string

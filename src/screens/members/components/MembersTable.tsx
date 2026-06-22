@@ -31,6 +31,37 @@ function truncateGroupTitle(title: string | null | undefined, maxLength = 10) {
   return normalizedTitle.slice(0, maxLength);
 }
 
+function MemberGroupBadge({
+  group,
+  className = "h-5 w-6",
+  textClassName = "text-[10px]",
+}: {
+  group: NonNullable<MemberItem["eligibleGroups"]>[number];
+  className?: string;
+  textClassName?: string;
+}) {
+  return (
+    <span className={`relative inline-flex shrink-0 ${className}`}>
+      <GroupLogoBadge
+        iconKey={group.iconKey}
+        title={group.title}
+        className="h-full w-full"
+        textClassName={textClassName}
+      />
+      {(group.eligibilityStatus === "WARNING" || group.eligibilityStatus === "FINAL_WARNING") ? (
+        <Image
+          src="/images/icons/warning_icon.png"
+          alt=""
+          width={12}
+          height={12}
+          aria-hidden="true"
+          className="absolute -bottom-0.5 -right-1 h-3 w-3"
+        />
+      ) : null}
+    </span>
+  );
+}
+
 function statusClass(status: string) {
   switch (status.toLowerCase()) {
     case "active":
@@ -78,6 +109,14 @@ const MEMBER_TYPE_TABS = [
   { value: "warning", label: "Bị cảnh báo" },
 ] as const;
 
+function MemberTypeTabCount({ count, isLoading }: { count: number; isLoading: boolean }) {
+  return (
+    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-[#2B2B2B] px-2 text-sm font-normal leading-none text-[#B7B7B7]">
+      {isLoading ? "0" : count.toLocaleString("en-US")}
+    </span>
+  );
+}
+
 // const ELIGIBILITY_OPTIONS = [
 //   { value: "ELIGIBLE", label: "Đủ điều kiện" },
 //   { value: "WARNING", label: "Cảnh báo" },
@@ -122,6 +161,37 @@ export default function MembersTable() {
   const { data, isLoading, isFetching, error } = useGetMembersQuery(query, {
     refetchOnMountOrArgChange: true,
   });
+  const memberTypeCountBaseQuery = useMemo(
+    () => ({
+      ...query,
+      page: 1,
+      limit: 1,
+      sortBy: undefined,
+      sortOrder: undefined,
+      eligibilityStatus: undefined,
+      inactiveDays: undefined,
+      includeGroups: false,
+    }),
+    [query],
+  );
+  const { data: inactiveMembersCountData, isFetching: isInactiveMembersCountFetching } = useGetMembersQuery(
+    {
+      ...memberTypeCountBaseQuery,
+      inactiveDays: 14,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
+  const { data: warningMembersCountData, isFetching: isWarningMembersCountFetching } = useGetMembersQuery(
+    {
+      ...memberTypeCountBaseQuery,
+      eligibilityStatus: "FINAL_WARNING,WARNING",
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   useEffect(() => {
     if (!error) return;
@@ -137,6 +207,8 @@ export default function MembersTable() {
   const pagination = data?.pagination;
   const totalItems = pagination?.totalItems ?? 0;
   const totalPages = Math.max(1, pagination?.totalPages ?? 1);
+  const inactiveMembersCount = inactiveMembersCountData?.pagination.totalItems ?? 0;
+  const warningMembersCount = warningMembersCountData?.pagination.totalItems ?? 0;
 
   useEffect(() => {
     if (page > totalPages) {
@@ -224,7 +296,7 @@ export default function MembersTable() {
           <div>
             <div className="text-base font-normal leading-6 text-white">{fullName(member)}</div>
             <div className="text-sm text-muted-foreground">
-              @{member.telegramUsername}
+              {member.lpexUid ? `UID: ${member.lpexUid}` : ""}
             </div>
           </div>
         </div>
@@ -246,13 +318,7 @@ export default function MembersTable() {
             <TooltipTrigger asChild>
               <button type="button" className="inline-flex items-center gap-1.5">
                 {visibleGroups.map((group) => (
-                  <GroupLogoBadge
-                    key={group.accessId || group.groupId}
-                    iconKey={group.iconKey}
-                    title={group.title}
-                    className="h-5 w-6"
-                    textClassName="text-[10px]"
-                  />
+                  <MemberGroupBadge key={group.accessId || group.groupId} group={group} />
                 ))}
               </button>
             </TooltipTrigger>
@@ -264,12 +330,7 @@ export default function MembersTable() {
               <div className="space-y-1.5">
                 {groups.map((group) => (
                   <div key={group.accessId || group.groupId} className="flex items-center gap-2">
-                    <GroupLogoBadge
-                      iconKey={group.iconKey}
-                      title={group.title}
-                      className="h-5 w-6"
-                      textClassName="text-[10px]"
-                    />
+                    <MemberGroupBadge group={group} />
                     <span className="max-w-[96px] text-sm font-medium text-foreground">
                       {truncateGroupTitle(group.title)}
                     </span>
@@ -398,11 +459,12 @@ export default function MembersTable() {
                 }}
               >
                 <span>{tab.label}</span>
-                {/* {"count" in tab ? (
-                  <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-xs font-normal text-primary-foreground">
-                    {tab.count}
-                  </span>
-                ) : null} */}
+                {tab.value === "inactive_2_weeks" ? (
+                  <MemberTypeTabCount count={inactiveMembersCount} isLoading={isInactiveMembersCountFetching} />
+                ) : null}
+                {tab.value === "warning" ? (
+                  <MemberTypeTabCount count={warningMembersCount} isLoading={isWarningMembersCountFetching} />
+                ) : null}
                 {isActive ? (
                   <span className="absolute -bottom-px left-1/2 h-0.5 w-[calc(100%+16px)] -translate-x-1/2 rounded-full bg-white" />
                 ) : null}
