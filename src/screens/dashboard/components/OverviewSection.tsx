@@ -4,9 +4,11 @@ import { Triangle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { formatVnd } from "@/lib/formatMoney";
 import { cn } from "@/lib/utils";
+import { useGetCurrentUserQuery } from "@/services/api/authApi";
+import { useGetKolCashbackCommissionQuery } from "@/services/api/cashbackApi";
 import { useGetKolDashboardSummaryQuery } from "@/services/api/dashboardApi";
 import type { KolDashboardMetricKey, KolDashboardTrendSummary } from "@/types/api";
-import { defaultDateRange } from "../constants";
+import { defaultDateRange, type DashboardSegment } from "../constants";
 import { OverviewSkeleton } from "@/components/skeletons/dashboard/OverviewSkeleton";
 
 const metricIconSrcs: Record<Exclude<KolDashboardMetricKey, "commission">, string> = {
@@ -25,6 +27,10 @@ interface OverviewMetricCard {
 }
 
 const fallbackMetricOrder: OverviewMetricKey[] = ["referral", "deposit", "trade", "kyc"];
+
+function isDashboardSegment(value: string | null): value is DashboardSegment {
+  return value === "all" || value === "spot" || value === "future";
+}
 
 function formatNumber(value: number | undefined) {
   return new Intl.NumberFormat("vi-VN", {
@@ -55,18 +61,48 @@ function formatTrend(trend: KolDashboardTrendSummary | undefined) {
 
 export default function OverviewSection() {
   const searchParams = useSearchParams();
+  const {
+    data: currentUser,
+    isLoading: isCurrentUserLoading,
+    isFetching: isCurrentUserFetching,
+  } = useGetCurrentUserQuery();
+  const selectedSegment = isDashboardSegment(searchParams.get("segment"))
+    ? searchParams.get("segment")
+    : "all";
+  const hasDateRangeParams = searchParams.has("from") || searchParams.has("to");
+  const isGetAllTime = searchParams.get("getalltime") === "true" || !hasDateRangeParams;
   const from = searchParams.get("from") || defaultDateRange.from;
   const to = searchParams.get("to") || defaultDateRange.to;
-  const isInvalidRange = Boolean(from && to && to < from);
+  const isInvalidRange = !isGetAllTime && Boolean(from && to && to < from);
+  const lpexUid = currentUser?.lpexUid?.trim();
   const { data, isLoading, isFetching } = useGetKolDashboardSummaryQuery(
     {
-      startDate: from,
-      endDate: to,
+      startDate: isGetAllTime ? undefined : from,
+      endDate: isGetAllTime ? undefined : to,
     },
     { skip: isInvalidRange },
   );
+  const {
+    data: commissionData,
+    isLoading: isCommissionLoading,
+    isFetching: isCommissionFetching,
+  } = useGetKolCashbackCommissionQuery(
+    { lpexUid: lpexUid ?? "" },
+    { skip: !lpexUid },
+  );
+  const totalCommission =
+    selectedSegment === "spot"
+      ? (commissionData?.spot.commission ?? 0)
+      : selectedSegment === "future"
+        ? (commissionData?.future.commission ?? 0)
+        : (commissionData?.spot.commission ?? 0) + (commissionData?.future.commission ?? 0);
+  const isInitialLoading =
+    isLoading ||
+    isCurrentUserLoading ||
+    isCurrentUserFetching ||
+    (Boolean(lpexUid) && isCommissionLoading);
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return <OverviewSkeleton />;
   }
 
@@ -80,7 +116,7 @@ export default function OverviewSection() {
   );
 
   return (
-    <section className={cn("mb-4 rounded-[14px] bg-surface-2 p-5 md:p-6", isFetching && "opacity-80")}>
+    <section className={cn("mb-4 rounded-[14px] bg-surface-2 p-5 md:p-6", (isFetching || isCommissionFetching) && "opacity-80")}>
       <h2 className="mb-5 text-base font-semibold text-foreground">Chỉ số tổng quan</h2>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_2fr]">
@@ -93,7 +129,7 @@ export default function OverviewSection() {
               <span className="text-sm font-medium uppercase text-white">Tổng số hoa hồng</span>
             </div>
             <div className="text-[40px] font-bold leading-tight tracking-normal text-white md:text-[40px]">
-              {formatVnd(data?.commission)} <span className="text-[32px] font-medium">VNĐ</span>
+              {formatVnd(totalCommission)} <span className="text-[32px] font-medium">VNĐ</span>
             </div>
           </div>
         </div>

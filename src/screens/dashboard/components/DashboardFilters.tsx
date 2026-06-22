@@ -17,21 +17,38 @@ export default function DashboardFilters() {
   const selectedSegment = isDashboardSegment(searchParams.get("segment"))
     ? searchParams.get("segment")
     : "all";
+  const hasDateRangeParams = searchParams.has("from") || searchParams.has("to");
+  const isGetAllTime = searchParams.get("getalltime") === "true" || !hasDateRangeParams;
   const from = searchParams.get("from") || defaultDateRange.from;
   const to = searchParams.get("to") || defaultDateRange.to;
-  const isInvalidRange = Boolean(from && to && to < from);
+  const isInvalidRange = !isGetAllTime && Boolean(from && to && to < from);
 
-  const updateParams = (updates: Partial<Record<"segment" | "from" | "to", string>>) => {
+  const updateParams = (updates: Partial<Record<"segment" | "from" | "to" | "isGetAllTime", string | boolean>>) => {
     const params = new URLSearchParams(searchParams.toString());
 
     Object.entries(updates).forEach(([key, value]) => {
+      if (key === "isGetAllTime") {
+        if (value) {
+          params.set("getalltime", "true");
+          params.delete("from");
+          params.delete("to");
+        } else {
+          params.delete("getalltime");
+        }
+        return;
+      }
+
       if (!value || (key === "segment" && value === "all")) {
         params.delete(key);
         return;
       }
 
-      params.set(key, value);
+      params.set(key, value.toString());
     });
+
+    if (updates.from || updates.to) {
+      params.delete("getalltime");
+    }
 
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
@@ -60,6 +77,7 @@ export default function DashboardFilters() {
       <DateRangeFilter
         from={from}
         to={to}
+        isGetAllTime={isGetAllTime}
         isInvalidRange={isInvalidRange}
         onChange={(range) => updateParams(range)}
       />

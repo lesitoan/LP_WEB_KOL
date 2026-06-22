@@ -13,10 +13,11 @@ type DateRange = {
 type DateRangeFilterProps = {
   from: string;
   to: string;
+  isGetAllTime?: boolean;
   isInvalidRange?: boolean;
   className?: string;
   triggerClassName?: string;
-  onChange: (range: { from: string; to: string }) => void;
+  onChange: (range: { from?: string; to?: string; isGetAllTime?: boolean }) => void;
 };
 
 const weekdayLabels = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
@@ -81,6 +82,7 @@ function getCalendarDays(month: Date) {
 export default function DateRangeFilter({
   from,
   to,
+  isGetAllTime = false,
   isInvalidRange = false,
   className,
   triggerClassName,
@@ -115,6 +117,16 @@ export default function DateRangeFilter({
     onChange({
       from: toIsoDate(range.from),
       to: toIsoDate(range.to),
+      isGetAllTime: false,
+    });
+    setIsCalendarOpen(false);
+  };
+
+  const applyAllTime = () => {
+    onChange({
+      from: "",
+      to: "",
+      isGetAllTime: true,
     });
     setIsCalendarOpen(false);
   };
@@ -146,22 +158,38 @@ export default function DateRangeFilter({
           <button
             type="button"
             className={cn(
-              "flex w-fit max-w-full items-center justify-between gap-3 rounded-lg border bg-surface-2 px-3 py-2 text-sm text-foreground outline-none transition-colors",
+              "flex w-fit max-w-full items-center justify-between gap-2 rounded-lg border bg-surface-2 px-2 py-1 text-sm text-foreground outline-none transition-colors",
               "hover:border-border-strong hover:bg-surface-3 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30",
-              isInvalidRange ? "border-red-500/70" : "border-border",
+              isInvalidRange ? "border-red-500/70" : "border-border/60",
               triggerClassName,
             )}
-          >
-            <span className="inline-flex items-center gap-2">
-              <span className="font-medium">{formatIsoToDisplay(from)}</span>
-              <span className="text-muted-foreground">-</span>
-              <span className="font-medium">{formatIsoToDisplay(to)}</span>
-            </span>
+            >
+            {isGetAllTime ? (
+              <span className="font-medium">Tất cả</span>
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <span className="font-medium">{formatIsoToDisplay(from)}</span>
+                <span className="text-muted-foreground">-</span>
+                <span className="font-medium">{formatIsoToDisplay(to)}</span>
+              </span>
+            )}
             <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-[min(calc(100vw-2rem),336px)] border-border bg-surface-2 p-3 shadow-2xl">
-          <div className="rounded-lg border border-border bg-surface-1 p-2">
+        <PopoverContent align="end" className="w-[min(calc(100vw-2rem),336px)] border-border/60 bg-surface-2 p-1.5 shadow-2xl">
+          <button
+            type="button"
+            onClick={applyAllTime}
+            className={cn(
+              "mb-0.5 flex h-8 w-full items-center justify-center rounded-lg border px-2 text-sm font-medium transition-colors",
+              isGetAllTime
+                ? "border-border/50 bg-surface-1 text-foreground"
+                : "border-border/40 bg-surface-1 text-foreground hover:border-border hover:bg-surface-3",
+            )}
+          >
+            Tất cả
+          </button>
+          <div className="rounded-lg border border-border/50 bg-surface-1 p-1">
             <div className="mb-2 flex h-9 items-center justify-between">
               <button
                 type="button"

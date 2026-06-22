@@ -15,6 +15,7 @@ export interface UserProfile {
   kolId?: string
   kolCode?: string
   kolDisplayName?: string
+  lpexUid?: string
   lpexRefCode?: string
   telegramContact?: string
   zaloContact?: string

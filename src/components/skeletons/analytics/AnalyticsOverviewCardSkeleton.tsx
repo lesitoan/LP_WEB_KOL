@@ -5,11 +5,16 @@ export default function AnalyticsOverviewCardSkeleton() {
     <section className="mb-5 rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
       <h2 className="mb-4 text-base font-semibold">Chỉ số tổng quan nhóm</h2>
       <div className="grid gap-3 lg:grid-cols-[1.05fr_2.15fr]">
-        <div className="rounded-lg bg-[#28282880] p-5">
-          <div className="flex min-h-[220px] flex-col items-center justify-center">
-            <Skeleton className="mb-4 h-20 w-20 rounded-full" />
-            <Skeleton className="mb-3 h-3 w-14" />
-            <Skeleton className="h-7 w-44" />
+        <div className="relative overflow-hidden rounded-lg bg-[#28282880] bg-[url('/images/analytics/hero_bg_gradient.png')] bg-cover bg-center p-6">
+          <div className="relative flex min-h-[220px] flex-col items-start justify-center">
+            <div className="mb-8 flex items-center gap-3">
+              <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+            <div className="flex items-end gap-2">
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-8 w-14" />
+            </div>
           </div>
         </div>
 

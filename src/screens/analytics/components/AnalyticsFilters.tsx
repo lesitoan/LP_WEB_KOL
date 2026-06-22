@@ -31,14 +31,27 @@ export default function AnalyticsFilters() {
   const requestedGroupId = searchParams.get("groupId");
   const selectedGroup = groups.find((group) => group.id === requestedGroupId) ?? null;
   const selectedGroupId = selectedGroup?.id ?? allGroupsValue;
+  const hasDateRangeParams = searchParams.has("from") || searchParams.has("to");
+  const isGetAllTime = searchParams.get("getalltime") === "true" || !hasDateRangeParams;
   const from = searchParams.get("from") || defaultDateRange.from;
   const to = searchParams.get("to") || defaultDateRange.to;
-  const isInvalidRange = Boolean(from && to && to < from);
+  const isInvalidRange = !isGetAllTime && Boolean(from && to && to < from);
 
-  const updateParams = (updates: Partial<Record<"groupId" | "from" | "to", string>>) => {
+  const updateParams = (updates: Partial<Record<"groupId" | "from" | "to" | "isGetAllTime", string | boolean>>) => {
     const params = new URLSearchParams(searchParams.toString());
 
     Object.entries(updates).forEach(([key, value]) => {
+      if (key === "isGetAllTime") {
+        if (value) {
+          params.set("getalltime", "true");
+          params.delete("from");
+          params.delete("to");
+        } else {
+          params.delete("getalltime");
+        }
+        return;
+      }
+
       if (!value) {
         params.delete(key);
         return;
@@ -49,8 +62,12 @@ export default function AnalyticsFilters() {
         return;
       }
 
-      params.set(key, value);
+      params.set(key, value.toString());
     });
+
+    if (updates.from || updates.to) {
+      params.delete("getalltime");
+    }
 
     if (updates.groupId) {
       params.delete("group");
@@ -105,6 +122,7 @@ export default function AnalyticsFilters() {
       <DateRangeFilter
         from={from}
         to={to}
+        isGetAllTime={isGetAllTime}
         isInvalidRange={isInvalidRange}
         className="w-[min(100%,294px)] sm:w-fit"
         triggerClassName="w-full sm:w-fit"

@@ -185,7 +185,7 @@ export function GroupSettingsCard({
         <MetricBlock label="Volume (VNĐ)">{`${formatVnd(group.minVolumeRequired)} - ${formatVnd(group.maxVolumeRequired)}`}</MetricBlock>
         <MetricBlock label="Số lượng TV" className="text-right flex flex-col items-end">{group.memberCount ?? 0}</MetricBlock>
         <MetricBlock label="Cảnh báo">{group.warningCountBeforeKick} lần</MetricBlock>
-        <MetricBlock label="Ân hạn" className="text-right flex flex-col items-end">{formatGracePeriodInDays(group)}</MetricBlock>
+        <MetricBlock label="Gia hạn" className="text-right flex flex-col items-end">{formatGracePeriodInDays(group)}</MetricBlock>
         <MetricBlock label="Auto-kick">
           <TogglePill enabled={group.autoKickEnabled} />
         </MetricBlock>
