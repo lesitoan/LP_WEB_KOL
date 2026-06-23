@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useMemo, useState } from 'react'
 import { Eye } from 'lucide-react'
@@ -86,14 +86,14 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
       </Tooltip>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="w-[calc(100vw-1rem)] max-w-[810px] gap-0 overflow-hidden border-[#252525] bg-[#171717] p-0 shadow-2xl sm:max-w-[810px] [&_[data-slot=dialog-close]]:right-6 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:rounded-md [&_[data-slot=dialog-close]]:bg-[#2A2A2A] [&_[data-slot=dialog-close]]:p-1.5 [&_[data-slot=dialog-close]]:text-[#CFCFCF]">
-          <DialogHeader className="border-b border-[#252525] px-4 py-4 sm:px-6">
-            <DialogTitle className="pr-10 text-lg font-medium text-[#E8E8E8]">Tổng quan nhóm</DialogTitle>
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-[810px] gap-0 overflow-hidden border-border bg-surface-card p-0 shadow-2xl sm:max-w-[810px] [&_[data-slot=dialog-close]]:right-6 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:rounded-md [&_[data-slot=dialog-close]]:bg-surface-control [&_[data-slot=dialog-close]]:p-1.5 [&_[data-slot=dialog-close]]:text-zinc-300">
+          <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
+            <DialogTitle className="pr-10 text-lg font-medium text-foreground">Tổng quan nhóm</DialogTitle>
           </DialogHeader>
           <div className="max-h-[calc(92vh-61px)] overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
             {isFetching ? (
-              <div className="flex min-h-[180px] items-center justify-center gap-2 text-sm font-normal text-[#777777]">
+              <div className="flex min-h-[180px] items-center justify-center gap-2 text-sm font-normal text-muted-foreground">
                 <Spinner className="h-4 w-4" />
                 Đang tải dữ liệu tổng quan...
               </div>
@@ -103,12 +103,12 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
               </div>
             ) : data ? (
               <div className="space-y-4">
-                <div className="rounded-lg border border-[#2A2A2A] p-4">
-                  <h4 className="text-sm font-normal text-[#D7D7D7]">Thông tin nhóm</h4>
+                <div className="rounded-lg border border-border-strong p-4">
+                  <h4 className="text-sm font-normal text-zinc-300">Thông tin nhóm</h4>
                   <div className="mt-4 grid gap-4 text-sm font-normal sm:grid-cols-2">
-                    <p className="min-w-0 break-all text-[#E8E8E8]"><span className="text-xs font-normal text-[#777777]">Tên nhóm:</span> {data.group.title}</p>
-                    <p className="flex items-center gap-2 text-[#E8E8E8]">
-                      <span className="text-xs font-normal text-[#777777]">Trạng thái:</span>
+                    <p className="min-w-0 break-all text-foreground"><span className="text-xs font-normal text-muted-foreground">Tên nhóm:</span> {data.group.title}</p>
+                    <p className="flex items-center gap-2 text-foreground">
+                      <span className="text-xs font-normal text-muted-foreground">Trạng thái:</span>
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-[3px] text-[11.5px] font-medium ${groupStatusClass(
                           data.group.status,
@@ -117,18 +117,18 @@ export function GroupSummaryDialog({ groupId }: GroupSummaryDialogProps) {
                         {formatGroupStatus(data.group.status)}
                       </span>
                     </p>
-                    <p className="text-[#E8E8E8]"><span className="text-xs font-normal text-[#777777]">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${formatVnd(data.group.minVolumeRequired)} VNĐ` : '---'}</p>
-                    <p className="text-[#E8E8E8]"><span className="text-xs font-normal text-[#777777]">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${formatVnd(data.group.maxVolumeRequired)} VNĐ` : '---'}</p>
+                    <p className="text-foreground"><span className="text-xs font-normal text-muted-foreground">Volume tối thiểu:</span> {data.group.minVolumeRequired !== null ? `${formatVnd(data.group.minVolumeRequired)} VNĐ` : '---'}</p>
+                    <p className="text-foreground"><span className="text-xs font-normal text-muted-foreground">Volume tối đa:</span> {data.group.maxVolumeRequired !== null ? `${formatVnd(data.group.maxVolumeRequired)} VNĐ` : '---'}</p>
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-[#2A2A2A] p-4">
-                  <h4 className="text-sm font-normal text-[#D7D7D7]">Tóm tắt truy cập</h4>
+                <div className="rounded-lg border border-border-strong p-4">
+                  <h4 className="text-sm font-normal text-zinc-300">Tóm tắt truy cập</h4>
                   <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {summaryEntries.map(([label, value]) => (
-                      <div key={String(label)} className="min-w-0 rounded-lg border border-[#2A2A2A] p-4">
-                        <p className="break-words text-xs font-normal text-[#777777]">{label}</p>
-                        <p className="break-all text-sm font-normal text-[#E8E8E8]">{value ?? '---'}</p>
+                      <div key={String(label)} className="min-w-0 rounded-lg border border-border-strong p-4">
+                        <p className="break-words text-xs font-normal text-muted-foreground">{label}</p>
+                        <p className="break-all text-sm font-normal text-foreground">{value ?? '---'}</p>
                       </div>
                     ))}
                   </div>

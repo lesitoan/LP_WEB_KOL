@@ -116,7 +116,7 @@ export default function OverviewSection() {
   );
 
   return (
-    <section className={cn("mb-4 rounded-[14px] bg-surface-2 p-5 md:p-6", (isFetching || isCommissionFetching) && "opacity-80")}>
+    <section className={cn("mb-4 rounded-card bg-surface-2 p-5 md:p-6", (isFetching || isCommissionFetching) && "opacity-80")}>
       <h2 className="mb-5 text-base font-semibold text-foreground">Chỉ số tổng quan</h2>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_2fr]">
@@ -141,7 +141,7 @@ export default function OverviewSection() {
             const isNeutral = delta === 0;
 
             return (
-              <article key={metric.key} className="rounded-md bg-[#1f1f1f] p-6">
+              <article key={metric.key} className="rounded-md bg-surface-3 p-6">
                 <div className="mb-6 flex items-center gap-3">
                   <img
                     src={metricIconSrcs[metric.key as Exclude<KolDashboardMetricKey, "commission">]}

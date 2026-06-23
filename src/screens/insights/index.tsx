@@ -22,7 +22,7 @@ export default function InsightsScreen() {
           <h1 className="text-2xl font-semibold leading-tight text-white">
             Insights
           </h1>
-          <p className="text-sm font-medium leading-5 text-[#8f8f8f]">
+          <p className="text-sm font-medium leading-5 text-muted-foreground">
             Baseline chất lượng cho mọi tier - context + risk, không phải khuyến nghị mua/bán
           </p>
         </header>

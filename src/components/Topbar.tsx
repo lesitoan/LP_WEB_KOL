@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdownMenu'
 import { useAuthSession } from '@/hooks/useAuthSession'
+import { usePopup } from '@/hooks/usePopup'
 import { useGetKolCurrentTierQuery } from '@/services/api/tierApi'
 
 type TopbarProps = {
@@ -37,6 +38,7 @@ function getTierIconSrc(code?: string | null, name?: string | null) {
 
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const { profile, logout } = useAuthSession()
+  const { showConfirm, Popup } = usePopup()
   const { data: tierData } = useGetKolCurrentTierQuery()
 
   const currentTierName =
@@ -49,13 +51,28 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     tierData?.kol.currentCommissionRate ??
     null
 
+  const handleLogout = async () => {
+    const accepted = await showConfirm({
+      title: 'Đăng xuất',
+      description: 'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?',
+      confirmText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      destructive: true,
+    })
+
+    if (accepted) {
+      logout()
+    }
+  }
+
   return (
-    <header className="fixed inset-x-0 top-0 z-40 flex h-16 shrink-0 items-center border-b border-[#202020] bg-black px-6 text-white">
+    <>
+    <header className="fixed inset-x-0 top-0 z-40 flex h-16 shrink-0 items-center border-b border-border bg-black px-6 text-white">
       <div className="flex h-full w-[232px] shrink-0 items-center gap-3 max-md:w-auto">
         <button
           type="button"
           onClick={onMenuClick}
-          className="mr-1 grid h-9 w-9 place-items-center rounded-md border border-[#262626] bg-[#0b0b0b] text-[#d7d7d7] transition-colors hover:bg-[#171717] hover:text-white md:hidden"
+          className="mr-1 grid h-9 w-9 place-items-center rounded-md border border-border-strong bg-surface-1 text-muted-foreground transition-colors hover:bg-surface-card hover:text-white md:hidden"
           aria-label="Mở menu"
         >
           <Menu className="h-4 w-4" strokeWidth={1.9} />
@@ -74,8 +91,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
       </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <div className="flex items-center gap-2 rounded-full border border-[#2a2a2a] bg-[#070707] py-1.5 pl-2 pr-3 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] sm:gap-3 sm:pr-4">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-[#292929] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] sm:h-9 sm:w-9">
+        <div className="flex items-center gap-2 rounded-full border border-border-strong bg-surface-1 py-1.5 pl-2 pr-3 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] sm:gap-3 sm:pr-4">
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-surface-control shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] sm:h-9 sm:w-9">
             <img
               src={getTierIconSrc(currentTierCode, currentTierName)}
               alt={currentTierName}
@@ -105,22 +122,22 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-52 border-[#252525] bg-[#080808] text-white"
+            className="w-52 border-border-strong bg-surface-card text-white"
           >
             <DropdownMenuLabel className="space-y-1">
               <div className="text-sm font-semibold leading-none">
                 {profile?.name ?? 'Unknown User'}
               </div>
-              <div className="truncate text-xs font-normal text-[#a5a5a5]">
+              <div className="truncate text-xs font-normal text-muted-foreground">
                 {profile?.email ?? ''}
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-[#252525]" />
+            <DropdownMenuSeparator className="bg-border-strong" />
             <DropdownMenuItem
               variant="destructive"
               onSelect={(event) => {
                 event.preventDefault()
-                logout()
+                void handleLogout()
               }}
               className="gap-2 text-red-400 focus:bg-red-500/10 focus:text-red-300"
             >
@@ -131,5 +148,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         </DropdownMenu>
       </div>
     </header>
+    <Popup />
+    </>
   )
 }

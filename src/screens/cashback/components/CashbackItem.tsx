@@ -25,7 +25,7 @@ export function CashbackItem({ group: g, rate, onRateChange }: CashbackItemProps
   };
 
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] p-5">
+    <div className="bg-surface-1 border border-border rounded-card p-5">
       <div className="flex items-center gap-3 mb-5">
         <div
           className={`w-9 h-9 rounded-lg grid place-items-center font-bold text-primary-foreground ${g.iconClass}`}

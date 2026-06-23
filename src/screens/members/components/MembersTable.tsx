@@ -67,7 +67,7 @@ function statusClass(status: string) {
     case "active":
       return "bg-success/[0.12] text-success border border-success/20";
     case "inactive":
-      return "bg-[#2B2B2B] text-[#B7B7B7] border border-[#3A3A3A]";
+      return "bg-surface-control text-muted-foreground border border-border-strong";
     default:
       return "bg-warning/[0.12] text-warning border border-warning/20";
   }
@@ -111,7 +111,7 @@ const MEMBER_TYPE_TABS = [
 
 function MemberTypeTabCount({ count, isLoading }: { count: number; isLoading: boolean }) {
   return (
-    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-[#2B2B2B] px-2 text-sm font-normal leading-none text-[#B7B7B7]">
+    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-surface-control px-2 text-sm font-normal leading-none text-muted-foreground">
       {isLoading ? "0" : count.toLocaleString("en-US")}
     </span>
   );
@@ -325,7 +325,7 @@ export default function MembersTable() {
             <TooltipContent
               side="top"
               align="start"
-              className="rounded-lg border-[#303030] bg-[#1F1F1F] px-2.5 py-2 shadow-xl"
+              className="rounded-lg border-border-strong bg-surface-3 px-2.5 py-2 shadow-xl"
             >
               <div className="space-y-1.5">
                 {groups.map((group) => (
@@ -405,7 +405,7 @@ export default function MembersTable() {
               {[1, 2, 3, 4].map((step) => (
                 <span
                   key={step}
-                  className={`h-1 w-6 rounded-full ${step <= progress.steps ? "bg-[#16C784]" : "bg-[#2A2A2A]"}`}
+                  className={`h-1 w-6 rounded-full ${step <= progress.steps ? "bg-[#16C784]" : "bg-surface-control"}`}
                 />
               ))}
             </div>
@@ -416,7 +416,7 @@ export default function MembersTable() {
   ];
 
   return (
-    <div className="bg-[#171717] border border-border rounded-[14px] overflow-visible relative">
+    <div className="bg-surface-card border border-border rounded-card overflow-visible relative">
         <MembersFilters
         searchInput={searchInput}
         countryCodeInput={countryCodeInput}
@@ -441,7 +441,7 @@ export default function MembersTable() {
         }}
       />
 
-      <div className="border-b border-[#303030] px-6">
+      <div className="border-b border-border-strong px-6">
         <div className="scrollbar-none flex items-end gap-7 overflow-x-auto">
           {MEMBER_TYPE_TABS.map((tab) => {
             const isActive = selectedMemberType === tab.value;
@@ -474,7 +474,7 @@ export default function MembersTable() {
         </div>
       </div>
 
-      <div className="rounded-b-[14px] overflow-hidden">
+      <div className="rounded-b-card overflow-hidden">
         <DataTable
           columns={columns}
           data={members}

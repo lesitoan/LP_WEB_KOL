@@ -45,10 +45,10 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
           Hãy biến cộng đồng của bạn thành thu nhập bền vững
           </span>
         </h1>
-        <p className="mt-6 max-w-lg text-2xl font-medium max-lg:text-xl leading-9 text-[#bdbdbd]">
+        <p className="mt-6 max-w-lg text-2xl font-medium max-lg:text-xl leading-9 text-muted-foreground">
           Sử dụng công cụ minh hoạ bên cạnh để xem thu nhập tiềm năng theo quy mô cộng đồng của bạn.
         </p>
-        <Link href="/login" className="mt-9 inline-flex h-11 items-center rounded-[8px] bg-brand pl-7 pr-3 text-base font-semibold text-black uppercase hover:bg-brand-bright transition-all duration-300 hover:scale-[1.02] shadow-[0_4px_20px_rgba(247,240,161,0.2)]">
+        <Link href="/login" className="mt-9 inline-flex h-11 items-center rounded-control bg-brand pl-7 pr-3 text-base font-semibold text-black uppercase hover:bg-brand-bright transition-all duration-300 hover:scale-[1.02] shadow-[0_4px_20px_rgba(247,240,161,0.2)]">
           ĐĂNG KÝ PARTNER
           <span className="ml-3 flex h-5 w-5 items-center justify-center rounded-full bg-black text-brand">
             <ArrowUpRight className="h-3.5 w-3.5 stroke-[3]" />
@@ -57,7 +57,7 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
       </div>
 
       <div
-        className="relative rounded-[24px] p-[3px] shadow-[0_0_38px_rgba(247,240,161,0.13)] transition-all duration-300 hover:shadow-[0_0_50px_rgba(247,240,161,0.2)] overflow-hidden"
+        className="relative rounded-3xl p-[3px] shadow-[0_0_38px_rgba(247,240,161,0.13)] transition-all duration-300 hover:shadow-[0_0_50px_rgba(247,240,161,0.2)] overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, #FFF9B3 0%, #FFEF3C 20%, #746B00 45%, #746B00 55%, #FFEF3C 80%, #FFF9B3 100%)'
         }}
@@ -84,7 +84,7 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
             box-shadow: none !important;
           }
         `}</style>
-        <div className="relative h-full w-full rounded-[21px] bg-[#0f0f0f] px-8 py-10 max-md:px-5 max-md:py-6 space-y-6 overflow-hidden">
+        <div className="relative h-full w-full rounded-2xl bg-surface-card px-8 py-10 max-md:px-5 max-md:py-6 space-y-6 overflow-hidden border border-border-strong">
           {/* Top light glow background */}
           <div
             className="absolute -top-1 left-0 right-0 h-[150px] bg-no-repeat bg-top bg-cover pointer-events-none opacity-80"
@@ -96,10 +96,10 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
               <div className="flex items-center justify-between gap-4 text-xl font-semibold max-md:text-lg max-md:font-medium">
                 <div className="flex items-center gap-2">
                   <img src="/images/partner/user_icon.svg" alt="" className="h-5 w-5 object-contain" />
-                  <span className="text-[#bdbdbd]">Số thành viên cộng đồng</span>
+                  <span className="text-muted-foreground">Số thành viên cộng đồng</span>
                 </div>
                 <span className="shrink-0 font-bold text-lg">
-                  <span className="text-[#FFBB00]">{new Intl.NumberFormat('en-US').format(members)}</span>{' '}
+                  <span className="text-brand-bright">{new Intl.NumberFormat('en-US').format(members)}</span>{' '}
                   <span className="text-white font-medium">members</span>
                 </span>
               </div>
@@ -120,10 +120,10 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
               <div className="flex items-center justify-between gap-4 text-xl font-semibold">
                 <div className="flex items-center gap-2">
                   <img src="/images/partner/commission_icon.svg" alt="" className="h-5 w-5 object-contain" />
-                  <span className="text-[#bdbdbd]">Hoa hồng</span>
+                  <span className="text-muted-foreground">Hoa hồng</span>
                 </div>
                 <span className="shrink-0 font-bold text-lg">
-                  <span className="text-[#FFBB00]">{activeTierRate}%</span>{' '}
+                  <span className="text-brand-bright">{activeTierRate}%</span>{' '}
                   <span className="text-white font-medium">- Tier {activeTierName}</span>
                 </span>
               </div>
@@ -151,8 +151,8 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
                         : 'rgba(255, 255, 255, 0.15)'
                     }}
                   >
-                    <div className="rounded-[6.5px] bg-[#0f0f0f] px-3 py-4 text-center">
-                      <div className={`text-xl max-lg:text-lg font-medium transition-colors duration-200 ${isActive ? 'text-white' : 'text-[#8f8f8f]'}`}>
+                    <div className="rounded-[6.5px] bg-surface-card px-3 py-4 text-center border border-border-strong">
+                      <div className={`text-xl max-lg:text-lg font-medium transition-colors duration-200 ${isActive ? 'text-white' : 'text-muted-foreground'}`}>
                         {tier.name}
                       </div>
                       <div className="mt-1 text-2xl max-lg:text-xl font-bold text-white">
@@ -163,7 +163,7 @@ export default function PartnerHero({ tiers }: PartnerHeroProps) {
                 )
               })}
             </div>
-            <p className="mt-8 text-center text-base font-medium leading-5 text-[#8f8f8f]">
+            <p className="mt-8 text-center text-base font-medium leading-5 text-muted-foreground">
               Số minh hoạ - giả định mỗi thành viên đóng góp 500.000 VNĐ phí/tháng. Thu nhập thực tế phụ thuộc hoạt động cộng đồng.
             </p>
           </div>

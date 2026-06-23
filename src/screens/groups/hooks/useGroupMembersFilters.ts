@@ -13,7 +13,6 @@ const INITIAL_QUERY: ListGroupMembersQuery = {
   sortOrder: 'desc',
   search: undefined,
   countryCode: undefined,
-  telegramStatus: undefined,
   lpexUserStatus: undefined,
 }
 
@@ -28,7 +27,6 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
   const limit = Number(searchParams.get('limit') || 20)
   const search = searchParams.get('search')?.trim() || ''
   const countryCode = searchParams.get('countryCode')?.trim().toUpperCase() || ''
-  const telegramStatus = searchParams.get('telegramStatus')?.trim().toLowerCase() || ''
   const lpexUserStatus = searchParams.get('lpexUserStatus')?.trim().toLowerCase() || ''
   const sortByRaw = searchParams.get('sortBy')?.trim()
   const sortOrderRaw = searchParams.get('sortOrder')?.trim()
@@ -47,7 +45,6 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
       sortOrder,
       search: search || undefined,
       countryCode: countryCode || undefined,
-      telegramStatus: telegramStatus || undefined,
       lpexUserStatus: lpexUserStatus || undefined,
     },
     viewMode: 'list' as GroupMembersFiltersViewMode,
@@ -79,10 +76,6 @@ function serializeToSearchParams(state: {
 
   if (state.query.countryCode) {
     params.set('countryCode', state.query.countryCode)
-  }
-
-  if (state.query.telegramStatus) {
-    params.set('telegramStatus', state.query.telegramStatus)
   }
 
   if (state.query.lpexUserStatus) {
@@ -121,7 +114,6 @@ export function useGroupMembersFilters() {
       limit: state.query.limit,
       searchName: state.searchInput,
       countryFilter: state.query.countryCode ?? 'all',
-      telegramStatusFilter: state.query.telegramStatus ?? 'all',
       lpexStatusFilter: state.query.lpexUserStatus ?? 'all',
       sortBy: state.query.sortBy ?? 'createdAt',
       sortOrder: state.query.sortOrder ?? 'desc',
@@ -140,12 +132,6 @@ export function useGroupMembersFilters() {
         ...state.query,
         page: 1,
         countryCode: countryFilter === 'all' ? undefined : countryFilter,
-      }),
-    setTelegramStatusFilter: (telegramStatusFilter: string) =>
-      setQuery({
-        ...state.query,
-        page: 1,
-        telegramStatus: telegramStatusFilter === 'all' ? undefined : telegramStatusFilter,
       }),
     setLpexStatusFilter: (lpexStatusFilter: string) =>
       setQuery({

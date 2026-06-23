@@ -9,6 +9,12 @@ const growthLegendItems = [
   { label: "Copy Trade", color: "#9B692C" },
 ]
 
+const growthLabelByKey: Record<string, string> = {
+  warning: "Future",
+  members: "Spot",
+  volume: "Copy Trade",
+}
+
 function formatVndAxis(value: number) {
   if (value === 0) return "0"
   return `${Math.round(value)}M`
@@ -16,6 +22,46 @@ function formatVndAxis(value: number) {
 
 function formatVndTooltip(value: number) {
   return `${Math.round(value).toLocaleString("vi-VN")} triệu VNĐ`
+}
+
+function formatFullVndTooltip(value: number) {
+  return `${Math.round(value * 1_000_000).toLocaleString("vi-VN")} VNĐ`
+}
+
+type TooltipPayloadItem = {
+  dataKey?: string | number
+  value?: number | string
+  color?: string
+}
+
+function renderGrowthTooltip({
+  active,
+  label,
+  payload,
+}: {
+  active?: boolean
+  label?: string
+  payload?: TooltipPayloadItem[]
+}) {
+  if (!active || !payload?.length) return null
+
+  return (
+    <div className="rounded-[10px] border border-border bg-surface-2 px-3 py-2 text-sm shadow-lg">
+      {label ? <div className="mb-1 font-medium text-foreground">{label}</div> : null}
+      <div className="space-y-1.5">
+        {payload.map((item) => {
+          const dataKey = String(item.dataKey ?? "")
+          const value = Number(item.value ?? 0)
+
+          return (
+            <div key={dataKey} className="whitespace-nowrap font-medium" style={{ color: item.color }}>
+              {growthLabelByKey[dataKey] ?? dataKey}: {formatFullVndTooltip(value)}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 function renderLeftAlignedYAxisTick({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
@@ -41,7 +87,7 @@ export default function AnalyticsGrowthChart() {
   }
 
   return (
-    <section className="rounded-[14px] border border-border bg-[#171717] px-6 py-4 sm:py-5">
+    <section className="rounded-card border border-border bg-surface-card px-6 py-4 sm:py-5">
       <h2 className="mb-3 text-base font-medium">
         So sánh tốc độ tăng trưởng volume (theo nhóm)
       </h2>
@@ -83,15 +129,7 @@ export default function AnalyticsGrowthChart() {
             />
             <Tooltip
               cursor={{ fill: "rgba(255,255,255,0.04)" }}
-              contentStyle={{
-                background: "hsl(var(--surface-2))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: 10,
-              }}
-              formatter={(value: number, name: string) => [
-                formatVndTooltip(value),
-                name === "warning" ? "Future" : name === "members" ? "Spot" : "Copy Trade",
-              ]}
+              content={renderGrowthTooltip}
             />
             <Bar dataKey="volume" stackId="growth" fill="#9B692C" radius={[0, 0, 4, 4]} barSize={41} />
             <Bar dataKey="members" stackId="growth" fill="#D4A74A" barSize={41} />

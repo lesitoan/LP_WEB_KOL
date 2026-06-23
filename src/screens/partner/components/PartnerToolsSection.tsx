@@ -23,7 +23,7 @@ export default function PartnerToolsSection({ benefits }: PartnerToolsSectionPro
               }}
             >
               <article
-                className="rounded-[14px] p-5 h-full flex flex-col"
+                className="rounded-card p-5 h-full flex flex-col"
                 style={{
                   background: borderTop
                     ? 'linear-gradient(to bottom, #1a1a1a 0%, #0a0a0a 100%)'
@@ -44,7 +44,7 @@ export default function PartnerToolsSection({ benefits }: PartnerToolsSectionPro
                   <h3 className="text-2xl  font-medium text-white">
                     {benefit.title}
                   </h3>
-                  <p className="mt-2 text-base font-normal leading-[20px] text-[#8c8c8c]">{benefit.body}</p>
+                  <p className="mt-2 text-base font-normal leading-[20px] text-muted-foreground">{benefit.body}</p>
                 </div>
               </article>
             </div>

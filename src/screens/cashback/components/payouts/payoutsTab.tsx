@@ -111,7 +111,7 @@ export function PayoutsTab() {
   }, [error])
 
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">
+    <div className="bg-surface-1 border border-border rounded-card overflow-visible relative">
       <TableFilterBar
         textFilters={[]}
         textValues={{}}
@@ -135,7 +135,7 @@ export function PayoutsTab() {
         }}
       />
 
-      <div className="rounded-b-[14px] overflow-hidden">
+      <div className="rounded-b-card overflow-hidden">
         <DataTable
           columns={columns}
           data={payouts}

@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function TierProgressCardSkeleton() {
   return (
-    <div className="bg-gradient-to-br from-surface-2 to-surface-1 border border-border rounded-[14px] p-6 mb-5 relative overflow-hidden">
+    <div className="bg-gradient-to-br from-surface-2 to-surface-1 border border-border rounded-card p-6 mb-5 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-80 h-full bg-[radial-gradient(circle_at_top_right,hsl(var(--brand-glow)),transparent_70%)] pointer-events-none" />
       <div className="relative space-y-4">
         <div className="flex items-center justify-between mb-4">

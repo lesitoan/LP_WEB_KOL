@@ -72,10 +72,10 @@ export function GroupsFilters({
             type="button"
             size="sm"
             variant="ghost"
-            className={`h-10 rounded-[100px] border-0 px-4 sm:px-7 text-base font-medium shadow-none has-[>svg]:px-3 sm:has-[>svg]:px-5 ${
+            className={`h-10 rounded-full border-0 px-4 sm:px-7 text-base font-medium shadow-none has-[>svg]:px-3 sm:has-[>svg]:px-5 ${
               viewMode === "table"
-                ? "bg-[#282828] text-white hover:bg-[#282828] hover:text-white"
-                : "bg-transparent text-[#D7D7D7] hover:bg-[#282828] hover:text-white"
+                ? "bg-surface-control text-white hover:bg-surface-control hover:text-white"
+                : "bg-transparent text-zinc-300 hover:bg-surface-control hover:text-white"
             }`}
             onClick={() => onViewModeChange("table")}
             disabled={isFetching}
@@ -87,10 +87,10 @@ export function GroupsFilters({
             type="button"
             size="sm"
             variant="ghost"
-            className={`h-10 rounded-[100px] border-0 px-3 sm:px-[18px] text-base font-medium shadow-none has-[>svg]:px-3 sm:has-[>svg]:px-[18px] ${
+            className={`h-10 rounded-full border-0 px-3 sm:px-[18px] text-base font-medium shadow-none has-[>svg]:px-3 sm:has-[>svg]:px-[18px] ${
               viewMode === "item"
-                ? "bg-[#282828] text-white hover:bg-[#282828] hover:text-white"
-                : "bg-transparent text-[#D7D7D7] hover:bg-[#282828] hover:text-white"
+                ? "bg-surface-control text-white hover:bg-surface-control hover:text-white"
+                : "bg-transparent text-zinc-300 hover:bg-surface-control hover:text-white"
             }`}
             onClick={() => onViewModeChange("item")}
             disabled={isFetching}

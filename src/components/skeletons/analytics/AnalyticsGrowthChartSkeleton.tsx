@@ -9,7 +9,7 @@ const bars = [
 
 export default function AnalyticsGrowthChartSkeleton() {
   return (
-    <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
+    <section className="rounded-card border border-border bg-surface-card p-4 sm:p-5">
       <h2 className="mb-4 text-sm font-semibold">
         So sánh tốc độ tăng trưởng volume (theo nhóm)
       </h2>

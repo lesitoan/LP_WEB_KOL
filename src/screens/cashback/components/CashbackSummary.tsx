@@ -10,7 +10,7 @@ export function CashbackSummary({ rates }: CashbackSummaryProps) {
   ];
 
   return (
-    <div className="bg-surface-2 border border-dashed border-border-strong rounded-[14px] p-5 mt-5">
+    <div className="bg-surface-2 border border-dashed border-border-strong rounded-card p-5 mt-5">
       <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground font-semibold mb-3">
         📋 Tóm tắt thay đổi sẽ áp dụng
       </div>

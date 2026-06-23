@@ -9,7 +9,7 @@ type InsightsGridProps = {
 export default function InsightsGrid({ insights }: InsightsGridProps) {
   if (!insights.length) {
     return (
-      <div className="rounded-[14px] border border-[#202020] bg-[#0d0d0d] p-8 text-center text-[13.5px] font-medium text-[#9c9c9c]">
+      <div className="rounded-card border border-border-strong bg-surface-card p-8 text-center text-[13.5px] font-medium text-muted-foreground">
         Chưa có insight cho danh mục này.
       </div>
     )

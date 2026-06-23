@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function TierSummaryCardSkeleton() {
   return (
-    <section className="relative mb-4 overflow-hidden rounded-[14px] border-2 border-yellow-200 bg-surface-2 p-5 shadow-[10px_0_24px_rgba(250,255,0,0.16)] md:p-6">
+    <section className="relative mb-4 overflow-hidden rounded-card border-2 border-yellow-200 bg-surface-2 p-5 shadow-[10px_0_24px_rgba(250,255,0,0.16)] md:p-6">
       <div className="mb-5">
         <Skeleton className="h-5 w-56" />
       </div>

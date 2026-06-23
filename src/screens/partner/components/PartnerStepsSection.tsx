@@ -11,7 +11,7 @@ export default function PartnerStepsSection({ steps }: PartnerStepsSectionProps)
     <section className="mx-auto max-w-[1320px] px-5">
       <h2 className="text-center text-6xl font-semibold max-lg:text-5xl max-md:text-4xl">Đơn giản để bắt đầu</h2>
       <div className="mt-10 grid gap-16 md:grid-cols-[1fr_0.9fr] md:items-center">
-        <div className="relative overflow-hidden rounded-xl border border-[#d8cf73]/45 bg-[#151515] p-6 shadow-lg">
+        <div className="relative overflow-hidden rounded-card border border-border-strong bg-surface-card p-6 shadow-lg">
           <div
             className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-cover bg-top bg-no-repeat opacity-70"
             style={{ backgroundImage: 'url("/images/partner/Ellipse.png")' }}
@@ -35,7 +35,7 @@ export default function PartnerStepsSection({ steps }: PartnerStepsSectionProps)
                     <span className="text-brand group-hover/step:text-brand-bright">{stepLabel}:</span>{' '}
                     <span className="text-white">{title}</span>
                   </h3>
-                  <p className="mt-1 text-xl max-md:text-base font-normal leading-5 text-[#bdbdbd]">{step.body}</p>
+                  <p className="mt-1 text-xl max-md:text-base font-normal leading-5 text-muted-foreground">{step.body}</p>
                 </div>
               </div>
             )
@@ -47,7 +47,7 @@ export default function PartnerStepsSection({ steps }: PartnerStepsSectionProps)
             <br />
             Vẫn có ngay <span className="font-semibold bg-[linear-gradient(90deg,#FFF6B8_0%,#FFFFFF_58%,#E8C878_100%)] bg-clip-text text-transparent" >30% hoa hồng</span>
           </h3>
-          <p className="mt-5 text-2xl max-lg:text-xl font-normal eading-6 text-[#bdbdbd]">
+          <p className="mt-5 text-2xl max-lg:text-xl font-normal eading-6 text-muted-foreground">
             Bạn chưa cần cộng đồng lớn hay điều kiện nào. Đăng ký, mời bạn bè, rồi leo hạng dần - hoa hồng tăng theo quy mô.
           </p>
           <Link

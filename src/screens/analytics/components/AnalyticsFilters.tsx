@@ -7,7 +7,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { useGetGroupsQuery } from "@/services/api/groupsApi";
 
@@ -31,6 +30,9 @@ export default function AnalyticsFilters() {
   const requestedGroupId = searchParams.get("groupId");
   const selectedGroup = groups.find((group) => group.id === requestedGroupId) ?? null;
   const selectedGroupId = selectedGroup?.id ?? allGroupsValue;
+  const selectedGroupLabel = isGroupsLoading
+    ? "Đang tải..."
+    : selectedGroup?.title ?? (groups.length ? "Tất cả" : "Chưa có nhóm");
   const hasDateRangeParams = searchParams.has("from") || searchParams.has("to");
   const isGetAllTime = searchParams.get("getalltime") === "true" || !hasDateRangeParams;
   const from = searchParams.get("from") || defaultDateRange.from;
@@ -91,10 +93,9 @@ export default function AnalyticsFilters() {
         >
           <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
             <span className="shrink-0 text-muted-foreground">Đang xem nhóm:</span>
-            <SelectValue
-              className="min-w-0 truncate font-medium"
-              placeholder={isGroupsLoading ? "Đang tải..." : "Chưa có nhóm"}
-            />
+            <span className="block min-w-0 max-w-[118px] truncate font-medium sm:max-w-[100px]">
+              {selectedGroupLabel}
+            </span>
           </span>
         </SelectTrigger>
         <SelectContent className="max-w-[280px] border-border bg-surface-2 text-foreground">
@@ -107,8 +108,10 @@ export default function AnalyticsFilters() {
             </SelectItem>
           ) : groups.length ? (
             groups.map((group) => (
-              <SelectItem key={group.id} value={group.id} title={group.title}>
-                <span className="block max-w-[220px] truncate">{group.title}</span>
+              <SelectItem key={group.id} value={group.id} title={group.title} className="max-w-[260px]">
+                <span className="block min-w-0 max-w-[220px] overflow-hidden text-ellipsis whitespace-nowrap">
+                  {group.title}
+                </span>
               </SelectItem>
             ))
           ) : (

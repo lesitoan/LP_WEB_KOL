@@ -10,8 +10,8 @@ export default function AnalyticsMembersTable() {
   }
 
   return (
-    <section className={`rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5 ${isFetching ? "opacity-80" : ""}`}>
-      <h2 className="mb-5 text-base font-medium">Thống kê members theo từng nhóm</h2>
+    <section className={`rounded-card border border-border bg-surface-card p-4 sm:p-5 ${isFetching ? "opacity-80" : ""}`}>
+      <h2 className="mb-5 text-base font-medium">Thống kê thành viên theo từng nhóm</h2>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>

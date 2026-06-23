@@ -17,13 +17,13 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
 
   return (
     <div
-      className="h-full rounded-[12px] p-px transition-all duration-300 hover:-translate-y-1"
+      className="h-full rounded-xl p-px transition-all duration-300 hover:-translate-y-1"
       style={{ background: gradientBorder }}
     >
       <article
         className={cn(
           'group relative flex h-full flex-col rounded-[11px] p-5 max-sm:px-3 max-sm:py-4 shadow-[0_0_15px_rgba(247,240,161,0.03)] transition-all duration-300 hover:bg-[#28271f] hover:shadow-[0_0_20px_rgba(247,240,161,0.15)]',
-          isActive ? 'bg-[#28271f]' : 'bg-[#151515]',
+          isActive ? 'bg-[#28271f]' : 'bg-surface-card',
         )}
       >
       <div className="border-b border-[#d8cf73]/25 pb-4 transition-colors duration-300 group-hover:border-[#d8cf73]/45">
@@ -31,7 +31,7 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
           <span
             className={cn(
               'grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full transition-colors duration-300',
-              isActive ? 'bg-[#FFD000]' : 'bg-[#292929]',
+              isActive ? 'bg-brand' : 'bg-surface-control',
             )}
           >
             <Image
@@ -44,23 +44,23 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
           </span>
           <div>
             <h3 className="text-2xl font-bold leading-6 text-white transition-colors duration-300">{tier.name}</h3>
-            <p className="text-sm font-medium italic leading-5 text-[#bdbdbd] transition-colors duration-300">{tier.members}</p>
+            <p className="text-sm font-medium italic leading-5 text-muted-foreground transition-colors duration-300">{tier.members}</p>
           </div>
         </div>
       </div>
 
       <div className="flex items-center gap-3 border-b border-[#d8cf73]/25 py-4 transition-colors duration-300 group-hover:border-[#d8cf73]/45 [&>span:last-child]:text-sm">
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#303030] transition-colors duration-300">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-surface-control transition-colors duration-300">
           <img src="/images/partner/commission_icon.svg" alt="" className="h-[18px] w-[16px] object-contain" />
         </span>
         <span className="text-2xl font-bold text-white transition-colors duration-300">{tier.rate}</span>
-        <span className="text-xs font-medium text-[#bdbdbd] transition-colors duration-300">Hoa hồng</span>
+        <span className="text-xs font-medium text-muted-foreground transition-colors duration-300">Hoa hồng</span>
       </div>
 
       <div className="space-y-2.5 pt-4">
         {tier.features.map((feature) => (
           <div key={feature} className="flex gap-2.5">
-            <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[#DAA440] text-white transition-colors duration-300">
+            <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-brand text-white transition-colors duration-300">
               <Check className="h-3 w-3" strokeWidth={3} />
             </span>
             <span className="text-base font-semibold leading-5 text-white transition-colors duration-300">{feature}</span>
@@ -68,10 +68,10 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
         ))}
         {tier.disabled.map((feature) => (
           <div key={feature} className="flex gap-2.5">
-            <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[#2b2b2b] text-[#a7a7a7] transition-colors duration-300">
+            <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-surface-control text-muted-foreground transition-colors duration-300">
               <Check className="h-3 w-3" strokeWidth={3} />
             </span>
-            <span className="text-base font-medium leading-5 text-[#bdbdbd] transition-colors duration-300">{feature}</span>
+            <span className="text-base font-medium leading-5 text-muted-foreground transition-colors duration-300">{feature}</span>
           </div>
         ))}
       </div>

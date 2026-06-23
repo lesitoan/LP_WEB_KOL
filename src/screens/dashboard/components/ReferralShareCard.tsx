@@ -27,7 +27,7 @@ export default function ReferralShareCard() {
   };
 
   return (
-    <section className="relative flex flex-col overflow-hidden rounded-[14px] bg-surface-2 px-5 py-6 lg:px-4 xl:px-6">
+    <section className="relative flex flex-col overflow-hidden rounded-card bg-surface-2 px-5 py-6 lg:px-4 xl:px-6">
       <div className="absolute left-0 top-5 h-16 w-1 bg-yellow-400" />
 
       <div className="mb-7 pl-3 lg:mb-6 xl:mb-7">
@@ -39,7 +39,7 @@ export default function ReferralShareCard() {
         </p>
       </div>
 
-      <div className="-mx-5 -mb-6 flex-1 rounded-t-[10px] bg-[#282828] px-4 py-5 lg:-mx-4 lg:px-3 xl:-mx-6 xl:px-4">
+      <div className="-mx-5 -mb-6 flex-1 rounded-t-lg bg-surface-control px-4 py-5 lg:-mx-4 lg:px-3 xl:-mx-6 xl:px-4">
         <div className="flex items-center justify-between gap-3 border-b border-zinc-500/50 pb-4 text-sm lg:text-xs xl:text-sm">
           <span className="text-zinc-400">Liên kết giới thiệu</span>
           <button

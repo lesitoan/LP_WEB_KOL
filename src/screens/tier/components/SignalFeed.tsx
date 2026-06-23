@@ -4,7 +4,7 @@ export default function SignalFeed() {
   return (
     <div>
       {signals.map((s, i) => (
-        <div key={i} className="bg-surface-1 border border-border rounded-[14px] p-5 mb-3">
+        <div key={i} className="bg-surface-1 border border-border rounded-card p-5 mb-3">
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm font-semibold flex items-center gap-2">
               {s.icon} {s.title}
