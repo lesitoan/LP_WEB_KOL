@@ -6,6 +6,7 @@ import type { ListMembersQuery } from '@/types/api'
 
 type MembersFiltersViewMode = 'list'
 type MemberTypeFilter = 'all' | 'inactive_2_weeks' | 'warning'
+type MembersSortField = NonNullable<ListMembersQuery['sortBy']>
 
 const INITIAL_QUERY: ListMembersQuery = {
   page: 1,
@@ -41,8 +42,12 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
   const sortByRaw = searchParams.get('sortBy')?.trim()
   const sortOrderRaw = searchParams.get('sortOrder')?.trim()
 
-  const sortBy: "telegramUsername" | "usdVolume" | "createdAt" | undefined =
-    sortByRaw === 'telegramUsername' || sortByRaw === 'usdVolume' || sortByRaw === 'createdAt'
+  const sortBy: MembersSortField | undefined =
+    sortByRaw === 'telegramUsername' ||
+    sortByRaw === 'usdVolume' ||
+    sortByRaw === 'volume7d' ||
+    sortByRaw === 'volume30d' ||
+    sortByRaw === 'createdAt'
       ? sortByRaw
       : undefined
   const sortOrder: "asc" | "desc" | undefined = sortOrderRaw === 'asc' || sortOrderRaw === 'desc' ? sortOrderRaw : undefined
@@ -198,7 +203,7 @@ export function useMembersFilters() {
       setSearchInput('')
       setQuery(createMemberTypeQuery(state.query, memberType))
     },
-    setSort: (sortBy: "telegramUsername" | "usdVolume" | "createdAt", sortOrder: "asc" | "desc") =>
+    setSort: (sortBy: MembersSortField, sortOrder: "asc" | "desc") =>
       setQuery({
         ...state.query,
         page: 1,

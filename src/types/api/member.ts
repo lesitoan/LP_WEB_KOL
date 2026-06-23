@@ -34,6 +34,29 @@ export interface MemberItem {
 
 export type MemberProgressStatus = 'NOT_KYC' | 'KYC_COMPLETED' | 'DEPOSIT_COMPLETED' | 'TRADE_COMPLETED'
 
+export interface VolumeBreakdown {
+  spot: number
+  future: number
+  total: number
+}
+
+export interface VolumePeriodsMemberItem {
+  lpexUserId: string
+  lpexUid: string
+  username: string
+  fullName: string
+  accountStatus: string
+  isKyc: boolean
+  isDeposit: boolean
+  kycAt: string | null
+  firstDepositAt: string | null
+  firstTradeAt: string | null
+  lastOnlineAt: string | null
+  volume7d: VolumeBreakdown
+  volume30d: VolumeBreakdown
+  eligibleGroups?: MemberItem['eligibleGroups']
+}
+
 export interface MembersPagination {
   page: number
   limit: number
@@ -44,7 +67,7 @@ export interface MembersPagination {
 export interface ListMembersQuery {
   page: number
   limit: number
-  sortBy?: "telegramUsername" | "usdVolume" | "createdAt"
+  sortBy?: "telegramUsername" | "usdVolume" | "volume7d" | "volume30d" | "createdAt"
   sortOrder?: "asc" | "desc"
   search?: string
   countryCode?: string
@@ -59,5 +82,10 @@ export interface ListMembersQuery {
 
 export interface MembersData {
   items: MemberItem[]
+  pagination: MembersPagination
+}
+
+export interface VolumePeriodsMembersData {
+  items: VolumePeriodsMemberItem[]
   pagination: MembersPagination
 }

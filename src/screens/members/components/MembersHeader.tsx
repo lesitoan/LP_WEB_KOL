@@ -7,22 +7,34 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "@/hooks/useToast";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
 import { useGetCurrentUserQuery } from "@/services/api/authApi";
-import { useLazyGetMembersQuery } from "@/services/api/membersApi";
+import { useLazyGetVolumePeriodsMembersQuery } from "@/services/api/membersApi";
 import type { ListMembersQuery } from "@/types/api";
 import { exportMembersToExcel } from "../utils/exportUtils";
 
 export default function MembersHeader() {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const searchParams = useSearchParams();
-  const [triggerGetMembers, { isFetching }] = useLazyGetMembersQuery();
+  const [triggerGetMembers, { isFetching }] = useLazyGetVolumePeriodsMembersQuery();
   const { data: profile } = useGetCurrentUserQuery();
 
   const queryFromUrl = useMemo<ListMembersQuery>(() => {
     const inactiveDays = Number(searchParams.get("inactiveDays") || "");
+    const sortByRaw = searchParams.get("sortBy")?.trim();
+    const sortBy =
+      sortByRaw === "telegramUsername" ||
+      sortByRaw === "usdVolume" ||
+      sortByRaw === "volume7d" ||
+      sortByRaw === "volume30d" ||
+      sortByRaw === "createdAt"
+        ? sortByRaw
+        : undefined;
+    const sortOrderRaw = searchParams.get("sortOrder")?.trim();
 
     return {
       page: Math.max(1, Number(searchParams.get("page") || "1") || 1),
       limit: Math.min(100, Math.max(1, Number(searchParams.get("limit") || "20") || 20)),
+      sortBy,
+      sortOrder: sortOrderRaw === "asc" || sortOrderRaw === "desc" ? sortOrderRaw : undefined,
       search: searchParams.get("search")?.trim() || undefined,
       countryCode: searchParams.get("countryCode")?.trim().toUpperCase() || undefined,
       telegramStatus: searchParams.get("telegramStatus")?.trim() || undefined,

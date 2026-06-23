@@ -1,9 +1,9 @@
 import * as XLSX from "xlsx";
-import type { MemberItem } from "@/types/api";
+import type { VolumePeriodsMemberItem } from "@/types/api";
 import { formatVnd } from "@/lib/formatMoney";
 
-function fullName(member: MemberItem) {
-  return `${member.telegramFirstName ?? ""} ${member.telegramLastName ?? ""}`.trim() || member.telegramUsername || "";
+function fullName(member: VolumePeriodsMemberItem) {
+  return member.fullName?.trim() || member.username || member.lpexUid || "";
 }
 
 function formatLpexUserStatusValue(status: string) {
@@ -12,47 +12,46 @@ function formatLpexUserStatusValue(status: string) {
       return "Hoạt động";
     case "inactive":
       return "Không hoạt động";
+    case "suspended":
+      return "Tạm khóa";
     default:
       return "Không xác định";
   }
 }
 
-function formatVerificationStatus(status: MemberItem["memberProgressStatus"]) {
-  switch (status) {
-    case "KYC_COMPLETED":
-      return "Đã KYC";
-    case "DEPOSIT_COMPLETED":
-      return "Đã deposit";
-    case "TRADE_COMPLETED":
-      return "Đã giao dịch";
-    case "NOT_KYC":
-    default:
-      return "Chưa KYC";
-  }
+function formatVerificationStatus(member: VolumePeriodsMemberItem) {
+  if (member.firstTradeAt) return "Đã giao dịch";
+  if (member.isDeposit) return "Đã deposit";
+  if (member.isKyc) return "Đã KYC";
+  return "Chưa KYC";
 }
 
-function formatGroups(member: MemberItem) {
+function formatGroups(member: VolumePeriodsMemberItem) {
   const groups = member.eligibleGroups || [];
   if (!groups.length) return "—";
   return groups.map((group) => `- ${group.title || "—"}`).join("\n");
 }
 
-function toWorkbook(members: MemberItem[]) {
+function toWorkbook(members: VolumePeriodsMemberItem[]) {
   const rows = members.map((member) => ({
     "Tên member": fullName(member),
-    "Telegram username": member.telegramUsername ? `@${member.telegramUsername}` : "—",
+    // "Username": member.username ? `@${member.username}` : "—",
+    "UID": member.lpexUid || "—",
     "Groups": formatGroups(member),
-    "Volume 30D": `${formatVnd(member.usdVolume)} VNĐ`,
-    "Trạng thái": formatLpexUserStatusValue(member.lpexUserStatus || "unknown"),
-    "Xác minh": formatVerificationStatus(member.memberProgressStatus),
+    "Volume 7D": `${formatVnd(member.volume7d.total)} VNĐ`,
+    "Volume 30D": `${formatVnd(member.volume30d.total)} VNĐ`,
+    "Trạng thái": formatLpexUserStatusValue(member.accountStatus || "unknown"),
+    "Xác minh": formatVerificationStatus(member),
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(rows, { skipHeader: false });
 
   const headers = Object.keys(rows[0] ?? {
     "Tên member": "",
-    "Telegram username": "",
+    // "Username": "",
+    "UID": "",
     "Groups": "",
+    "Volume 7D": "",
     "Volume 30D": "",
     "Trạng thái": "",
     "Xác minh": "",
@@ -153,7 +152,7 @@ function fallbackBrowserDownload(blob: Blob, fileName: string) {
   URL.revokeObjectURL(url);
 }
 
-export async function exportMembersToExcel(members: MemberItem[]): Promise<boolean> {
+export async function exportMembersToExcel(members: VolumePeriodsMemberItem[]): Promise<boolean> {
   const workbook = toWorkbook(members);
   const blob = workbookToBlob(workbook);
   const now = new Date();

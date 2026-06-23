@@ -9,16 +9,13 @@ import enLocale from 'i18n-iso-countries/langs/en.json';
 import type { ActiveFilterChip, SelectFilterConfig } from "@/components/filters/TableFilterBar";
 import { toast } from "@/hooks/useToast";
 import { formatVnd } from "@/lib/formatMoney";
-import { useGetMembersQuery } from "@/services/api/membersApi";
+import { useGetVolumePeriodsMembersQuery } from "@/services/api/membersApi";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
-import type { MemberItem } from "@/types/api";
+import type { ListMembersQuery, VolumePeriodsMemberItem } from "@/types/api";
 import { GroupLogoBadge } from "@/screens/groups/components/groupLogoBadge";
 import MembersFilters from "./filter/MembersFilters";
 import { useMembersFilters } from "../hooks/useMembersFilters";
 
-function fullName(member: MemberItem) {
-  return `${member.telegramFirstName ?? ""} ${member.telegramLastName ?? ""}`.trim() || member.telegramUsername;
-}
 
 function formatDate(dateIso: string) {
   if (!dateIso) return "—";
@@ -26,9 +23,9 @@ function formatDate(dateIso: string) {
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("vi-VN");
 }
 
-function truncateGroupTitle(title: string | null | undefined, maxLength = 10) {
+function groupTitle(title: string | null | undefined) {
   const normalizedTitle = (title || "—").trim() || "—";
-  return normalizedTitle.slice(0, maxLength);
+  return normalizedTitle;
 }
 
 function MemberGroupBadge({
@@ -36,7 +33,7 @@ function MemberGroupBadge({
   className = "h-5 w-6",
   textClassName = "text-[10px]",
 }: {
-  group: NonNullable<MemberItem["eligibleGroups"]>[number];
+  group: NonNullable<VolumePeriodsMemberItem["eligibleGroups"]>[number];
   className?: string;
   textClassName?: string;
 }) {
@@ -84,15 +81,14 @@ function formatLpexUserStatusValue(status: string) {
   }
 }
 
-function getMemberProgressConfig(status: MemberItem["memberProgressStatus"]) {
-  switch (status) {
-    case "KYC_COMPLETED":
+function getMemberProgressConfig(member: VolumePeriodsMemberItem) {
+  switch (true) {
+    case Boolean(member.isKyc && !member.isDeposit && !member.firstTradeAt):
       return { label: "Đã KYC", steps: 2, labelClassName: "text-[#12B76A]", textClassName: "text-base" };
-    case "DEPOSIT_COMPLETED":
+    case Boolean(member.isDeposit && !member.firstTradeAt):
       return { label: "Đã deposit", steps: 3, labelClassName: "text-[#FFD000]", textClassName: "text-base" };
-    case "TRADE_COMPLETED":
+    case Boolean(member.firstTradeAt):
       return { label: "Đã giao dịch", steps: 4, labelClassName: "text-[#00A4FF]", textClassName: "text-base" };
-    case "NOT_KYC":
     default:
       return { label: "Chưa KYC", steps: 1, labelClassName: "text-[#A8A8A9]", textClassName: "text-base" };
   }
@@ -111,7 +107,7 @@ const MEMBER_TYPE_TABS = [
 
 function MemberTypeTabCount({ count, isLoading }: { count: number; isLoading: boolean }) {
   return (
-    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-surface-control px-2 text-sm font-normal leading-none text-muted-foreground">
+    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-surface-control px-2 text-xs font-normal leading-none text-muted-foreground">
       {isLoading ? "0" : count.toLocaleString("en-US")}
     </span>
   );
@@ -158,7 +154,7 @@ export default function MembersTable() {
         ? "inactive_2_weeks"
         : activeMemberType;
 
-  const { data, isLoading, isFetching, error } = useGetMembersQuery(query, {
+  const { data, isLoading, isFetching, error } = useGetVolumePeriodsMembersQuery(query, {
     refetchOnMountOrArgChange: true,
   });
   const memberTypeCountBaseQuery = useMemo(
@@ -174,7 +170,7 @@ export default function MembersTable() {
     }),
     [query],
   );
-  const { data: inactiveMembersCountData, isFetching: isInactiveMembersCountFetching } = useGetMembersQuery(
+  const { data: inactiveMembersCountData, isFetching: isInactiveMembersCountFetching } = useGetVolumePeriodsMembersQuery(
     {
       ...memberTypeCountBaseQuery,
       inactiveDays: 14,
@@ -183,7 +179,7 @@ export default function MembersTable() {
       refetchOnMountOrArgChange: true,
     },
   );
-  const { data: warningMembersCountData, isFetching: isWarningMembersCountFetching } = useGetMembersQuery(
+  const { data: warningMembersCountData, isFetching: isWarningMembersCountFetching } = useGetVolumePeriodsMembersQuery(
     {
       ...memberTypeCountBaseQuery,
       eligibilityStatus: "FINAL_WARNING,WARNING",
@@ -257,7 +253,7 @@ export default function MembersTable() {
 
   const renderSortableHeader = (
     title: string,
-    field: "telegramUsername" | "usdVolume" | "createdAt",
+    field: NonNullable<ListMembersQuery["sortBy"]>,
   ) => {
     const isActive = sortBy === field;
 
@@ -280,7 +276,7 @@ export default function MembersTable() {
     );
   };
 
-  const columns: DataTableColumn<MemberItem>[] = [
+  const columns: DataTableColumn<VolumePeriodsMemberItem>[] = [
     {
       id: "member",
       header: "Thành viên",
@@ -294,7 +290,7 @@ export default function MembersTable() {
             className="h-8 w-8 shrink-0 rounded-full object-cover"
           />
           <div>
-            <div className="text-base font-normal leading-6 text-white">{fullName(member)}</div>
+            <div className="text-base font-normal leading-6 text-white">{ member.fullName?.trim()}</div>
             <div className="text-sm text-muted-foreground">
               {member.lpexUid ? `UID: ${member.lpexUid}` : ""}
             </div>
@@ -331,8 +327,8 @@ export default function MembersTable() {
                 {groups.map((group) => (
                   <div key={group.accessId || group.groupId} className="flex items-center gap-2">
                     <MemberGroupBadge group={group} />
-                    <span className="max-w-[96px] text-sm font-medium text-foreground">
-                      {truncateGroupTitle(group.title)}
+                    <span className="max-w-[20ch] whitespace-normal break-words text-sm font-medium leading-5 text-foreground">
+                      {groupTitle(group.title)}
                     </span>
                   </div>
                 ))}
@@ -371,10 +367,16 @@ export default function MembersTable() {
     // },
     
     {
-      id: "volume",
-      header: renderSortableHeader("Volume 30D", "usdVolume"),
+      id: "volume7d",
+      header: renderSortableHeader("Volume 7D", "volume7d"),
       cellClassName: "font-medium text-base",
-      cell: (member) => `${formatVnd(member.usdVolume)} VNĐ`,
+      cell: (member) => `${formatVnd(member.volume7d.total)} VNĐ`,
+    },
+    {
+      id: "volume30d",
+      header: renderSortableHeader("Volume 30D", "volume30d"),
+      cellClassName: "font-medium text-base",
+      cell: (member) => `${formatVnd(member.volume30d.total)} VNĐ`,
     },
     {
       id: "status",
@@ -382,11 +384,11 @@ export default function MembersTable() {
       cell: (member) => (
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${statusClass(
-            member.lpexUserStatus || "unknown",
+            member?.accountStatus || "unknown",
           )}`}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
-          {formatLpexUserStatusValue(member.lpexUserStatus || "unknown")}
+          {formatLpexUserStatusValue(member?.accountStatus || "unknown")}
         </span>
       ),
     },
@@ -394,7 +396,7 @@ export default function MembersTable() {
       id: "verification",
       header: "Xác minh",
       cell: (member) => {
-        const progress = getMemberProgressConfig(member.memberProgressStatus);
+        const progress = getMemberProgressConfig(member);
 
         return (
           <div className="inline-flex min-w-[116px] flex-col items-start gap-2 text-left">
@@ -478,7 +480,7 @@ export default function MembersTable() {
         <DataTable
           columns={columns}
           data={members}
-          rowKey={(member) => member.id}
+          rowKey={(member) => member?.lpexUserId || member?.lpexUid}
           isLoading={isLoading}
           loadingContent="Đang tải danh sách members..."
           emptyContent="Không có member phù hợp với bộ lọc"

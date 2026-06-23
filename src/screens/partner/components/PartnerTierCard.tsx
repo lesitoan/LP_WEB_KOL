@@ -66,7 +66,7 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
             />
           </span>
           <div>
-            <h3 className="text-2xl font-bold leading-6 text-[#FFFFFF] transition-colors duration-300">{tier.name}</h3>
+            <h3 className="text-2xl font-bold leading-6 uppercase text-[#FFFFFF] transition-colors duration-300">{tier.name}</h3>
             <p className="text-sm font-medium italic leading-5 text-[#D7D8D9] transition-colors duration-300">{tier.members}</p>
           </div>
         </div>
