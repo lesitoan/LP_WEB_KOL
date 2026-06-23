@@ -29,7 +29,7 @@ function StatCard({
   value: string
 }) {
   return (
-    <div className="rounded-lg bg-[#28282880] p-4 sm:p-5">
+    <div className="rounded-control bg-surface-control/50 p-4 sm:p-5">
       <div className="mb-4 flex items-center gap-2 text-sm font-medium uppercase text-muted-foreground">
         <img src={iconSrc} alt="" className="h-8 w-8 object-contain" />
         <span>{label}</span>
@@ -81,10 +81,10 @@ export default function AnalyticsOverviewCard() {
   }
 
   return (
-    <section className={cn("mb-5 rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5", (isFetching || isCommissionFetching) && "opacity-80")}>
+    <section className={cn("mb-5 rounded-card border border-border bg-surface-card p-4 sm:p-5", (isFetching || isCommissionFetching) && "opacity-80")}>
       <h2 className="mb-4 text-base font-medium">Chỉ số tổng quan nhóm</h2>
       <div className="grid gap-3 lg:grid-cols-[1.05fr_2.15fr]">
-        <div className="relative overflow-hidden rounded-lg bg-[#28282880] bg-[url('/images/analytics/hero_bg_gradient.png')] bg-cover bg-center p-6">
+        <div className="relative overflow-hidden rounded-control bg-surface-control/50 bg-[url('/images/analytics/hero_bg_gradient.png')] bg-cover bg-center p-6">
           <div className="relative flex min-h-[220px] flex-col items-start justify-center">
             <div className="mb-8 flex items-center gap-3">
               <img

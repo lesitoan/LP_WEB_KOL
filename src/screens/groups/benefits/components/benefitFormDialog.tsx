@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
@@ -75,7 +75,7 @@ export function BenefitFormDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-lg w-[calc(100vw-1rem)] sm:w-full bg-[#171717] p-0">
+      <DialogContent className="max-w-lg w-[calc(100vw-1rem)] sm:w-full border-border bg-surface-card p-0 shadow-2xl [&_[data-slot=dialog-close]]:right-6 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:rounded-md [&_[data-slot=dialog-close]]:bg-surface-control [&_[data-slot=dialog-close]]:p-1.5 [&_[data-slot=dialog-close]]:text-zinc-300">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader className="px-5 pt-5">
             <DialogTitle>{dialogTitle}</DialogTitle>

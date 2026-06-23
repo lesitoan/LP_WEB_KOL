@@ -47,14 +47,14 @@ export default function TierComparisonTable() {
 
   if (!tiers.length) {
     return (
-      <div className="mb-6 rounded-xl bg-[#171717] p-6 text-sm text-muted-foreground">
+      <div className="mb-6 rounded-card bg-surface-card p-6 text-sm text-muted-foreground">
         Chưa có dữ liệu tier.
       </div>
     )
   }
 
   return (
-    <div className="mb-6 rounded-xl bg-[#171717] p-5 sm:p-6">
+    <div className="mb-6 rounded-card bg-surface-card p-5 sm:p-6">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         {tiers.map((tier, index) => (
           <TierColumn

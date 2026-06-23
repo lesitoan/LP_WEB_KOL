@@ -17,8 +17,41 @@ const lineLegendItems = [
   { label: "Silver Group", color: "hsl(var(--brand))" },
 ]
 
+const lineLabelByKey: Record<string, string> = {
+  current: "VIP Platinum",
+  target: "Gold Traders",
+  baseline: "Silver Group",
+}
+
 export function formatVnd(value: number) {
   return `${Math.round(value).toLocaleString("vi-VN")} VNĐ`
+}
+
+type TooltipPayloadItem = {
+  dataKey?: string | number
+  value?: number | string
+  color?: string
+}
+
+function renderRevenueTooltip({ active, payload }: { active?: boolean; payload?: TooltipPayloadItem[] }) {
+  if (!active || !payload?.length) return null
+
+  return (
+    <div className="rounded-[10px] border border-border bg-surface-2 px-3 py-2 text-sm shadow-lg">
+      <div className="space-y-1.5">
+        {payload.map((item) => {
+          const dataKey = String(item.dataKey ?? "")
+          const value = Number(item.value ?? 0)
+
+          return (
+            <div key={dataKey} className="whitespace-nowrap font-medium" style={{ color: item.color }}>
+              {lineLabelByKey[dataKey] ?? dataKey}: {formatVnd(value)}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 function formatVndAxis(value: number) {
@@ -42,7 +75,7 @@ export default function AnalyticsRevenueChart({ title, summaryLabel }: Analytics
   }
 
   return (
-    <section className="relative rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
+    <section className="relative rounded-card border border-border bg-surface-card p-4 sm:p-5">
       <div className="mb-2">
         <h2 className="min-w-0 text-base font-medium">{title}</h2>
       </div>
@@ -75,16 +108,7 @@ export default function AnalyticsRevenueChart({ title, summaryLabel }: Analytics
               tickFormatter={(value) => formatVndAxis(Number(value))}
             />
             <Tooltip
-              contentStyle={{
-                background: "hsl(var(--surface-2))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: 10,
-              }}
-              labelStyle={{ color: "hsl(var(--muted-foreground))" }}
-              formatter={(value: number, name: string) => [
-                formatVnd(value),
-                name === "current" ? "Doanh thu" : name === "target" ? "Target" : "Nền",
-              ]}
+              content={renderRevenueTooltip}
             />
             <Line type="monotone" dataKey="current" stroke="hsl(var(--brand))" strokeWidth={2.5} dot={false} />
             <Line type="monotone" dataKey="target" stroke="#facc15" strokeWidth={2.5} dot={false} />

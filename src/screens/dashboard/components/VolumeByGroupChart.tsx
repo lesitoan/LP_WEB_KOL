@@ -12,19 +12,50 @@ import {
 } from "recharts";
 import { volumeChartData } from "../constants";
 
-const legendFormatter = (value: string) => {
-  const labels: Record<string, string> = {
-    vip: "VIP Platinum",
-    gold: "Gold Traders",
-    silver: "Silver Group",
-  };
-
-  return <span className="text-[10px] font-normal text-zinc-200 md:text-sm">{labels[value] ?? value}</span>;
+const volumeLabelByKey: Record<string, string> = {
+  vip: "VIP Platinum",
+  gold: "Gold Traders",
+  silver: "Silver Group",
 };
+
+const legendFormatter = (value: string) => {
+  return <span className="text-[10px] font-normal text-zinc-200 md:text-sm">{volumeLabelByKey[value] ?? value}</span>;
+};
+
+type TooltipPayloadItem = {
+  dataKey?: string | number;
+  value?: number | string;
+  color?: string;
+};
+
+function formatFullVnd(value: number) {
+  return `${Math.round(value * 1_000_000).toLocaleString("vi-VN")} VNĐ`;
+}
+
+function renderVolumeTooltip({ active, payload }: { active?: boolean; payload?: TooltipPayloadItem[] }) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="rounded-lg border border-border-strong bg-surface-3 px-3 py-2 text-sm shadow-lg">
+      <div className="space-y-1.5">
+        {payload.map((item) => {
+          const dataKey = String(item.dataKey ?? "");
+          const value = Number(item.value ?? 0);
+
+          return (
+            <div key={dataKey} className="whitespace-nowrap font-medium" style={{ color: item.color }}>
+              {volumeLabelByKey[dataKey] ?? dataKey}: {formatFullVnd(value)}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function VolumeByGroupChart() {
   return (
-    <section className="mb-4 rounded-[14px] bg-surface-2 p-5 md:p-6">
+    <section className="mb-4 rounded-card bg-surface-2 p-5 md:p-6">
       <h2 className="mb-6 text-base font-medium text-foreground">Volume 30 ngày (theo nhóm)</h2>
 
       <div className="h-[300px] w-full">
@@ -60,14 +91,7 @@ export default function VolumeByGroupChart() {
             />
             <Tooltip
               cursor={{ stroke: "hsl(var(--border-strong))" }}
-              contentStyle={{
-                background: "hsl(var(--surface-3))",
-                border: "1px solid hsl(var(--border-strong))",
-                borderRadius: 8,
-                color: "hsl(var(--foreground))",
-              }}
-              formatter={(value: number, name: string) => [`${value}M`, legendFormatter(name)]}
-              labelFormatter={(value) => value || "Ngày"}
+              content={renderVolumeTooltip}
             />
             <Legend
               verticalAlign="top"

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 
 import { useAuthSession } from '@/hooks/useAuthSession'
+import { usePopup } from '@/hooks/usePopup'
 import { cn } from '@/lib/utils'
 
 const navSections = [
@@ -102,13 +103,29 @@ function SidebarIcon({ src }: { src: string }) {
 export default function Sidebar({ onItemClick }: SidebarProps) {
   const pathname = usePathname()
   const { profile, logout } = useAuthSession()
+  const { showConfirm, Popup } = usePopup()
+
+  const handleLogout = async () => {
+    const accepted = await showConfirm({
+      title: 'Đăng xuất',
+      description: 'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?',
+      confirmText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      destructive: true,
+    })
+
+    if (accepted) {
+      logout()
+    }
+  }
 
   return (
-    <aside className="flex h-full min-h-0 w-[232px] shrink-0 flex-col overflow-y-auto border-r border-[#202020] bg-black px-4 py-5 text-[#f5f5f5] custom-scrollbar">
+    <>
+    <aside className="flex h-full min-h-0 w-[232px] shrink-0 flex-col overflow-y-auto border-r border-border bg-background px-4 py-5 text-foreground custom-scrollbar">
       <nav className="flex-1 space-y-8">
         {navSections.map((section) => (
           <section key={section.label} className="space-y-2">
-            <div className="px-0 text-xs font-normal uppercase leading-none text-[#8a8a8a]">
+            <div className="px-0 text-xs font-normal uppercase leading-none text-muted-foreground">
               {section.label}
             </div>
 
@@ -125,10 +142,10 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
                     href={item.href}
                     onClick={onItemClick}
                     className={cn(
-                      'flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors',
+                      'flex h-10 items-center gap-3 rounded-control px-3 text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-[#2b2b2b] text-white'
-                        : 'text-[#8f8f8f] hover:bg-[#171717] hover:text-white',
+                        ? 'bg-surface-control text-white'
+                        : 'text-muted-foreground hover:bg-surface-card hover:text-white',
                     )}
                   >
                     <SidebarIcon src={isActive ? item.activeIcon : item.icon} />
@@ -141,7 +158,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="border-t border-[#202020] pt-4">
+      <div className="border-t border-border pt-4">
         <div className="flex items-center gap-3">
           <Image
             src="/images/avatar_default.png"
@@ -155,15 +172,15 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
             <div className="truncate text-sm font-semibold leading-5 text-white">
               {profile?.name ?? 'Unknown User'}
             </div>
-            <div className="truncate text-sm font-normal leading-4 text-[#e0e0e0]">
+            <div className="truncate text-sm font-normal leading-4 text-muted-foreground">
               {profile?.email ?? '-'}
             </div>
           </div>
 
           <button
             type="button"
-            onClick={logout}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[#2b2b2b] text-[#dedede] transition-colors hover:bg-[#3a3a3a] hover:text-white"
+            onClick={handleLogout}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-control bg-surface-control text-muted-foreground transition-colors hover:bg-surface-control-hover hover:text-white"
             aria-label="Đăng xuất"
           >
             <LogOut className="h-4 w-4" strokeWidth={1.8} />
@@ -171,5 +188,7 @@ export default function Sidebar({ onItemClick }: SidebarProps) {
         </div>
       </div>
     </aside>
+    <Popup />
+    </>
   )
 }

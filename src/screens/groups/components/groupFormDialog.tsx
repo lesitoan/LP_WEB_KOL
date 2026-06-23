@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -165,7 +165,7 @@ export function GroupFormDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="w-[calc(100vw-1rem)] max-w-[810px] gap-0 overflow-hidden border-[#252525] bg-[#171717] p-0 shadow-2xl sm:max-w-[810px] [&_[data-slot=dialog-close]]:right-6 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:rounded-md [&_[data-slot=dialog-close]]:bg-[#2A2A2A] [&_[data-slot=dialog-close]]:p-1.5 [&_[data-slot=dialog-close]]:text-[#CFCFCF]">
+      <DialogContent className="w-[calc(100vw-1rem)] max-w-[810px] gap-0 overflow-hidden border-border bg-surface-card p-0 shadow-2xl sm:max-w-[810px] [&_[data-slot=dialog-close]]:right-6 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:rounded-md [&_[data-slot=dialog-close]]:bg-surface-control [&_[data-slot=dialog-close]]:p-1.5 [&_[data-slot=dialog-close]]:text-zinc-300">
         <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex max-h-[92vh] flex-col">
           <style>{`
             .group-form-range::-webkit-slider-thumb {
@@ -189,9 +189,9 @@ export function GroupFormDialog({
               box-shadow: none !important;
             }
           `}</style>
-          <DialogHeader className="border-b border-[#252525] px-4 py-4 sm:px-6">
-            <DialogTitle className="flex items-center gap-2 pr-10 text-lg font-medium text-[#E8E8E8]">
-              <Layers className="h-4 w-4 text-[#FFCC00]" />
+          <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
+            <DialogTitle className="flex items-center gap-2 pr-10 text-lg font-medium text-foreground">
+              <Layers className="h-4 w-4 text-brand" />
               {dialogTitle}
             </DialogTitle>
           </DialogHeader>
@@ -200,9 +200,9 @@ export function GroupFormDialog({
             <FieldGroup className="gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
                 <Field orientation="vertical" className="w-full gap-1">
-                  <FieldLabel className="text-xs font-semibold text-[#D7D7D7]">Tên group</FieldLabel>
+                  <FieldLabel className="text-xs font-semibold text-zinc-300">Tên group</FieldLabel>
                   <Input
-                    className="h-10 border-[#2A2A2A] bg-[#0D0D0D] text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
+                    className="h-10 border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
                     placeholder="Nhập tên nhóm"
                     {...register('title', {
                     required: 'Tên group không được để trống.',
@@ -215,9 +215,9 @@ export function GroupFormDialog({
                 </Field>
 
                 <Field orientation="vertical" className="w-full gap-1">
-                  <FieldLabel className="text-sm font-medium text-[#D7D7D7]">ID nhóm Telegram</FieldLabel>
+                  <FieldLabel className="text-sm font-medium text-zinc-300">ID nhóm Telegram</FieldLabel>
                   <Input
-                    className="h-10 border-[#2A2A2A] bg-[#0D0D0D] text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
+                    className="h-10 border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
                     placeholder="Nhập ID nhóm Telegram"
                     {...register('telegramGroupId', {
                     required: 'ID nhóm Telegram không được để trống.',
@@ -231,9 +231,9 @@ export function GroupFormDialog({
               </div>
 
               <Field orientation="vertical" className="gap-1">
-                <FieldLabel className="text-sm font-medium text-[#D7D7D7]">Mô tả nhóm</FieldLabel>
+                <FieldLabel className="text-sm font-medium text-zinc-300">Mô tả nhóm</FieldLabel>
                 <Textarea
-                  className="min-h-[104px] resize-none border-[#2A2A2A] bg-[#0D0D0D] text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
+                  className="min-h-[104px] resize-none border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
                   placeholder="Nhập mô tả cho nhóm"
                   {...register('description', {
                     required: 'Mô tả không được để trống.',
@@ -247,9 +247,9 @@ export function GroupFormDialog({
 
               <div className="grid gap-4 lg:grid-cols-2">
                 <Field orientation="vertical" className="gap-1">
-                  <FieldLabel className="text-sm font-medium text-[#D7D7D7]">{`Ngưỡng volume tối thiểu (USD)`}</FieldLabel>
+                  <FieldLabel className="text-sm font-medium text-zinc-300">{`Ngưỡng volume tối thiểu (USD)`}</FieldLabel>
                   <Input
-                    className="h-10 border-[#2A2A2A] bg-[#0D0D0D] text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
+                    className="h-10 border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
                     type="number"
                     min={0}
                     max={maxVolume ? Number(maxVolume) : undefined}
@@ -275,9 +275,9 @@ export function GroupFormDialog({
                 </Field>
 
                 <Field orientation="vertical" className="gap-1">
-                  <FieldLabel className="text-sm font-medium text-[#D7D7D7]">{`Ngưỡng volume tối đa (USD)`}</FieldLabel>
+                  <FieldLabel className="text-sm font-medium text-zinc-300">{`Ngưỡng volume tối đa (USD)`}</FieldLabel>
                   <Input
-                    className="h-10 border-[#2A2A2A] bg-[#0D0D0D] text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
+                    className="h-10 border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
                     type="text"
                     min={minVolume ? Number(minVolume) : 0}
                     inputMode="decimal"
@@ -305,8 +305,8 @@ export function GroupFormDialog({
               </div>
 
               <div className="grid gap-4 lg:grid-cols-2">
-                <Field orientation="vertical" className="gap-1 rounded-lg border border-[#2A2A2A] p-4">
-                  <FieldLabel className="text-sm font-normal text-[#D7D7D7]">Số lần cảnh báo trước khi kick</FieldLabel>
+                <Field orientation="vertical" className="gap-1 rounded-lg border border-border-strong p-4">
+                  <FieldLabel className="text-sm font-normal text-zinc-300">Số lần cảnh báo trước khi kick</FieldLabel>
                   <Controller
                     control={control}
                     name="warningCountBeforeKick"
@@ -318,9 +318,9 @@ export function GroupFormDialog({
                     }}
                     render={({ field }) => (
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm font-normal text-[#777777]">
+                        <div className="flex items-center justify-between text-sm font-normal text-muted-foreground">
                           <span>1 lần</span>
-                          <span className="font-normal text-[#D7D7D7]">{field.value[0]} lần</span>
+                          <span className="font-normal text-zinc-300">{field.value[0]} lần</span>
                           <span>5 lần</span>
                         </div>
                         <input
@@ -339,12 +339,12 @@ export function GroupFormDialog({
                   {errors.warningCountBeforeKick ? (
                     <FieldDescription className="text-destructive">{errors.warningCountBeforeKick.message}</FieldDescription>
                   ) : (
-                    <FieldDescription className="text-xs font-normal text-[#777777]">Giá trị hợp lệ từ 1 đến 5</FieldDescription>
+                    <FieldDescription className="text-xs font-normal text-muted-foreground">Giá trị hợp lệ từ 1 đến 5</FieldDescription>
                   )}
                 </Field>
 
-                <Field orientation="vertical" className="gap-1 rounded-lg border border-[#2A2A2A] p-4">
-                  <FieldLabel className="text-sm font-normal text-[#D7D7D7]">Thời gian gia hạn (ngày)</FieldLabel>
+                <Field orientation="vertical" className="gap-1 rounded-lg border border-border-strong p-4">
+                  <FieldLabel className="text-sm font-normal text-zinc-300">Thời gian gia hạn (ngày)</FieldLabel>
                   <Controller
                     control={control}
                     name="gracePeriodDays"
@@ -356,9 +356,9 @@ export function GroupFormDialog({
                     }}
                     render={({ field }) => (
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm font-normal text-[#777777]">
+                        <div className="flex items-center justify-between text-sm font-normal text-muted-foreground">
                           <span>3 ngày</span>
-                          <span className="font-normal text-[#D7D7D7]">{field.value[0]} ngày</span>
+                          <span className="font-normal text-zinc-300">{field.value[0]} ngày</span>
                           <span>30 ngày</span>
                         </div>
                         <input
@@ -381,17 +381,17 @@ export function GroupFormDialog({
               </div>
 
               <div className="grid gap-4 lg:grid-cols-2">
-                <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-[#2A2A2A] p-4">
+                <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-border-strong p-4">
                   <div className="space-y-0.5">
-                    <FieldLabel className="text-sm font-normal text-[#D7D7D7]">Bật auto-kick</FieldLabel>
-                    <FieldDescription className="text-xs font-normal text-[#777777]">Giá trị hợp lệ từ 1 đến 5</FieldDescription>
+                    <FieldLabel className="text-sm font-normal text-zinc-300">Bật auto-kick</FieldLabel>
+                    <FieldDescription className="text-xs font-normal text-muted-foreground">Giá trị hợp lệ từ 1 đến 5</FieldDescription>
                   </div>
                   <Controller
                     control={control}
                     name="autoKickEnabled"
                     render={({ field }) => (
                       <Switch
-                        className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+                        className="h-6 w-[38px] border-0 bg-surface-control data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-surface-control [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -399,17 +399,17 @@ export function GroupFormDialog({
                   />
                 </Field>
 
-                <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-[#2A2A2A] p-4">
+                <Field orientation="horizontal" className="items-center justify-between rounded-lg border border-border-strong p-4">
                   <div className="space-y-0.5">
-                    <FieldLabel className="text-sm font-normal text-[#D7D7D7]">Cho phép rejoin</FieldLabel>
-                    <FieldDescription className="text-xs font-normal text-[#777777]">Thành viên có thể tham gia lại sau khi bị kick.</FieldDescription>
+                    <FieldLabel className="text-sm font-normal text-zinc-300">Cho phép rejoin</FieldLabel>
+                    <FieldDescription className="text-xs font-normal text-muted-foreground">Thành viên có thể tham gia lại sau khi bị kick.</FieldDescription>
                   </div>
                   <Controller
                     control={control}
                     name="rejoinEnabled"
                     render={({ field }) => (
                       <Switch
-                        className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+                        className="h-6 w-[38px] border-0 bg-surface-control data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-surface-control [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -419,7 +419,7 @@ export function GroupFormDialog({
               </div>
 
               <Field orientation="vertical" className="gap-1">
-                <FieldLabel className="text-sm font-medium text-[#D7D7D7]">Logo nhóm</FieldLabel>
+                <FieldLabel className="text-sm font-medium text-zinc-300">Logo nhóm</FieldLabel>
                 <Controller
                   control={control}
                   name="iconKey"
@@ -428,13 +428,13 @@ export function GroupFormDialog({
                   }}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-11 w-full border-[#2A2A2A] text-[#D7D7D7]">
+                      <SelectTrigger className="h-11 w-full border-border-strong text-zinc-300">
                         <span className="flex items-center gap-2">
                           <GroupLogoBadge iconKey={selectedLogo.key} title={title} className="h-6 w-7" textClassName="text-xs" />
                           {selectedLogo.label}
                         </span>
                       </SelectTrigger>
-                      <SelectContent className="border-[#2A2A2A] bg-[#171717] text-[#D7D7D7]">
+                      <SelectContent className="border-border-strong bg-surface-card text-zinc-300">
                         {GROUP_LOGO_OPTIONS.map((option) => (
                           <SelectItem key={option.key} value={option.key}>
                             <span className="flex items-center gap-2">
@@ -461,11 +461,11 @@ export function GroupFormDialog({
             </FieldGroup>
           </div>
 
-          <DialogFooter className="border-t border-[#252525] px-4 py-4 sm:px-6">
-            <Button type="button" variant="outline" className="h-9 bg-white text-base font-semibold text-[#171717] hover:bg-white/90" disabled={isSubmitting} onClick={() => setOpen(false)}>
+          <DialogFooter className="border-t border-border px-4 py-4 sm:px-6">
+            <Button type="button" variant="outline" className="h-9 bg-white text-base font-semibold text-black hover:bg-white/90" disabled={isSubmitting} onClick={() => setOpen(false)}>
               Hủy
             </Button>
-            <Button type="submit" className="h-9 bg-brand text-base font-semibold text-[#171717] hover:bg-brand-dim" disabled={isSubmitting || descriptionInvalid || rangeInvalid}>
+            <Button type="submit" className="h-9 bg-brand text-base font-semibold text-black hover:bg-brand-dim" disabled={isSubmitting || descriptionInvalid || rangeInvalid}>
               {submitText}
             </Button>
           </DialogFooter>

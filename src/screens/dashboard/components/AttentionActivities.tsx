@@ -25,7 +25,7 @@ export default function AttentionActivities() {
   const { data: activities = [], isLoading, isFetching, error } = useGetKolRecentActivitiesQuery({ limit: 5 });
 
   return (
-    <section className={cn("rounded-[14px] bg-surface-2 p-5 lg:p-4 xl:p-6", isFetching && "opacity-80")}>
+    <section className={cn("rounded-card bg-surface-2 p-5 lg:p-4 xl:p-6", isFetching && "opacity-80")}>
       <h2 className="mb-6 text-base font-semibold text-foreground lg:mb-5 lg:text-sm xl:mb-6 xl:text-base">
         Hoạt động cần chú ý
       </h2>

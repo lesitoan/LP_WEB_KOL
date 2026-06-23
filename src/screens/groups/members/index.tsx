@@ -56,17 +56,6 @@ function formatLpexStatusLabel(status: string | null | undefined) {
   }
 }
 
-function formatTelegramStatusLabel(status: string | null | undefined) {
-  switch (normalizeStatus(status).toLowerCase()) {
-    case 'active':
-      return 'Đang tham gia'
-    case 'inactive':
-      return 'Đã rời nhóm'
-    default:
-      return 'Không xác định'
-  }
-}
-
 function formatEligibilityStatusLabel(status: string | null | undefined) {
   switch (normalizeStatus(status)) {
     case 'ELIGIBLE':
@@ -87,17 +76,6 @@ function formatEligibilityStatusLabel(status: string | null | undefined) {
       return 'Không xác định'
     default:
       return status || 'Không xác định'
-  }
-}
-
-function getTelegramStatusClass(status: string | null | undefined) {
-  switch (normalizeStatus(status).toLowerCase()) {
-    case 'active':
-      return 'bg-success/[0.12] text-success border border-success/20'
-    case 'inactive':
-      return 'bg-muted text-muted-foreground border border-border'
-    default:
-      return 'bg-warning/[0.12] text-warning border border-warning/20'
   }
 }
 
@@ -138,7 +116,6 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     limit,
     searchName,
     countryFilter,
-    telegramStatusFilter,
     lpexStatusFilter,
     sortBy,
     sortOrder,
@@ -147,7 +124,6 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     setLimit,
     setSearchName,
     setCountryFilter,
-    setTelegramStatusFilter,
     setLpexStatusFilter,
     setSort,
   } = useGroupMembersFilters()
@@ -179,14 +155,6 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
   const selectFilters: SelectFilterConfig[] = useMemo(
     () => [
       {
-        key: 'telegramStatus',
-        label: 'Trạng thái telegram',
-        options: [
-          { value: 'active', label: 'Đang tham gia' },
-          { value: 'inactive', label: 'Đã rời nhóm' },
-        ],
-      },
-      {
         key: 'lpexUserStatus',
         label: 'Trạng thái SCEX',
         options: [
@@ -214,10 +182,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     }
 
     for (const filter of selectFilters) {
-      const rawValue =
-        filter.key === 'telegramStatus'
-            ? telegramStatusFilter
-            : lpexStatusFilter
+      const rawValue = lpexStatusFilter
 
       if (!rawValue || rawValue === 'all') continue
 
@@ -232,7 +197,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
     }
 
     return chips
-  }, [countryFilter, lpexStatusFilter, selectFilters, telegramStatusFilter])
+  }, [countryFilter, lpexStatusFilter, selectFilters])
 
   const renderSortableHeader = (
     title: string,
@@ -297,16 +262,6 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
       ),
     },
     {
-      id: 'telegramStatus',
-      header: 'Trạng thái telegram',
-      cell: (member) => (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-[3px] rounded-full text-xs font-normal ${getTelegramStatusClass(member.telegramStatus)}`}>
-          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
-          {formatTelegramStatusLabel(member.telegramStatus)}
-        </span>
-      ),
-    },
-    {
       id: 'eligibilityStatus',
       header: 'Trạng thái thành viên',
       cell: (member) => (
@@ -365,7 +320,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
         <h2 className="text-base font-medium text-right">Thành viên nhóm ({pagination.totalItems})</h2>
       </div>
 
-      <div className="bg-[#171717] border border-border rounded-[14px] overflow-visible relative">
+      <div className="bg-surface-card border border-border rounded-card overflow-visible relative">
         <TableFilterBar
           textFilters={[
             {
@@ -394,11 +349,6 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
             setSearchName(value)
           }}
           onSelectFilter={(key, value) => {
-            if (key === 'telegramStatus') {
-              setTelegramStatusFilter(value)
-              return
-            }
-
             setLpexStatusFilter(value)
           }}
           onRemoveChip={(key) => {
@@ -407,16 +357,11 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
               return
             }
 
-            if (key === 'telegramStatus') {
-              setTelegramStatusFilter('all')
-              return
-            }
-
             setLpexStatusFilter('all')
           }}
         />
 
-        <div className="rounded-b-[14px] overflow-hidden">
+        <div className="rounded-b-card overflow-hidden">
           <DataTable
             columns={tableColumns}
             data={members}

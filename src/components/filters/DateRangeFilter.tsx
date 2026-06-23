@@ -158,7 +158,7 @@ export default function DateRangeFilter({
           <button
             type="button"
             className={cn(
-              "flex w-fit max-w-full items-center justify-between gap-2 rounded-lg border bg-surface-2 px-2 py-1 text-sm text-foreground outline-none transition-colors",
+              "flex h-10 w-fit max-w-full items-center justify-between gap-2 rounded-lg border bg-surface-2 px-2 text-sm text-foreground outline-none transition-colors",
               "hover:border-border-strong hover:bg-surface-3 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30",
               isInvalidRange ? "border-red-500/70" : "border-border/60",
               triggerClassName,

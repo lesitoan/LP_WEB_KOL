@@ -145,7 +145,7 @@ function ConfigItemCard({ config, group, isBusy, onToggleStatus, onPatchConfig }
   const isControlsDisabled = isBusy || isSubmitting;
 
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] p-5 flex flex-col gap-4">
+    <div className="bg-surface-1 border border-border rounded-card p-5 flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-[15px] font-semibold">
@@ -358,7 +358,7 @@ export function ConfigsTable({
       : [];
 
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] overflow-visible relative">
+    <div className="bg-surface-1 border border-border rounded-card overflow-visible relative">
       <TableFilterBar
         textFilters={[]}
         textValues={{}}
@@ -370,7 +370,7 @@ export function ConfigsTable({
         onRemoveChip={() => onStatusFilterChange("all")}
       />
 
-      <div className="rounded-b-[14px] overflow-hidden p-5 space-y-4">
+      <div className="rounded-b-card overflow-hidden p-5 space-y-4">
         {isFetching && configs.length === 0 ? (
           <div className="flex flex-col gap-4">
             {[...Array(3)].map((_, i) => (

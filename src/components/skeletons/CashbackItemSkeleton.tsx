@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export function CashbackItemSkeleton() {
   return (
-    <div className="bg-surface-1 border border-border rounded-[14px] p-5 animate-pulse">
+    <div className="bg-surface-1 border border-border rounded-card p-5 animate-pulse">
       {/* Header */}
       <div className="flex items-center gap-3 mb-5">
         <Skeleton className="w-9 h-9 rounded-lg" />

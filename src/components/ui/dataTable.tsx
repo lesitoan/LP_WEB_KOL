@@ -136,10 +136,10 @@ export function DataTable<T>({
   const gridTemplateColumns = `repeat(${columns.length}, max-content)`
 
   return (
-     <div className={className ?? "bg-[#171717] border border-border rounded-[14px] overflow-hidden"}>
-      <div className={`${TABLE_SCROLL_VIEWPORT_CLASS} border-t border-[#303030] bg-[#171717]`}>
+     <div className={className ?? "bg-surface-card border border-border rounded-card overflow-hidden"}>
+      <div className={`${TABLE_SCROLL_VIEWPORT_CLASS} border-t border-border-strong bg-surface-card`}>
         <table
-          className="grid w-full min-w-[980px] border-collapse justify-between bg-[#171717]"
+          className="grid w-full min-w-[980px] border-collapse justify-between bg-surface-card"
           style={{ gridTemplateColumns }}
         >
           <thead className="contents">
@@ -147,13 +147,13 @@ export function DataTable<T>({
               <th
                 aria-hidden="true"
                 colSpan={columns.length}
-                className="sticky top-0 z-10 bg-[#171717] p-0"
+                className="sticky top-0 z-10 bg-surface-card p-0"
                 style={{ gridColumn: '1 / -1', gridRow: 1 }}
               />
               {columns.map((column, columnIndex) => (
                 <th
                   key={column.id}
-                  className={`sticky top-0 z-20 bg-[#171717] px-3 py-3 text-left text-xs font-semibold text-muted-foreground normal-case tracking-normal whitespace-nowrap ${
+                  className={`sticky top-0 z-20 bg-surface-card px-3 py-3 text-left text-xs font-semibold text-muted-foreground normal-case tracking-normal whitespace-nowrap ${
                     columnIndex === 0 ? 'pl-3' : ''
                   } ${
                     columnIndex === columns.length - 1 ? 'justify-self-end pr-4 text-right' : ''

@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AnalyticsRevenueChartSkeleton({ title }: { title: string }) {
   return (
-    <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
+    <section className="rounded-card border border-border bg-surface-card p-4 sm:p-5">
       <h2 className="mb-4 text-sm font-semibold">{title}</h2>
       <div className="flex h-[240px] items-end gap-3 sm:h-[270px]">
         <div className="flex h-full w-10 flex-col justify-between py-2">

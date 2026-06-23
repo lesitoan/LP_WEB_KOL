@@ -60,10 +60,10 @@ function GroupToggleBadge({ enabled }: { enabled: boolean }) {
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-normal ${
-        enabled ? 'bg-[#003F27] text-[#15C982]' : 'bg-[#2B2B2B] text-[#B7B7B7]'
+        enabled ? 'bg-success/[0.12] text-success' : 'bg-surface-control text-muted-foreground'
       }`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-[#15C982]' : 'bg-[#B7B7B7]'}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-success' : 'bg-muted-foreground'}`} />
       {enabled ? 'Bật' : 'Tắt'}
     </span>
   )
@@ -81,13 +81,13 @@ function GroupStatusSwitch({
   return (
     <span className="inline-flex items-center gap-2">
       <Switch
-        className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+        className="h-6 w-[38px] border-0 bg-surface-control data-[state=checked]:bg-success data-[state=unchecked]:bg-surface-control [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
         aria-label={checked ? 'Tắt nhóm' : 'Bật nhóm'}
       />
-      <span className="text-xs font-normal text-[#D7D7D7]">{checked ? 'Bật' : 'Tắt'}</span>
+      <span className="text-xs font-normal text-zinc-300">{checked ? 'Bật' : 'Tắt'}</span>
     </span>
   )
 }
@@ -150,7 +150,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
         return (
           <span className="inline-flex items-center gap-2">
           <Switch
-            className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+            className="h-6 w-[38px] border-0 bg-surface-control data-[state=checked]:bg-success data-[state=unchecked]:bg-surface-control [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
             checked={isActive}
             disabled={isUpdating}
             onCheckedChange={(checked) => {
@@ -158,7 +158,7 @@ export function GroupsTableView({ groups, isFetching = false, pagination, onUpda
             }}
             aria-label={isActive ? 'Tắt nhóm' : 'Bật nhóm'}
           />
-          <span className="text-base font-normal text-[#D7D7D7]">{isActive ? 'Bật' : 'Tắt'}</span>
+          <span className="text-base font-normal text-zinc-300">{isActive ? 'Bật' : 'Tắt'}</span>
           </span>
         )
       },

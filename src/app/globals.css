@@ -13,6 +13,9 @@
     --surface-2: 0 0% 7%;
     --surface-3: 0 0% 12%;
     --surface-4: 0 0% 18%;
+    --surface-card: 0 0% 9%;
+    --surface-control: 0 0% 16%;
+    --surface-control-hover: 0 0% 20%;
 
     --card: 0 0% 5%;
     --card-foreground: 0 0% 96%;

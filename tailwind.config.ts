@@ -109,6 +109,9 @@ const config: Config = {
         "surface-2": "hsl(var(--surface-2))",
         "surface-3": "hsl(var(--surface-3))",
         "surface-4": "hsl(var(--surface-4))",
+        "surface-card": "hsl(var(--surface-card))",
+        "surface-control": "hsl(var(--surface-control))",
+        "surface-control-hover": "hsl(var(--surface-control-hover))",
         "tier-starter": "hsl(var(--tier-starter))",
         "tier-partner": "hsl(var(--tier-partner))",
         "tier-elite": "hsl(var(--tier-elite))",
@@ -131,6 +134,8 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        card: "14px",
+        control: "8px",
       },
       keyframes: {
         "accordion-down": {

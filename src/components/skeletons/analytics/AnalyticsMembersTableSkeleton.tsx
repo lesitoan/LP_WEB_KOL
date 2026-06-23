@@ -2,8 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AnalyticsMembersTableSkeleton() {
   return (
-    <section className="rounded-[14px] border border-border bg-[#171717] p-4 sm:p-5">
-      <h2 className="mb-5 text-base font-semibold">Thống kê members theo từng nhóm</h2>
+    <section className="rounded-card border border-border bg-surface-card p-4 sm:p-5">
+      <h2 className="mb-5 text-base font-semibold">Thống kê thành viên theo từng nhóm</h2>
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
           <div className="mb-4 grid grid-cols-[1.35fr_1fr_1fr_1fr_1fr] gap-4 text-xs font-medium text-muted-foreground">

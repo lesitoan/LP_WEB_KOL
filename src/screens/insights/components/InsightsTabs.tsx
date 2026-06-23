@@ -54,7 +54,7 @@ export default function InsightsTabs({
       {showArrows && (
         <button
           type="button"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#2b2b2b] text-white shadow-[0_0_18px_rgba(0,0,0,0.55)] transition-colors hover:bg-[#3a3a3a] disabled:cursor-default disabled:opacity-35 disabled:hover:bg-[#2b2b2b]"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-control text-white shadow-[0_0_18px_rgba(0,0,0,0.55)] transition-colors hover:bg-surface-control-hover disabled:cursor-default disabled:opacity-35 disabled:hover:bg-surface-control"
           onClick={() => scrollTabs('left')}
           disabled={!scrollState.left}
           aria-label="Cuộn tab sang trái"
@@ -77,8 +77,8 @@ export default function InsightsTabs({
               className={cn(
                 'h-10 rounded-full px-4 text-base font-semibold transition-colors',
                 activeTab === tab.id
-                  ? 'bg-[#2b2b2b] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]'
-                  : 'text-[#8f8f8f] hover:bg-[#151515] hover:text-white',
+                  ? 'bg-surface-control text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]'
+                  : 'text-muted-foreground hover:bg-surface-control-hover hover:text-white',
               )}
             >
               {tab.label}
@@ -90,7 +90,7 @@ export default function InsightsTabs({
       {showArrows && (
         <button
           type="button"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#2b2b2b] text-white shadow-[0_0_18px_rgba(0,0,0,0.55)] transition-colors hover:bg-[#3a3a3a] disabled:cursor-default disabled:opacity-35 disabled:hover:bg-[#2b2b2b]"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-control text-white shadow-[0_0_18px_rgba(0,0,0,0.55)] transition-colors hover:bg-surface-control-hover disabled:cursor-default disabled:opacity-35 disabled:hover:bg-surface-control"
           onClick={() => scrollTabs('right')}
           disabled={!scrollState.right}
           aria-label="Cuộn tab sang phải"

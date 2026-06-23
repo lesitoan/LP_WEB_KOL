@@ -73,11 +73,11 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
   const gradientBorder =
     'linear-gradient(135deg, #FCF19D 0%, rgba(252,241,157,0.3) 30%, rgba(252,241,157,0.3) 70%, #FCF19D 100%)'
 
-  const innerBg = isCurrent ? TIER_CURRENT_BG : '#171717'
+  const innerBg = isCurrent ? TIER_CURRENT_BG : 'hsl(var(--surface-card))'
 
   return (
     <div
-      className="h-full rounded-[12px] p-px"
+      className="h-full rounded-xl p-px"
       style={{ background: gradientBorder }}
     >
       <article
@@ -99,7 +99,7 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
             <div className="truncate text-xl font-bold uppercase leading-6 tracking-normal text-foreground">
               {tier.name}
             </div>
-            <div className="text-sm font-medium italic leading-5 text-[#BDBDBD]">
+            <div className="text-sm font-medium italic leading-5 text-muted-foreground">
               {formatActiveMembers(tier)}
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
               <span className="text-2xl font-bold leading-none text-foreground">
                 {tier.commissionRatePct}%
               </span>
-              <span className="text-sm font-medium text-[#BDBDBD]">Hoa hồng</span>
+              <span className="text-sm font-medium text-muted-foreground">Hoa hồng</span>
             </div>
           </div>
         </div>
@@ -138,14 +138,14 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
                   <Check className="size-3" strokeWidth={3} aria-hidden="true" />
                 </span>
               ) : (
-                <span className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full bg-[#2B2B2B] text-[#9C9C9C]">
+                <span className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full bg-surface-control text-muted-foreground border border-border-strong">
                   <Check className="size-3" strokeWidth={3} aria-hidden="true" />
                 </span>
               )}
               <span
                 className={cn(
                   'text-base leading-5',
-                  option.isIncluded ? 'font-semibold text-foreground' : 'font-medium text-[#BDBDBD]',
+                  option.isIncluded ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground',
                 )}
               >
                 {option.label}

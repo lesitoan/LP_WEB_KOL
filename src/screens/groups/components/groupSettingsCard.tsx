@@ -41,10 +41,10 @@ function TogglePill({ enabled }: { enabled: boolean }) {
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-normal ${
-        enabled ? 'bg-[#003F27] text-[#15C982]' : 'bg-[#2B2B2B] text-[#D7D7D7]'
+        enabled ? 'bg-success/[0.12] text-success' : 'bg-surface-control text-muted-foreground'
       }`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-[#15C982]' : 'bg-[#D7D7D7]'}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-success' : 'bg-muted-foreground'}`} />
       {enabled ? 'Bật' : 'Tắt'}
     </span>
   )
@@ -61,8 +61,8 @@ function MetricBlock({
 }) {
   return (
     <div className={`min-w-0 ${className || ''}`}>
-      <p className="text-xs font-normal text-[#A5A5A5]">{label}</p>
-      <div className="mt-2 break-words text-base font-normal text-[#F4F4F4]">{children}</div>
+      <p className="text-xs font-normal text-muted-foreground">{label}</p>
+      <div className="mt-2 break-words text-base font-normal text-foreground">{children}</div>
     </div>
   )
 }
@@ -90,16 +90,16 @@ export function GroupSettingsCard({
   }
 
   return (
-    <article className="relative overflow-visible rounded-[20px] sm:rounded-[28px] border border-[#4A4A4A] bg-[#171717] p-4 sm:p-6 shadow-sm">
+    <article className="relative overflow-visible rounded-card border border-border-strong bg-surface-card p-4 sm:p-6 shadow-sm">
       <div className="mb-6 sm:mb-8 flex items-center justify-between gap-1.5 sm:gap-4">
         <div className="min-w-0 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
-                <h3 className="truncate text-base font-normal text-[#F4F4F4]">{group.title || 'Tên group'}</h3>
+                <h3 className="truncate text-base font-normal text-foreground">{group.title || 'Tên group'}</h3>
               </TooltipTrigger>
               <TooltipContent>{group.title || 'Tên group'}</TooltipContent>
             </Tooltip>
-            <p className="truncate text-sm font-normal text-[#A5A5A5]">{truncateDescription(group.description)}</p>
+            <p className="truncate text-sm font-normal text-muted-foreground">{truncateDescription(group.description)}</p>
         </div>
 
         <div className="relative shrink-0">
@@ -107,7 +107,7 @@ export function GroupSettingsCard({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-9 w-9 rounded-lg bg-[#282828] text-[#F4F4F4] hover:bg-[#333333] hover:text-white"
+            className="h-9 w-9 rounded-lg bg-surface-control text-foreground hover:bg-surface-control-hover hover:text-white"
             onClick={() => setActionsOpen((open) => !open)}
             aria-label="Mở hành động"
           >
@@ -115,7 +115,7 @@ export function GroupSettingsCard({
           </Button>
 
           {actionsOpen ? (
-            <div className="absolute right-0 top-11 z-20 flex items-center gap-1 rounded-lg border border-border bg-[#222222] p-1 shadow-xl">
+            <div className="absolute right-0 top-11 z-20 flex items-center gap-1 rounded-lg border border-border bg-surface-3 p-1 shadow-xl">
               <GroupSummaryDialog groupId={group.id} />
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -165,11 +165,11 @@ export function GroupSettingsCard({
         </div>
       </div>
 
-      <div className="flex min-h-[72px] sm:min-h-[84px] items-center justify-between gap-2 sm:gap-4 rounded-xl border border-[#2A2A2A] px-3 py-2 sm:px-4 sm:py-3">
-        <span className="text-xs font-normal text-[#A5A5A5]">Trạng thái</span>
-        <span className="inline-flex items-center gap-3 text-base font-normal text-[#F4F4F4]">
+      <div className="flex min-h-[72px] sm:min-h-[84px] items-center justify-between gap-2 sm:gap-4 rounded-xl border border-border-strong px-3 py-2 sm:px-4 sm:py-3">
+        <span className="text-xs font-normal text-muted-foreground">Trạng thái</span>
+        <span className="inline-flex items-center gap-3 text-base font-normal text-foreground">
           <Switch
-            className="h-6 w-[38px] border-0 bg-[#2B2B2B] data-[state=checked]:bg-[#15C982] data-[state=unchecked]:bg-[#2B2B2B] [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
+            className="h-6 w-[38px] border-0 bg-surface-control data-[state=checked]:bg-success data-[state=unchecked]:bg-surface-control [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:data-[state=checked]:translate-x-4 [&_[data-slot=switch-thumb]]:data-[state=unchecked]:translate-x-0.5"
             checked={isActive}
             disabled={isUpdatingStatus}
             onCheckedChange={(checked) => {

@@ -57,7 +57,7 @@ export function GroupsListContainer({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[14px] border border-border bg-[#171717]">
+    <div className="relative overflow-hidden rounded-card border border-border bg-surface-card">
       <GroupsFilters
         searchInput={searchInput}
         statusValue={query.status || ""}
@@ -81,7 +81,7 @@ export function GroupsListContainer({
         onViewModeChange={onViewModeChange}
       />
 
-      <div className="min-w-0 overflow-hidden rounded-b-[14px]">
+      <div className="min-w-0 overflow-hidden rounded-b-card">
         {viewMode === "table" ? (
           <GroupsTableView
             groups={groups}

@@ -50,7 +50,7 @@ export default function TierSummaryCard() {
       className="mb-4 rounded-[16px] p-1"
       style={{ background: gradientBorder }}
     >
-      <section className="relative overflow-hidden rounded-[12px] bg-surface-2 p-5 md:p-6">
+      <section className="relative overflow-hidden rounded-xl bg-surface-2 p-5 md:p-6">
       <div className="pointer-events-none absolute inset-y-0 left-0 w-44 bg-gradient-to-r from-black via-black/70 to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-44 bg-gradient-to-l from-black via-black/70 to-transparent" />
 
