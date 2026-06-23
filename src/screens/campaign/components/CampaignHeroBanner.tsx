@@ -46,12 +46,6 @@ function formatVND(volumeStr: string | number): string {
   return `${Math.round(vnd).toLocaleString("vi-VN")} VNĐ`;
 }
 
-function formatMonthLabel(isoDate: string): string {
-  const date = new Date(isoDate);
-  const month = date.getMonth() + 1;
-  return `THÁNG ${month}`;
-}
-
 export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
   const status = useMemo(() => {
     const apiStatus = campaign.status;
@@ -105,9 +99,6 @@ export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
           <p className="font-semibold tracking-[0.1em] uppercase text-white mb-1.5 md:mb-2 drop-shadow-md text-[clamp(12px,3vw,21px)] lg:text-[14px] xl:text-[21px]">
             {campaign.name}
           </p>
-          <h2 className="font-extrabold text-[#F5C35A] tracking-tight leading-none drop-shadow-md text-[clamp(24px,6vw,40px)] lg:text-[26px] xl:text-[40px]">
-            {formatMonthLabel(campaign.startAt)}
-          </h2>
         </div>
 
         {/* Stats Block */}

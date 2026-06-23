@@ -123,6 +123,7 @@ export default function CampaignScreen() {
       ) : allCampaigns.length > 0 ? (
         <CampaignHistory 
           campaigns={allCampaigns} 
+          activeCampaignId={displayedCampaign?.id}
           onViewCampaign={(id) => {
             setSelectedCampaignId(id);
             window.scrollTo({ top: 0, behavior: 'smooth' });
