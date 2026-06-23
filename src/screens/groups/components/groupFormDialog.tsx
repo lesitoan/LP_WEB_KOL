@@ -247,7 +247,7 @@ export function GroupFormDialog({
 
               <div className="grid gap-4 lg:grid-cols-2">
                 <Field orientation="vertical" className="gap-1">
-                  <FieldLabel className="text-sm font-medium text-zinc-300">{`Ngưỡng volume tối thiểu (USD)`}</FieldLabel>
+                  <FieldLabel className="text-sm font-medium text-zinc-300">{`Ngưỡng volume tối thiểu (VNĐ)`}</FieldLabel>
                   <Input
                     className="h-10 border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
                     type="number"
@@ -275,7 +275,7 @@ export function GroupFormDialog({
                 </Field>
 
                 <Field orientation="vertical" className="gap-1">
-                  <FieldLabel className="text-sm font-medium text-zinc-300">{`Ngưỡng volume tối đa (USD)`}</FieldLabel>
+                  <FieldLabel className="text-sm font-medium text-zinc-300">{`Ngưỡng volume tối đa (VNĐ)`}</FieldLabel>
                   <Input
                     className="h-10 border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
                     type="text"

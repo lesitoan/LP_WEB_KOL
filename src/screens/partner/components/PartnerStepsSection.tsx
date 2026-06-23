@@ -35,7 +35,7 @@ export default function PartnerStepsSection({ steps }: PartnerStepsSectionProps)
                     <span className="text-brand group-hover/step:text-brand-bright">{stepLabel}:</span>{' '}
                     <span className="text-white">{title}</span>
                   </h3>
-                  <p className="mt-1 text-xl max-md:text-base font-normal leading-5 text-muted-foreground">{step.body}</p>
+                  <p className="mt-1 text-[18px] max-md:text-base font-normal leading-5 text-muted-foreground">{step.body}</p>
                 </div>
               </div>
             )

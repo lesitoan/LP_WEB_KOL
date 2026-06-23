@@ -7,9 +7,18 @@ export type PartnerTier = {
   rate: string
   icon: LucideIcon
   isCurrent?: boolean
-  features: string[]
-  disabled: string[]
+  features: PartnerTierFeature[]
+  disabled: PartnerTierFeature[]
 }
+
+export type PartnerTierFeature =
+  | string
+  | {
+      id: string
+      label: string
+      note?: string | null
+      highlightNote?: string | null
+    }
 
 export type PartnerStep = {
   icon: string

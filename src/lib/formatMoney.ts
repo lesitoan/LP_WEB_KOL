@@ -3,5 +3,7 @@ export function formatVnd(value?: number | string | null) {
 
   if (!Number.isFinite(parsed)) return '0'
 
-  return Math.round(parsed).toLocaleString('en-US')
+  return parsed.toLocaleString('en-US', {
+    maximumFractionDigits: 2,
+  })
 }

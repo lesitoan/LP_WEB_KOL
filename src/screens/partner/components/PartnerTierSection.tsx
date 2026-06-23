@@ -42,8 +42,8 @@ function mapApiTierToPartnerTier(tier: KolTier, staticTiers: PartnerTier[]): Par
     rate: formatCommissionRate(tier.commissionRatePct),
     icon: fallbackTier?.icon ?? staticTiers[0].icon,
     isCurrent: fallbackTier?.isCurrent,
-    features: features.filter((feature) => feature.isIncluded).map((feature) => feature.label),
-    disabled: features.filter((feature) => !feature.isIncluded).map((feature) => feature.label),
+    features: features.filter((feature) => feature.isIncluded),
+    disabled: features.filter((feature) => !feature.isIncluded),
   }
 }
 

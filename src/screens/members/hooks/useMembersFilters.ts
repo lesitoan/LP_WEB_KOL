@@ -5,6 +5,7 @@ import { useListFilters } from '@/hooks/useListFilters'
 import type { ListMembersQuery } from '@/types/api'
 
 type MembersFiltersViewMode = 'list'
+type MemberTypeFilter = 'all' | 'inactive_2_weeks' | 'warning'
 
 const INITIAL_QUERY: ListMembersQuery = {
   page: 1,
@@ -40,11 +41,11 @@ function parseFromSearchParams(searchParams: { get: (name: string) => string | n
   const sortByRaw = searchParams.get('sortBy')?.trim()
   const sortOrderRaw = searchParams.get('sortOrder')?.trim()
 
-  const sortBy: "telegramUsername" | "usdVolume" | "createdAt" =
+  const sortBy: "telegramUsername" | "usdVolume" | "createdAt" | undefined =
     sortByRaw === 'telegramUsername' || sortByRaw === 'usdVolume' || sortByRaw === 'createdAt'
       ? sortByRaw
-      : 'createdAt'
-  const sortOrder: "asc" | "desc" = sortOrderRaw === 'asc' || sortOrderRaw === 'desc' ? sortOrderRaw : 'desc'
+      : undefined
+  const sortOrder: "asc" | "desc" | undefined = sortOrderRaw === 'asc' || sortOrderRaw === 'desc' ? sortOrderRaw : undefined
 
   return {
     query: {
@@ -126,6 +127,18 @@ function applySearchToQuery(query: ListMembersQuery, searchInput: string): ListM
   }
 }
 
+function createMemberTypeQuery(currentQuery: ListMembersQuery, memberType: MemberTypeFilter): ListMembersQuery {
+  return {
+    ...INITIAL_QUERY,
+    page: 1,
+    limit: currentQuery.limit ?? INITIAL_QUERY.limit,
+    sortBy: undefined,
+    sortOrder: undefined,
+    eligibilityStatus: memberType === 'warning' ? 'FINAL_WARNING,WARNING' : undefined,
+    inactiveDays: memberType === 'inactive_2_weeks' ? 14 : undefined,
+  }
+}
+
 export function useMembersFilters() {
   const { state, setSearchInput, setQuery } = useListFilters<ListMembersQuery, MembersFiltersViewMode>({
     initialState: INITIAL_STATE,
@@ -181,13 +194,10 @@ export function useMembersFilters() {
         page: 1,
         eligibilityStatus: eligibilityStatus || undefined,
       }),
-    setMemberTypeFilter: (memberType: 'all' | 'inactive_2_weeks' | 'warning') =>
-      setQuery({
-        ...state.query,
-        page: 1,
-        eligibilityStatus: memberType === 'warning' ? 'FINAL_WARNING,WARNING' : undefined,
-        inactiveDays: memberType === 'inactive_2_weeks' ? 14 : undefined,
-      }),
+    setMemberTypeFilter: (memberType: MemberTypeFilter) => {
+      setSearchInput('')
+      setQuery(createMemberTypeQuery(state.query, memberType))
+    },
     setSort: (sortBy: "telegramUsername" | "usdVolume" | "createdAt", sortOrder: "asc" | "desc") =>
       setQuery({
         ...state.query,

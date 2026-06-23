@@ -21,6 +21,8 @@ export interface KolTierFeature {
   label: string
   sortOrder: number
   isIncluded: boolean
+  note?: string | null
+  highlightNote?: string | null
 }
 
 export interface KolTierKOLProfile {

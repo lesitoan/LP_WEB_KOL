@@ -36,6 +36,16 @@ function getTierIconSrc(code: string) {
   return `/images/tier_icons/${code.toUpperCase()}.png`
 }
 
+function formatFeatureNote(value?: string | null) {
+  const normalizedDetail = value?.trim() ?? ''
+
+  if (!normalizedDetail) {
+    return ''
+  }
+
+  return normalizedDetail.startsWith('(') ? normalizedDetail : `(${normalizedDetail})`
+}
+
 function formatActiveMembers(tier: KolTier) {
   if (tier.maxActiveMembers === null) {
     return `${tier.minActiveMembers.toLocaleString('en-US')}+ thành viên`
@@ -96,10 +106,10 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
           />
 
           <div className="min-w-0">
-            <div className="truncate text-xl font-bold uppercase leading-6 tracking-normal text-foreground">
+            <div className="truncate text-xl font-bold uppercase leading-6 tracking-normal text-[#FFFFFF]">
               {tier.name}
             </div>
-            <div className="text-sm font-medium italic leading-5 text-muted-foreground">
+            <div className="text-sm font-medium italic leading-5 text-[#D7D8D9]">
               {formatActiveMembers(tier)}
             </div>
           </div>
@@ -117,10 +127,10 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-baseline gap-x-2">
-              <span className="text-2xl font-bold leading-none text-foreground">
+              <span className="text-2xl font-bold leading-none text-[#FFFFFF]">
                 {tier.commissionRatePct}%
               </span>
-              <span className="text-sm font-medium text-muted-foreground">Hoa hồng</span>
+              <span className="text-sm font-medium text-[#D7D8D9]">Hoa hồng</span>
             </div>
           </div>
         </div>
@@ -128,30 +138,48 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
 
       {options.length > 0 ? (
         <div className="space-y-3 pt-4">
-          {options.map((option) => (
-            <div key={option.id} className="flex items-start gap-2.5">
-              {option.isIncluded ? (
-                <span
-                  className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full border text-white"
-                  style={{ backgroundColor: TIER_CHECK, borderColor: TIER_CARD_BORDER }}
-                >
-                  <Check className="size-3" strokeWidth={3} aria-hidden="true" />
-                </span>
-              ) : (
-                <span className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full bg-surface-control text-muted-foreground border border-border-strong">
-                  <Check className="size-3" strokeWidth={3} aria-hidden="true" />
-                </span>
-              )}
-              <span
-                className={cn(
-                  'text-base leading-5',
-                  option.isIncluded ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground',
+          {options.map((option) => {
+            const note = formatFeatureNote(option.note)
+            const highlightNote = formatFeatureNote(option.highlightNote)
+
+            return (
+              <div key={option.id} className="flex items-start gap-2.5">
+                {option.isIncluded ? (
+                  <span
+                    className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full border text-white"
+                    style={{ backgroundColor: TIER_CHECK, borderColor: TIER_CARD_BORDER }}
+                  >
+                    <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+                  </span>
+                ) : (
+                  <span className="mt-0.5 flex size-[17px] shrink-0 items-center justify-center rounded-full bg-surface-control text-muted-foreground border border-border-strong">
+                    <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+                  </span>
                 )}
-              >
-                {option.label}
-              </span>
-            </div>
-          ))}
+                <span
+                  className={cn(
+                    'flex min-w-0 flex-col text-base leading-5',
+                    option.isIncluded ? 'font-semibold text-[#FFFFFF]' : 'font-medium text-[#D7D8D9]',
+                  )}
+                >
+                  <span>{option.label}</span>
+                  {note ? (
+                    <span className="mt-0.5 text-base font-normal text-[#D7D8D9]">
+                      {note}
+                    </span>
+                  ) : null}
+                  {highlightNote ? (
+                    <span
+                      className={cn('mt-0.5 text-base font-medium', !option.isIncluded && 'text-[#D7D8D9]')}
+                      style={option.isIncluded ? { color: '#F7F0A1' } : undefined}
+                    >
+                      {highlightNote}
+                    </span>
+                  ) : null}
+                </span>
+              </div>
+            )
+          })}
         </div>
       ) : null}
     </article>
