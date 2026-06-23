@@ -8,6 +8,7 @@ import { usePopup } from "@/hooks/usePopup";
 
 interface Props {
   campaigns: CampaignData[];
+  activeCampaignId?: string;
   onViewCampaign?: (id: string) => void;
 }
 
@@ -114,7 +115,7 @@ function getStatusConfig(status: string) {
 }
 
 // History Card
-function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onViewCampaign?: (id: string) => void }) {
+function HistoryCard({ campaign, onViewCampaign, isActive }: { campaign: CampaignData, onViewCampaign?: (id: string) => void, isActive?: boolean }) {
   const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignMutation();
   const [deleteCampaign, { isLoading: isDeleting }] = useDeleteCampaignMutation();
   const { showConfirm, Popup } = usePopup();
@@ -168,7 +169,11 @@ function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onV
   };
 
   return (
-    <div className="relative w-full bg-[#171717] rounded-[20px] overflow-hidden border border-white/5 flex flex-col">
+    <div className={`relative w-full bg-[#171717] rounded-[20px] overflow-hidden border border-white/5 flex flex-col transition-all duration-300 ${
+      isActive 
+        ? "ring-2 ring-[#FFD255] shadow-[0_0_15px_rgba(255,210,85,0.25)]" 
+        : ""
+    }`}>
 
       {/* Nửa trên */}
       <div className={`relative pt-5 px-5 pb-8 min-[576px]:px-4 lg:px-5 ${cfg.gradient}`}>
@@ -184,7 +189,7 @@ function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onV
 
           {/* Badge trạng thái */}
           <div
-            className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold ${cfg.badgeBg} ${cfg.badgeText}`}
+            className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-semibold ${cfg.badgeBg} ${cfg.badgeText}`}
           >
             <span className={`w-1.5 h-1.5 rounded-full ${cfg.dotBg}`} />
             {cfg.label}
@@ -197,26 +202,16 @@ function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onV
 
         {/* Stats */}
         <div className="flex justify-between items-start gap-1">
-          <div className="min-w-0">
-            <p className="text-[11px] text-[#8B8B93] mb-1.5 truncate">Participants</p>
-            <p className="font-bold text-[14px] text-white truncate">
-              {campaign.participantCount ?? "—"}
-            </p>
-          </div>
-          <div className="min-w-0">
-            <p className="text-[11px] text-[#8B8B93] mb-1.5 truncate">Tổng</p>
-            <p className="font-bold text-[14px] text-white truncate">
-              {campaign.totalVolumeUsd != null
-                ? formatVND(campaign.totalVolumeUsd)
-                : "—"}
-            </p>
-          </div>
-          <div className="min-w-0">
-            <p className="text-[11px] text-[#8B8B93] mb-1.5 truncate">{countdownLabel}</p>
-            <p className="font-bold text-[14px] text-white truncate">
-              {liveCountdown}
-            </p>
-          </div>
+          {[
+            { label: "Participants", value: campaign.participantCount ?? "—" },
+            { label: "Tổng", value: campaign.totalVolumeUsd != null ? formatVND(campaign.totalVolumeUsd) : "—" },
+            { label: countdownLabel, value: liveCountdown },
+          ].map((item, i) => (
+            <div key={i} className="min-w-0">
+              <p className="text-[14px] text-[#8B8B93] mb-1.5 truncate">{item.label}</p>
+              <p className="font-bold text-[14px] text-white truncate">{item.value}</p>
+            </div>
+          ))}
         </div>
 
         {/* Divider */}
@@ -228,7 +223,7 @@ function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onV
           <div className="flex items-center gap-2">
             <button 
               onClick={() => onViewCampaign?.(campaign.id)}
-              className="inline-flex justify-center items-center gap-2 bg-white text-black font-bold text-[13px] px-4 py-2.5 rounded-[12px] hover:bg-gray-200 transition-colors active:scale-[0.98]"
+              className="inline-flex justify-center items-center gap-2 bg-white text-black font-bold text-[16px] px-4 py-2.5 rounded-[12px] hover:bg-gray-200 transition-colors active:scale-[0.98]"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
@@ -311,7 +306,7 @@ function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onV
 }
 
 // Main Component
-export default function CampaignHistory({ campaigns, onViewCampaign }: Props) {
+export default function CampaignHistory({ campaigns, activeCampaignId, onViewCampaign }: Props) {
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [currentPage, setCurrentPage] = useState(0);
   const [cols, setCols] = useState(3);
@@ -373,7 +368,7 @@ export default function CampaignHistory({ campaigns, onViewCampaign }: Props) {
                 key={tab.key}
                 type="button"
                 onClick={() => setActiveFilter(tab.key)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all ${
+                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[16px] font-medium transition-all ${
                   isActive
                     ? "bg-[#27272A] text-white"
                     : "text-[#8B8B93] hover:text-white"
@@ -381,7 +376,7 @@ export default function CampaignHistory({ campaigns, onViewCampaign }: Props) {
               >
                 {tab.label}
                 <span
-                  className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold ${
+                  className={`inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[12px] font-bold ${
                     isActive
                       ? "bg-[#F7F0A1] text-black"
                       : "bg-white/10 text-[#8B8B93]"
@@ -428,7 +423,12 @@ export default function CampaignHistory({ campaigns, onViewCampaign }: Props) {
       ) : (
         <div className="grid grid-cols-1 min-[576px]:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
           {paginated.map((campaign, index) => (
-            <HistoryCard key={`${campaign.id}-${index}`} campaign={campaign} onViewCampaign={onViewCampaign} />
+            <HistoryCard 
+              key={`${campaign.id}-${index}`} 
+              campaign={campaign} 
+              onViewCampaign={onViewCampaign} 
+              isActive={campaign.id === activeCampaignId}
+            />
           ))}
         </div>
       )}

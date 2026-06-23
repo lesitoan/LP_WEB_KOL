@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { CampaignReward, LeaderboardEntry, CampaignData, CampaignRankingType } from "@/types/api/campaign";
 
 interface Props {
@@ -44,6 +44,8 @@ function getPrize(rank: number, rewards: CampaignReward[]): string | undefined {
 
 // Format VNĐ
 function formatVNDRaw(vnd: number, forceFullFormat: boolean = false): string {
+  if (isNaN(vnd) || vnd <= 0) return "—";
+  
   if (forceFullFormat) {
     return `${Math.round(vnd).toLocaleString("vi-VN")} VNĐ`;
   }
@@ -63,15 +65,20 @@ function formatVNDRaw(vnd: number, forceFullFormat: boolean = false): string {
 }
 
 // Format volume VNĐ (quy đổi từ USD sang VNĐ)
-function formatVND(volumeStr: string | number, forceFullFormat: boolean = false): string {
-  const usd = typeof volumeStr === "string" ? parseFloat(volumeStr || "0") : volumeStr;
+function formatVND(volumeStr: string | number | null | undefined, forceFullFormat: boolean = false): string {
+  if (volumeStr === null || volumeStr === undefined || volumeStr === "") return "—";
+  const usd = typeof volumeStr === "string" ? parseFloat(volumeStr) : volumeStr;
+  if (isNaN(usd) || usd <= 0) return "—";
   return formatVNDRaw(usd * 25000, forceFullFormat);
 }
 
 // Format giá trị hiển thị theo rankingType của chiến dịch
 function formatEntryValue(entry: LeaderboardEntry, rankingType: CampaignRankingType, forceFullFormat: boolean = false): string {
   if (rankingType === 'TOP_TRADE_COUNT') {
-    const count = entry.tradeCount ?? 0;
+    const count = entry.tradeCount;
+    if (count === null || count === undefined || isNaN(count) || count <= 0) {
+      return "—";
+    }
     return `${count.toLocaleString("vi-VN")} lệnh`;
   }
   return formatVND(entry.usdVolume, forceFullFormat);
@@ -192,11 +199,16 @@ export default function CampaignLeaderboard({ leaderboard, rewards, campaign }: 
   const safeLeaderboard = Array.isArray(leaderboard) ? leaderboard : [];
   const safeRewards = Array.isArray(rewards) ? rewards : [];
   
-  // Lấy rankingType trực tiếp từ chiến dịch (không phải từ tab)
+  // Lấy rankingType từ chiến dịch làm giá trị mặc định cho tab
   const campaignRankingType: CampaignRankingType = campaign?.rankingType || 'TOP_VOLUME';
   
-  // Tab criteria state (chỉ để chuyển đổi giao diện tab, không ảnh hưởng dữ liệu)
-  const [activeTab, setActiveTab] = useState<CampaignRankingType>("TOP_VOLUME");
+  // Tab mặc định = tiêu chí xếp hạng khi tạo chiến dịch, cho phép chuyển đổi
+  const [activeTab, setActiveTab] = useState<CampaignRankingType>(campaignRankingType);
+
+  // Khi chuyển sang xem chiến dịch khác → cập nhật lại tab mặc định
+  useEffect(() => {
+    setActiveTab(campaignRankingType);
+  }, [campaignRankingType]);
 
   const rawPodium = safeLeaderboard.filter((e) => e.rank <= 3);
   const podium = [...rawPodium].sort((a, b) => a.rank - b.rank);
@@ -217,30 +229,29 @@ export default function CampaignLeaderboard({ leaderboard, rewards, campaign }: 
       {/* Centered Title and Criteria Selector */}
       <div className="flex flex-col items-center mb-6">
         <h3 className="text-[24px] font-semibold text-white mb-4">Bảng xếp hạng</h3>
-        
         <div className="inline-flex p-1 bg-[#121214] border border-white/10 rounded-full">
           <button
             type="button"
-            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium transition-all ${
+            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[16px] font-medium transition-all ${
               activeTab === 'TOP_VOLUME'
                 ? 'bg-[#27272A] text-white shadow-sm'
                 : 'text-[#8B8B93] hover:text-white'
             }`}
             onClick={() => setActiveTab('TOP_VOLUME')}
           >
-            <BarChartIcon className={`w-4 h-4 ${activeTab === 'TOP_VOLUME' ? 'text-[#FFD255]' : 'text-[#8B8B93]'}`} />
+            <BarChartIcon className={`w-[16px] h-[16px] ${activeTab === 'TOP_VOLUME' ? 'text-[#FFD255]' : 'text-[#8B8B93]'}`} />
             Top Volume
           </button>
           <button
             type="button"
-            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium transition-all ${
+            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[16px] font-medium transition-all ${
               activeTab === 'TOP_TRADE_COUNT'
                 ? 'bg-[#27272A] text-white shadow-sm'
                 : 'text-[#8B8B93] hover:text-white'
             }`}
             onClick={() => setActiveTab('TOP_TRADE_COUNT')}
           >
-            <TradeIcon className={`w-4 h-4 ${activeTab === 'TOP_TRADE_COUNT' ? 'text-[#FFD255]' : 'text-[#8B8B93]'}`} />
+            <TradeIcon className={`w-[16px] h-[16px] ${activeTab === 'TOP_TRADE_COUNT' ? 'text-[#FFD255]' : 'text-[#8B8B93]'}`} />
             Top Số lệnh trade
           </button>
         </div>
@@ -259,7 +270,7 @@ export default function CampaignLeaderboard({ leaderboard, rewards, campaign }: 
                 key={entry.rank} 
                 className={`w-full ${getPodiumOrderClass(entry.rank)}`}
               >
-                <PodiumCard entry={entry} rewards={safeRewards} rankingType={campaignRankingType} />
+                <PodiumCard entry={entry} rewards={safeRewards} rankingType={activeTab} />
               </div>
             ))}
           </div>
@@ -271,7 +282,7 @@ export default function CampaignLeaderboard({ leaderboard, rewards, campaign }: 
               <div className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-2 text-[11px] md:text-[13px] font-medium text-[#8B8B93]">
                 <span>Thứ hạng</span>
                 <span>User ID</span>
-                <span>{getColumnLabel(campaignRankingType)}</span>
+                <span>{getColumnLabel(activeTab)}</span>
               </div>
 
               {/* Danh sách các hàng */}
@@ -297,7 +308,7 @@ export default function CampaignLeaderboard({ leaderboard, rewards, campaign }: 
                   {/* Giá trị tương ứng */}
                   <div className="flex items-center justify-start gap-2 shrink-0">
                     <span className="text-[13px] md:text-[14px] text-white whitespace-nowrap">
-                      {formatEntryValue(entry, campaignRankingType, true)}
+                      {formatEntryValue(entry, activeTab, true)}
                     </span>
                   </div>
                 </div>

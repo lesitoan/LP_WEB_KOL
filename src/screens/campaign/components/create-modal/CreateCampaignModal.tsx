@@ -116,7 +116,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
       const payload = {
         name: data.name,
         description: data.description || null,
-        rankingType: "TOP_VOLUME",
+        rankingType: data.rankingType,
         scopeType: data.telegramGroupId === "ALL_GROUPS" ? "ALL_GROUPS" : "SINGLE_GROUP",
         telegramGroupId: data.telegramGroupId === "ALL_GROUPS" ? null : data.telegramGroupId,
         startAt: new Date(`${data.startAt}T00:00:00+07:00`).toISOString(),
