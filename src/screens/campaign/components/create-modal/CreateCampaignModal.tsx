@@ -71,8 +71,11 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
       // Map label phần thưởng
       const formatLabel = (val?: string) => {
         if (!val) return "";
-        const trimmed = val.trim();
-        return trimmed.toUpperCase().includes("USDT") ? trimmed : `${trimmed} USDT`;
+        const num = parseInt(val.trim(), 10);
+        if (!isNaN(num)) {
+          return `${num.toLocaleString("vi-VN")} VNĐ`;
+        }
+        return `${val.trim()} VNĐ`;
       };
 
       // Map ngày thông báo
@@ -116,8 +119,8 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
         rankingType: "TOP_VOLUME",
         scopeType: data.telegramGroupId === "ALL_GROUPS" ? "ALL_GROUPS" : "SINGLE_GROUP",
         telegramGroupId: data.telegramGroupId === "ALL_GROUPS" ? null : data.telegramGroupId,
-        startAt: `${data.startAt}T00:00:00.000Z`,
-        endAt: `${data.endAt}T23:59:59.000Z`,
+        startAt: new Date(`${data.startAt}T00:00:00+07:00`).toISOString(),
+        endAt: new Date(`${data.endAt}T23:59:59+07:00`).toISOString(),
         rewards: [
           { rankFrom: 1, rankTo: 1, label: formatLabel(data.rank1) },
           { rankFrom: 2, rankTo: 2, label: formatLabel(data.rank2) },

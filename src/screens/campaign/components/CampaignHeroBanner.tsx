@@ -36,7 +36,7 @@ function useCountdown(target: Date) {
   return time;
 }
 
-// Format số volume VNĐ
+// Format volume VNĐ
 function formatVND(volumeStr: string | number): string {
   const usd = typeof volumeStr === "string" ? parseFloat(volumeStr || "0") : volumeStr;
   const vnd = usd * 25000;
@@ -53,8 +53,28 @@ function formatMonthLabel(isoDate: string): string {
 }
 
 export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
-  const endDate = useMemo(() => new Date(campaign.endAt), [campaign.endAt]);
-  const { hours, minutes, seconds } = useCountdown(endDate);
+  const status = useMemo(() => {
+    const apiStatus = campaign.status;
+    const now = Date.now();
+    const startMs = new Date(campaign.startAt).getTime();
+    const endMs = new Date(campaign.endAt).getTime();
+
+    if (apiStatus === "DRAFT") return "DRAFT";
+    if (now > endMs) return "CANCELLED";
+    if (now >= startMs) return "ACTIVE";
+    return "UPCOMING";
+  }, [campaign.status, campaign.startAt, campaign.endAt]);
+
+  const isNotStarted = status === "UPCOMING" || status === "DRAFT";
+
+  const targetDate = useMemo(() => {
+    if (isNotStarted) {
+      return new Date(campaign.startAt);
+    }
+    return new Date(campaign.endAt);
+  }, [isNotStarted, campaign.startAt, campaign.endAt]);
+
+  const { hours, minutes, seconds } = useCountdown(targetDate);
 
   const safeLeaderboard = Array.isArray(leaderboard) ? leaderboard : [];
 
@@ -81,25 +101,25 @@ export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between w-full p-4 md:px-6 md:py-6 gap-4">
         
         {/* Title */}
-        <div className="shrink-0 flex flex-col items-center lg:items-start text-center lg:text-left lg:ml-[15%] xl:ml-[18%] w-full lg:w-auto">
+        <div className="shrink-0 flex flex-col items-center lg:items-start text-center lg:text-left lg:ml-[23%] xl:ml-[18%] w-full lg:w-auto">
           <p className="font-semibold tracking-[0.1em] uppercase text-white mb-1.5 md:mb-2 drop-shadow-md text-[clamp(12px,3vw,21px)] lg:text-[14px] xl:text-[21px]">
             {campaign.name}
           </p>
-          <h2 className="font-extrabold text-[#F5C35A] tracking-tight leading-none drop-shadow-md text-[clamp(24px,6vw,40px)] lg:text-[24px] xl:text-[40px]">
+          <h2 className="font-extrabold text-[#F5C35A] tracking-tight leading-none drop-shadow-md text-[clamp(24px,6vw,40px)] lg:text-[26px] xl:text-[40px]">
             {formatMonthLabel(campaign.startAt)}
           </h2>
         </div>
 
         {/* Stats Block */}
-        <div className="flex flex-row items-center justify-between bg-[#1C1C1E]/90 lg:bg-[#1C1C1E]/95 backdrop-blur-md border border-white/5 rounded-[11px] py-4 px-2.5 sm:px-4 md:px-4 md:py-4 lg:px-4 lg:py-5 xl:px-8 xl:py-7 gap-2 sm:gap-4 md:gap-4 lg:gap-4 xl:gap-8 shadow-xl w-full lg:w-auto">
+        <div className="flex flex-row items-center justify-between bg-[#1C1C1E]/90 lg:bg-[#1C1C1E]/95 backdrop-blur-md border border-white/5 rounded-[11px] py-4 px-2.5 sm:px-4 md:px-4 md:py-4 lg:px-3 lg:py-7 xl:px-8 xl:py-7 gap-2 sm:gap-4 md:gap-4 lg:gap-3 xl:gap-8 shadow-xl w-full lg:w-auto">
           
           {/* Stat 1: Participants */}
           <div className="flex flex-col justify-center items-center lg:items-start shrink-0">
             <div className="flex items-center gap-1 md:gap-2 lg:gap-1.5 xl:gap-2 mb-2 lg:mb-1.5 xl:mb-3">
               <img src="/images/campaign/Ic_filled_users-group.png" alt="Participants" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
-              <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[12px] xl:text-[14px] whitespace-nowrap">Participants</p>
+              <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[15px] xl:text-[14px] whitespace-nowrap">Participants</p>
             </div>
-            <p className="font-bold text-white leading-none truncate text-[12px] sm:text-[14px] lg:text-[16px] xl:text-[22px]">
+            <p className="font-bold text-white leading-none truncate text-[12px] sm:text-[14px] lg:text-[17px] xl:text-[24px]">
               {participantCount}
             </p>
           </div>
@@ -110,11 +130,11 @@ export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
           <div className="flex flex-col justify-center items-center lg:items-start shrink-0">
             <div className="flex items-center gap-1 md:gap-2 lg:gap-1.5 xl:gap-2 mb-2 lg:mb-1.5 xl:mb-3">
               <img src="/images/campaign/Ic_filled_bitcoin-circle.png" alt="Total Volume" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
-              <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[12px] xl:text-[14px] whitespace-nowrap">
+              <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[15px] xl:text-[14px] whitespace-nowrap">
                 <span className="hidden sm:inline">Tổng </span>volume
               </p>
             </div>
-            <p className="font-bold text-white leading-none truncate text-[12px] sm:text-[14px] lg:text-[16px] xl:text-[22px]">
+            <p className="font-bold text-white leading-none truncate text-[12px] sm:text-[14px] lg:text-[17px] xl:text-[24px]">
               {formatVND(totalVolume)}
             </p>
           </div>
@@ -125,11 +145,19 @@ export default function CampaignHeroBanner({ campaign, leaderboard }: Props) {
           <div className="flex flex-col justify-center items-center lg:items-start shrink-0">
             <div className="flex items-center gap-1 md:gap-2 lg:gap-1.5 xl:gap-2 mb-2 lg:mb-1.5 xl:mb-3">
               <img src="/images/campaign/Ic_filled_alarm-clock.png" alt="Remaining Time" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
-              <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[12px] xl:text-[14px] whitespace-nowrap">
-                <span className="hidden sm:inline">Thời gian </span>còn lại
+              <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[15px] xl:text-[14px] whitespace-nowrap">
+                {isNotStarted ? (
+                  <>
+                    <span className="hidden sm:inline">Thời gian </span>chờ
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">Thời gian </span>còn lại
+                  </>
+                )}
               </p>
             </div>
-            <div className="font-bold text-white leading-none tracking-wider truncate text-[12px] sm:text-[14px] lg:text-[16px] xl:text-[22px]">
+            <div className="font-bold text-white leading-none tracking-wider truncate text-[12px] sm:text-[14px] lg:text-[17px] xl:text-[24px]">
               {pad(hours)} : {pad(minutes)} : {pad(seconds)}
             </div>
           </div>

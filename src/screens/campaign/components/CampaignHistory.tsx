@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import type { CampaignData } from "@/types/api/campaign";
-import { useUpdateCampaignMutation } from "@/services/api/campaignApi";
+import { useUpdateCampaignMutation, useDeleteCampaignMutation } from "@/services/api/campaignApi";
 import { toast } from "@/hooks/useToast";
 import { extractApiErrorMessage } from "@/services/api/baseApi";
+import { usePopup } from "@/hooks/usePopup";
 
 interface Props {
   campaigns: CampaignData[];
+  onViewCampaign?: (id: string) => void;
 }
 
 // Format VNĐ
@@ -112,8 +114,10 @@ function getStatusConfig(status: string) {
 }
 
 // History Card
-function HistoryCard({ campaign }: { campaign: CampaignData }) {
+function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onViewCampaign?: (id: string) => void }) {
   const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignMutation();
+  const [deleteCampaign, { isLoading: isDeleting }] = useDeleteCampaignMutation();
+  const { showConfirm, Popup } = usePopup();
 
   // Tính trạng thái hiển thị thực tế theo thời gian
   const effectiveStatus = getEffectiveStatus(campaign);
@@ -121,7 +125,7 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
   const isUpcoming = effectiveStatus === "UPCOMING";
   const isCancelled = effectiveStatus === "CANCELLED";
 
-  // Countdown: UPCOMING → đếm đến startAt, ACTIVE → đếm đến endAt, còn lại → dừng
+  // Countdown: UPCOMING đến startAt, ACTIVE đến endAt
   const countdownTarget = isUpcoming ? campaign.startAt : campaign.endAt;
   const countdownPaused = isDraft || isCancelled;
   const liveCountdown = useLiveCountdown(countdownTarget, countdownPaused);
@@ -177,7 +181,7 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
 
         <div className="flex justify-between items-start pl-2">
           <div className="flex-1 mr-3">
-            <p className="text-[12px] font-medium text-white/80 mb-0.5 tracking-wide line-clamp-1">
+            <p className="text-[18px] font-medium text-white/80 mb-0.5 tracking-wide line-clamp-1">
               {campaign.name}
             </p>
           </div>
@@ -193,7 +197,7 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
       </div>
 
       {/* Nửa dưới */}
-      <div className="relative z-10 -mt-5 bg-[#171717] rounded-t-[20px] p-5 min-[576px]:p-4 lg:p-5 flex-1 flex flex-col justify-between">
+      <div className="relative z-10 -mt-5 bg-[#171717] rounded-t-[20px] pt-5 px-5 pb-4 min-[576px]:pt-4 min-[576px]:px-4 min-[576px]:pb-3.5 lg:pt-5 lg:px-5 lg:pb-4 flex-1 flex flex-col justify-between">
 
         {/* Stats */}
         <div className="flex justify-between items-start gap-1">
@@ -220,52 +224,218 @@ function HistoryCard({ campaign }: { campaign: CampaignData }) {
         </div>
 
         {/* Divider */}
-        <div className="h-px w-full bg-white/5 my-5" />
+        <div className="h-px w-full bg-white/5 mt-4 mb-3" />
 
         {/* Nút Action */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Nút trạng thái (trái) */}
-          <div>
+        <div className="flex items-center justify-between gap-3">
+          {/* Xem chiến dịch & Phát hành */}
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => onViewCampaign?.(campaign.id)}
+              className="inline-flex justify-center items-center gap-2 bg-white text-black font-bold text-[13px] px-4 py-2.5 rounded-[12px] hover:bg-gray-200 transition-colors active:scale-[0.98]"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              Xem chiến dịch
+            </button>
+
             {isDraft && (
               <button
                 type="button"
                 onClick={handlePublish}
                 disabled={isUpdating}
-                className="inline-flex items-center gap-1.5 border border-[#F6F0AA]/20 text-[#F6F0AA]/80 hover:text-[#F6F0AA] hover:bg-[#F6F0AA]/10 font-bold text-[12px] px-3.5 py-2 rounded-[10px] transition-all disabled:opacity-50 active:scale-95"
+                className="inline-flex items-center gap-1.5 border border-[#F6F0AA]/20 text-[#F6F0AA]/80 hover:text-[#F6F0AA] hover:bg-[#F6F0AA]/10 font-bold text-[12px] px-3.5 py-2.5 rounded-[12px] transition-all disabled:opacity-50 active:scale-95"
               >
                 {isUpdating ? "Đang xử lý..." : "Phát hành"}
               </button>
             )}
           </div>
 
-          {/* Nút xem (phải) */}
-          <button className="inline-flex justify-center items-center gap-2 bg-white text-black font-bold text-[13px] px-4 py-2.5 rounded-[12px] hover:bg-gray-200 transition-colors active:scale-[0.98]">
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            Xem chiến dịch
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Edit Button */}
+            <button
+              type="button"
+              className="transition-all active:scale-95 shrink-0"
+            >
+              <img 
+                src="/images/campaign/Button_edit.png" 
+                alt="Edit" 
+                className="w-[42px] h-[42px] object-contain hover:brightness-110" 
+              />
+            </button>
+
+            {/* Delete Button */}
+            <button
+              type="button"
+              disabled={isDeleting}
+              onClick={async () => {
+                const accepted = await showConfirm({
+                  title: "Xác nhận xóa chiến dịch",
+                  description: `Bạn có chắc chắn muốn xóa chiến dịch "${campaign.name}"? Hành động này không thể hoàn tác.`,
+                  confirmText: "Đồng ý",
+                  cancelText: "Hủy bỏ",
+                  destructive: true,
+                });
+                if (!accepted) return;
+
+                try {
+                  await deleteCampaign(campaign.id).unwrap();
+                  toast({
+                    title: "Xóa thành công",
+                    description: "Chiến dịch đã được xóa khỏi hệ thống.",
+                    variant: "success",
+                  });
+                } catch (err) {
+                  console.error("Delete campaign error:", err);
+                  const msg = extractApiErrorMessage(err, "Không thể xóa chiến dịch");
+                  toast({
+                    title: "Xóa thất bại",
+                    description: msg,
+                    variant: "destructive",
+                  });
+                }
+              }}
+              className="transition-all active:scale-95 shrink-0 disabled:opacity-50"
+            >
+              <img 
+                src="/images/campaign/Button_delete.png" 
+                alt="Delete" 
+                className="w-[42px] h-[42px] object-contain hover:brightness-110" 
+              />
+            </button>
+          </div>
         </div>
       </div>
 
+      <Popup />
     </div>
   );
 }
 
 // Main Component
-export default function CampaignHistory({ campaigns }: Props) {
+export default function CampaignHistory({ campaigns, onViewCampaign }: Props) {
+  const [activeFilter, setActiveFilter] = useState<string>("ALL");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [cols, setCols] = useState(3);
+
+  // Detect responsive column count
+  useEffect(() => {
+    const update = () => {
+      if (window.innerWidth >= 1024) setCols(3);
+      else if (window.innerWidth >= 576) setCols(2);
+      else setCols(1);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  // Reset page on filter or column change
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [activeFilter, cols]);
+
+  const counts = {
+    ALL: campaigns.length,
+    CANCELLED: campaigns.filter((c) => getEffectiveStatus(c) === "CANCELLED").length,
+    ACTIVE: campaigns.filter((c) => getEffectiveStatus(c) === "ACTIVE").length,
+    UPCOMING: campaigns.filter((c) => getEffectiveStatus(c) === "UPCOMING").length,
+    DRAFT: campaigns.filter((c) => getEffectiveStatus(c) === "DRAFT").length,
+  };
+
+  const tabs: { key: string; label: string }[] = [
+    { key: "ALL", label: "Tất cả" },
+    { key: "CANCELLED", label: "Đã kết thúc" },
+    { key: "ACTIVE", label: "Đang diễn ra" },
+    { key: "UPCOMING", label: "Sắp diễn ra" },
+    { key: "DRAFT", label: "Bản nháp" },
+  ];
+
+  const filtered = activeFilter === "ALL"
+    ? campaigns
+    : campaigns.filter((c) => getEffectiveStatus(c) === activeFilter);
+
+  const totalPages = Math.ceil(filtered.length / cols);
+  const paginated = filtered.slice(currentPage * cols, (currentPage + 1) * cols);
+
   return (
     <div className="mt-12 mb-8">
-      <h3 className="text-[16px] font-semibold mb-5 text-white">
+      <h3 className="text-[20px] font-semibold text-white mb-4">
         Các chiến dịch đã tạo
       </h3>
 
-      <div className="grid grid-cols-1 min-[576px]:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-        {campaigns.map((campaign) => (
-          <HistoryCard key={campaign.id} campaign={campaign} />
-        ))}
+      {/* Filter Tabs Row + Pagination Buttons */}
+      <div className="flex items-center justify-between gap-2 mb-5 flex-wrap">
+        {/* Tabs */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {tabs.map((tab) => {
+            const isActive = activeFilter === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveFilter(tab.key)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all ${
+                  isActive
+                    ? "bg-[#27272A] text-white"
+                    : "text-[#8B8B93] hover:text-white"
+                }`}
+              >
+                {tab.label}
+                <span
+                  className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold ${
+                    isActive
+                      ? "bg-[#F7F0A1] text-black"
+                      : "bg-white/10 text-[#8B8B93]"
+                  }`}
+                >
+                  {counts[tab.key as keyof typeof counts]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Prev / Next Buttons */}
+        {totalPages > 1 && (
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+              disabled={currentPage === 0}
+              className="w-[40px] h-[40px] flex items-center justify-center rounded-[10px] bg-transparent border border-white/20 text-white disabled:opacity-30 hover:bg-white/5 transition-all active:scale-95"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={currentPage === totalPages - 1}
+              className="w-[40px] h-[40px] flex items-center justify-center rounded-[10px] bg-transparent border border-white/20 text-white disabled:opacity-30 hover:bg-white/5 transition-all active:scale-95"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
+
+      {filtered.length === 0 ? (
+        <div className="text-center text-[#8B8B93] py-10 text-[14px]">
+          Không có chiến dịch nào trong mục này.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 min-[576px]:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+          {paginated.map((campaign) => (
+            <HistoryCard key={campaign.id} campaign={campaign} onViewCampaign={onViewCampaign} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

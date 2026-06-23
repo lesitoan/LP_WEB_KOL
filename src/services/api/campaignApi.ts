@@ -81,6 +81,17 @@ export const campaignApi = api.injectEndpoints({
       invalidatesTags: ['Campaigns'],
     }),
 
+    // DELETE /kol/campaigns/:id
+    deleteCampaign: builder.mutation<void, string>({
+      query: (id) => ({
+        url: apiV1Path(`/kol/campaigns/${id}`),
+        method: 'DELETE',
+      }),
+      transformResponse: (payload: ApiResponse<void>) =>
+        ensureData(payload, 'Không thể xóa chiến dịch'),
+      invalidatesTags: ['Campaigns'],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -91,4 +102,5 @@ export const {
   useGetCampaignLeaderboardQuery,
   useCreateCampaignMutation,
   useUpdateCampaignMutation,
+  useDeleteCampaignMutation,
 } = campaignApi

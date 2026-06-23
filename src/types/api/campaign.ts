@@ -1,4 +1,3 @@
-
 export type CampaignRankingType = 'TOP_VOLUME' | 'TOP_TRADE_COUNT' | 'TOP_GROWTH'
 export type CampaignScopeType = 'ALL_GROUPS' | 'SINGLE_GROUP'
 export type CampaignStatus = 'DRAFT' | 'UPCOMING' | 'ACTIVE' | 'CANCELLED' 
@@ -34,6 +33,7 @@ export interface LeaderboardEntry {
   lpexUid: string
   telegramUsername: string
   usdVolume: string
+  tradeCount?: number
 }
 
 export interface GetCampaignsQuery {

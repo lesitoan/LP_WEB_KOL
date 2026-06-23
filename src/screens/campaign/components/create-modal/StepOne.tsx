@@ -24,7 +24,7 @@ export default function StepOne() {
     <div className="space-y-5 animate-fade-in">
       <FormInput 
         label="Tên chiến dịch"
-        placeholder="Nhập tên nhóm"
+        placeholder="Nhập tên chiến dịch"
         {...register("name")}
         error={errors.name?.message}
       />
@@ -59,7 +59,7 @@ export default function StepOne() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormSelect 
           label="Tiêu chí xếp hạng"
-          options={[{ label: "Volume giao dịch", value: "TOP_VOLUME" }, {label: "Số lệnh giao dịch", value: "TOP_TRADE_COUNT" }, { label: "PNL tăng trưởng", value: "TOP_GROWTH" }]}
+          options={[{ label: "Volume giao dịch", value: "TOP_VOLUME" }, {label: "Số lệnh giao dịch", value: "TOP_TRADE_COUNT" }]}
           {...register("rankingType")}
           error={errors.rankingType?.message}
         />

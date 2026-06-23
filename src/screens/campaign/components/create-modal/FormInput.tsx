@@ -19,7 +19,7 @@ const FormInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormInputPr
 }, ref) => {
   const textareaProps = props as React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-  const baseInputClass = `w-full bg-[#131313] border ${error ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-[#006AF5]'} rounded-xl text-[14px] text-white placeholder-[#8B8B93] focus:outline-none transition-colors`;
+  const baseInputClass = `w-full bg-[#131313] border ${error ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-[#006AF5]'} rounded-xl text-[13px] text-white placeholder-[#8B8B93] focus:outline-none transition-colors`;
 
   const paddingClass = icon 
     ? iconPosition === 'left' ? 'pl-11 pr-4 py-3' : 'pl-4 pr-11 py-3'
@@ -42,7 +42,7 @@ const FormInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormInputPr
 
   return (
     <div className={className}>
-      <label className="block text-[13px] text-white font-semibold mb-2">
+      <label className="block text-[14px] text-white font-semibold mb-2">
         {label} {props.required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       
