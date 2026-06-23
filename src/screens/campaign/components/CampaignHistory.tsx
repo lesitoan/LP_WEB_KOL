@@ -139,29 +139,25 @@ function HistoryCard({ campaign, onViewCampaign }: { campaign: CampaignData, onV
     try {
       const now = Date.now();
       const startMs = new Date(campaign.startAt).getTime();
-      const endMs = new Date(campaign.endAt).getTime();
 
-      // Xác định trạng thái
-      let newStatus: string;
-      if (now > endMs) {
-        newStatus = "CANCELLED";
-      } else if (now >= startMs) {
-        newStatus = "ACTIVE";
-      } else {
-        newStatus = "UPCOMING";
+      // Chỉ cho phép phát hành TRƯỚC khi chiến dịch diễn ra
+      if (now >= startMs) {
+        toast({
+          title: "Không thể phát hành",
+          description: "Thời gian bắt đầu của chiến dịch này đã trôi qua nên không thể phát hành.",
+          variant: "destructive",
+        });
+        return;
       }
+
+      // Trạng thái sẽ luôn là UPCOMING do đã chặn thời gian quá khứ ở trên
+      const newStatus = "UPCOMING";
 
       await updateCampaign({ id: campaign.id, body: { status: newStatus } }).unwrap();
 
-      const messages: Record<string, string> = {
-        ACTIVE: "Chiến dịch đã được kích hoạt ngay lập tức!",
-        UPCOMING: "Chiến dịch sẽ tự động bắt đầu khi đến ngày.",
-        CANCELLED: "Chiến dịch đã quá hạn và được đánh dấu kết thúc.",
-      };
-
       toast({
         title: "Phát hành thành công",
-        description: messages[newStatus] || "Trạng thái đã được cập nhật.",
+        description: "Chiến dịch đã được lên lịch và sẽ tự động bắt đầu khi đến thời gian.",
         variant: "success",
       });
     } catch (err: unknown) {
@@ -431,8 +427,8 @@ export default function CampaignHistory({ campaigns, onViewCampaign }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 min-[576px]:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-          {paginated.map((campaign) => (
-            <HistoryCard key={campaign.id} campaign={campaign} onViewCampaign={onViewCampaign} />
+          {paginated.map((campaign, index) => (
+            <HistoryCard key={`${campaign.id}-${index}`} campaign={campaign} onViewCampaign={onViewCampaign} />
           ))}
         </div>
       )}

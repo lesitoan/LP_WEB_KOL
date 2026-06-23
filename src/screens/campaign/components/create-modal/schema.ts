@@ -20,6 +20,20 @@ export const createCampaignSchema = z.object({
 })
 // CUSTOM VALIDATION (Cross-field)
 .refine((data) => {
+  if (!data.endAt) return true;
+  
+  const end = new Date(data.endAt);
+  end.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return end > today;
+}, {
+  message: "Ngày kết thúc không được ở trong quá khứ hoặc hôm nay",
+  path: ["endAt"],
+})
+.refine((data) => {
   // Chỉ kiểm tra nếu người dùng đã nhập cả 2 ngày
   if (!data.startAt || !data.endAt) return true; 
   
