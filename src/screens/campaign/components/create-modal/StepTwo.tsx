@@ -32,10 +32,14 @@ export default function StepTwo() {
               <div key={rank}>
                 <FormInput 
                   label={`Hạng ${rank}`}
-                  placeholder="Nhập số tiền"
+                  placeholder="Nhập số tiền (VNĐ)"
                   icon={<img src="/images/campaign/Ic_filled_bitcoin-circle-1.png" alt="Coin" className="w-4 h-4 opacity-80 object-contain" />}
                   // Bind data động theo tên trường rank1, rank2, rank3
-                  {...register(`rank${rank}` as keyof CreateCampaignFormValues)}
+                  {...register(`rank${rank}` as keyof CreateCampaignFormValues, {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/\D/g, "");
+                    }
+                  })}
                   error={errors[`rank${rank}` as keyof CreateCampaignFormValues]?.message}
                 />
               </div>

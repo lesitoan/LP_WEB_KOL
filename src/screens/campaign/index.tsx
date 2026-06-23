@@ -12,6 +12,7 @@ import CampaignHistorySkeleton from "@/components/skeletons/campaign/CampaignHis
 
 export default function CampaignScreen() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
 
   // 1. Fetch campaigns ACTIVE
   const { data: activeData, isLoading: isLoadingActive } = useGetCampaignsQuery({ 
@@ -38,11 +39,15 @@ export default function CampaignScreen() {
   });
 
   // Lọc ra campaign ACTIVE mới nhất
-  const activeCampaign = useMemo(() => {
+  const newestActiveCampaign = useMemo(() => {
     if (!activeData?.items || activeData.items.length === 0) return null;
-    return [...activeData.items].sort(
-      (a, b) => new Date(b.startAt).getTime() - new Date(a.startAt).getTime()
-    )[0];
+    return [...activeData.items].sort((a, b) => {
+      const dateA = (a as any).createdAt || (a as any).created_at || a.startAt;
+      const dateB = (b as any).createdAt || (b as any).created_at || b.startAt;
+      const timeDiff = new Date(dateB).getTime() - new Date(dateA).getTime();
+      if (timeDiff !== 0) return timeDiff;
+      return b.id.localeCompare(a.id);
+    })[0];
   }, [activeData]);
 
   // Gộp tất cả campaign cho phần lịch sử
@@ -51,18 +56,31 @@ export default function CampaignScreen() {
     const ended = historyData?.items ?? [];
     const upcoming = upcomingData?.items ?? [];
     const draft = draftData?.items ?? [];
-    return [...active, ...ended, ...upcoming, ...draft].sort(
-      (a, b) => new Date(b.startAt).getTime() - new Date(a.startAt).getTime()
-    );
+    return [...active, ...ended, ...upcoming, ...draft].sort((a, b) => {
+      const dateA = (a as any).createdAt || (a as any).created_at || a.startAt;
+      const dateB = (b as any).createdAt || (b as any).created_at || b.startAt;
+      const timeDiff = new Date(dateB).getTime() - new Date(dateA).getTime();
+      if (timeDiff !== 0) return timeDiff;
+      return b.id.localeCompare(a.id);
+    });
   }, [activeData, historyData, upcomingData, draftData]);
 
-  // 5. Fetch Leaderboard nếu có activeCampaign
+  // Campaign hiển thị trên banner (Được chọn hoặc mặc định)
+  const displayedCampaign = useMemo(() => {
+    if (selectedCampaignId) {
+      const found = allCampaigns.find(c => c.id === selectedCampaignId);
+      if (found) return found;
+    }
+    return newestActiveCampaign;
+  }, [selectedCampaignId, newestActiveCampaign, allCampaigns]);
+
+  // 5. Fetch Leaderboard nếu có displayedCampaign
   const { data: leaderboardData, isLoading: isLoadingLeaderboard } = useGetCampaignLeaderboardQuery(
-    activeCampaign?.id ?? "", 
-    { skip: !activeCampaign?.id } 
+    displayedCampaign?.id ?? "", 
+    { skip: !displayedCampaign?.id } 
   );
 
-  const leaderboard = leaderboardData ?? [];
+  const leaderboard = leaderboardData || [];
 
   // Loading states cho từng phần
   const isHeroLoading = isLoadingActive;
@@ -76,21 +94,20 @@ export default function CampaignScreen() {
       {/* Hero Banner */}
       {isHeroLoading ? (
         <CampaignHeroBannerSkeleton />
-      ) : activeCampaign ? (
+      ) : displayedCampaign ? (
         <>
           <CampaignHeroBanner 
-            campaign={activeCampaign} 
+            campaign={displayedCampaign} 
             leaderboard={leaderboard}
           />
 
-          {/* Leaderboard */}
-          <h3 className="text-[15px] font-semibold mb-4 text-white mt-8">Bảng xếp hạng</h3>
           {isLeaderboardLoading ? (
             <CampaignLeaderboardSkeleton />
           ) : (
             <CampaignLeaderboard 
               leaderboard={leaderboard} 
-              rewards={activeCampaign.rewards} 
+              rewards={displayedCampaign?.rewards || []} 
+              campaign={displayedCampaign}
             />
           )}
         </>
@@ -104,7 +121,13 @@ export default function CampaignScreen() {
       {isHistoryLoading ? (
         <CampaignHistorySkeleton />
       ) : allCampaigns.length > 0 ? (
-        <CampaignHistory campaigns={allCampaigns} />
+        <CampaignHistory 
+          campaigns={allCampaigns} 
+          onViewCampaign={(id) => {
+            setSelectedCampaignId(id);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
       ) : null}
 
       <CreateCampaignModal 

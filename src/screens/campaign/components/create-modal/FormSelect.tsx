@@ -18,7 +18,7 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-[13px] text-white font-semibold mb-2">
+        <label className="block text-[14px] text-white font-semibold mb-2">
           {label} {props.required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
       )}
