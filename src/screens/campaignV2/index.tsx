@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDeleteCampaignMutation, useGetCampaignByIdQuery, useGetCampaignsQuery } from "@/services/api/campaignApiV2";
-import type { CampaignCounts, CampaignHistoryFilter, GetCampaignsQuery } from "@/types/api/campaignV2";
+import type { Campaign, CampaignCounts, CampaignHistoryFilter, GetCampaignsQuery } from "@/types/api/campaignV2";
 import CampaignSummaryBanner from "./components/CampaignSummaryBanner";
 import CampaignLeaderboardSection from "./components/CampaignLeaderboardSection";
 import CampaignHistoryScroller from "./components/CampaignHistoryScroller";
 import CampaignHeader from "./components/CampaignHeader";
 import EmptyCampaign from "./components/EmptyCampaign";
+import CreateCampaignModal from "./components/popupModel/CreateCampaignModal";
+import EditCampaignModal from "./components/popupModel/EditCampaignModal";
 import CampaignSummaryBannerSkeleton from "../../components/skeletons/campaignV2/CampaignSummaryBannerSkeleton";
 import CampaignLeaderboardSectionSkeleton from "../../components/skeletons/campaignV2/CampaignLeaderboardSectionSkeleton";
 import CampaignHistoryScrollerSkeleton from "../../components/skeletons/campaignV2/CampaignHistoryScrollerSkeleton";
@@ -46,6 +48,8 @@ export default function CampaignScreen() {
   const [allCounts, setAllCounts] = useState<CampaignCounts>(() => getEmptyCounts());
   const [hasLoadedInitialAll, setHasLoadedInitialAll] = useState(false);
   const [hasAppliedInitialFilter, setHasAppliedInitialFilter] = useState(initialFilter === "ALL");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
 
   const replaceCampaignUrl = useCallback(
     (filter: CampaignHistoryFilter, campaignId: string | null) => {
@@ -142,6 +146,10 @@ export default function CampaignScreen() {
     replaceCampaignUrl(activeFilter, campaignId);
   };
 
+  const handleEditCampaign = (campaign: Campaign) => {
+    setEditingCampaign(campaign);
+  };
+
   const handleDeleteCampaign = async (campaignId: string) => {
     const confirmed = await showConfirm({
       title: "Xóa chiến dịch",
@@ -169,13 +177,17 @@ export default function CampaignScreen() {
       isFetching={isFetching}
       onFilterChange={handleFilterChange}
       onSelectCampaign={handleSelectCampaign}
+      onEditCampaign={handleEditCampaign}
       onDeleteCampaign={handleDeleteCampaign}
     />
   );
 
   return (
     <div className="animate-fade-in flex flex-col min-h-[calc(100dvh-104px)]">
-      <CampaignHeader hasNoCampaigns={hasNoCampaigns} />
+      <CampaignHeader
+        hasNoCampaigns={hasNoCampaigns}
+        onCreateClick={() => setIsCreateModalOpen(true)}
+      />
 
       {(isLoading && activeFilter === "ALL") || isPreparingInitialFilter ? (
         <>
@@ -184,7 +196,7 @@ export default function CampaignScreen() {
           <CampaignHistoryScrollerSkeleton />
         </>
       ) : hasNoCampaigns ? (
-        <EmptyCampaign />
+        <EmptyCampaign onCreateClick={() => setIsCreateModalOpen(true)} />
       ) : selectedCampaignId ? (
         <>
           {isDetailLoading || isDetailFetching || !selectedCampaign ? (
@@ -201,6 +213,15 @@ export default function CampaignScreen() {
       ) : (
         renderHistory()
       )}
+      <CreateCampaignModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+      <EditCampaignModal
+        isOpen={!!editingCampaign}
+        campaign={editingCampaign}
+        onClose={() => setEditingCampaign(null)}
+      />
       <Popup />
     </div>
   );
