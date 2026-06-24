@@ -1,5 +1,5 @@
-import CampaignPageScreen from "@/screens/campaign";
+import CampaignScreen from "@/screens/campaignV2";
 
 export default function Page() {
-  return <CampaignPageScreen />;
+  return <CampaignScreen />;
 }

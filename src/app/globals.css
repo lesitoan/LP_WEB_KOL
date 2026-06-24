@@ -142,18 +142,18 @@
 
 /* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(var(--surface-3));
+  background: hsl(var(--brand) / 0.35);
   border-radius: 9999px;
   border: 2px solid hsl(var(--surface-0));
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--surface-4));
+  background: hsl(var(--brand) / 0.7);
 }
 
 .scrollbar-none {
