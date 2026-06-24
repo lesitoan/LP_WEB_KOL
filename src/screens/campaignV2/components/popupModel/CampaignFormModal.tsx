@@ -92,7 +92,7 @@ export default function CampaignFormModal({
               alt=""
               className="h-4 w-4 object-contain"
             />
-            <h2 className="text-[14px] font-semibold text-white">{title}</h2>
+            <h2 className="text-[16px] md:text-[18px] font-medium text-white">{title}</h2>
           </div>
           <button
             type="button"
@@ -108,21 +108,28 @@ export default function CampaignFormModal({
             onSubmit={handleFormSubmit}
             className="flex max-h-[calc(100dvh-80px)] flex-col"
           >
-            <div className="overflow-y-auto px-5 py-4">
+            <div className="overflow-y-auto thin-yellow-scrollbar px-5 py-4">
               {step === 1 ? <StepOne mode={mode} /> : <StepTwo />}
             </div>
 
-            <div className="flex items-center justify-between border-t border-white/10 px-5 py-4">
-              <p className="text-[12px] text-white/80">
-                Bước <span className="font-semibold">{step}/2</span>:{" "}
-                {step === 1 ? "Thông tin chiến dịch" : "Phần thưởng & thông báo"}
+            <div className="flex flex-col gap-3.5 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-[12px] md:text-[14px] font-medium text-white/80">
+                Bước{" "}
+                {step === 1 ? (
+                  <>
+                    <span className="font-semibold text-[#FFBB00]">1</span>/2
+                  </>
+                ) : (
+                  <span className="font-semibold text-[#FFBB00]">2/2</span>
+                )}
+                : {step === 1 ? "Thông tin chiến dịch" : "Phần thưởng & thông báo"}
               </p>
-              <div className="flex items-center gap-3">
+              <div className="grid grid-cols-2 gap-3 w-full sm:flex sm:w-auto sm:items-center">
                 <button
                   type="button"
                   disabled={isLoading}
                   onClick={() => (step === 1 ? onClose() : setStep(1))}
-                  className="rounded-[8px] bg-white px-4 py-2 text-[12px] font-bold text-black hover:bg-gray-200 disabled:opacity-60"
+                  className="rounded-[8px] bg-white px-4 py-2.5 text-[13px] md:text-[14px] font-semibold text-black hover:bg-gray-200 disabled:opacity-60 w-full text-center sm:w-auto"
                 >
                   {step === 1 ? "Hủy" : "Quay lại bước 1"}
                 </button>
@@ -130,7 +137,7 @@ export default function CampaignFormModal({
                   <button
                     type="button"
                     onClick={(event) => void handleNext(event)}
-                    className="rounded-[8px] bg-[#F7F0A1] px-4 py-2 text-[12px] font-bold text-black hover:brightness-105"
+                    className="rounded-[8px] bg-[#F7F0A1] px-4 py-2.5 text-[13px] md:text-[14px] font-semibold text-black hover:brightness-105 w-full text-center sm:w-auto"
                   >
                     Tiếp tục
                   </button>
@@ -138,7 +145,7 @@ export default function CampaignFormModal({
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="rounded-[8px] bg-[#F7F0A1] px-4 py-2 text-[12px] font-bold text-black hover:brightness-105 disabled:opacity-60"
+                    className="rounded-[8px] bg-[#F7F0A1] px-4 py-2.5 text-[13px] md:text-[14px] font-semibold text-black hover:brightness-105 disabled:opacity-60 w-full text-center sm:w-auto"
                   >
                     {isLoading ? "Đang lưu..." : submitLabel}
                   </button>

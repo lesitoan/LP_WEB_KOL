@@ -121,7 +121,7 @@ export default function CampaignHistoryScroller({
                   type="button"
                   disabled={isDisabled}
                   onClick={() => onFilterChange(tab.key)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-medium transition-all shrink-0 ${
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[16px] font-medium transition-all shrink-0 ${
                     isActive
                       ? "bg-[#27272A] text-white"
                       : "text-[#8B8B93] hover:text-white"

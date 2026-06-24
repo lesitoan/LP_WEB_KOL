@@ -26,13 +26,13 @@ export default function StepTwo() {
     <div className="space-y-4">
       <div className="rounded-[12px] border border-white/10 bg-[#151515] p-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-[12px] font-semibold text-white/85">Phần thưởng</label>
+          <label className="text-[12px] md:text-[14px] font-medium text-white/85">Phần thưởng</label>
           <Controller
             control={control}
             name="rewardType"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
+                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] md:text-[14px] font-normal text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
                   {field.value || "Tiền thưởng"}
                 </SelectTrigger>
                 <SelectContent className="border-white/10 bg-[#171717] text-white z-[110]">
@@ -51,7 +51,13 @@ export default function StepTwo() {
               key={rank}
               label={`Hạng ${rank}`}
               placeholder="Nhập số tiền (VNĐ)"
-              icon={<Coins className="h-4 w-4 text-[#F7C64A]" />}
+              icon={
+                <img
+                  src="/images/bitcoin_logo.png"
+                  alt=""
+                  className="h-4 w-4 object-contain"
+                />
+              }
               {...register(`rank${rank}` as keyof CampaignFormValues, {
                 onChange: (event) => {
                   event.target.value = event.target.value.replace(/\D/g, "");
@@ -65,13 +71,13 @@ export default function StepTwo() {
 
       <div className="rounded-[12px] border border-white/10 bg-[#151515] p-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-[12px] font-semibold text-white/85">Thông báo</label>
+          <label className="text-[12px] md:text-[14px] font-medium text-white/85">Thông báo</label>
           <Controller
             control={control}
             name="announceFrequency"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
+                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] md:text-[14px] font-normal text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
                   {ANNOUNCE_FREQUENCY_OPTIONS.find((opt) => opt.value === field.value)?.label || "Chọn thông báo"}
                 </SelectTrigger>
                 <SelectContent className="border-white/10 bg-[#171717] text-white z-[110]">
@@ -91,7 +97,7 @@ export default function StepTwo() {
 
         {showTimeInput && (
           <div className="mt-4 flex flex-col gap-1.5">
-            <label className="text-[12px] font-semibold text-white/85">Thời gian thông báo</label>
+            <label className="text-[12px] md:text-[14px] font-medium text-white/85">Thời gian thông báo</label>
             <Controller
               control={control}
               name="announceTime"
@@ -124,7 +130,7 @@ export default function StepTwo() {
                       ref={ref}
                       disabled={disabled}
                       className={cn(
-                        "w-full bg-[#111111] border rounded-[8px] text-[13px] text-white placeholder-[#77777D] text-left transition-colors flex items-center justify-between relative min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed",
+                        "w-full bg-[#111111] border rounded-[8px] text-[13px] md:text-[14px] font-normal text-white placeholder-[#77777D] text-left transition-colors flex items-center justify-between relative min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed",
                         errors.announceTime ? "border-red-500" : "border-white/10 hover:border-white/20",
                         "px-3 py-2"
                       )}

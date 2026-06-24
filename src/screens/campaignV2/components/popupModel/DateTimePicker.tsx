@@ -65,7 +65,7 @@ export default function DateTimePicker({
         ref={ref}
         disabled={disabled}
         className={cn(
-          "w-full bg-[#111111] border rounded-[8px] text-[13px] text-white placeholder-[#77777D] text-left transition-colors flex items-center gap-3 relative min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed",
+          "w-full bg-[#111111] border rounded-[8px] text-[13px] md:text-[14px] font-normal text-white placeholder-[#77777D] text-left transition-colors flex items-center gap-3 relative min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed",
           error ? "border-red-500" : "border-white/10 hover:border-white/20",
           icon ? "pl-9 pr-3 py-2" : "px-3 py-2"
         )}
@@ -89,7 +89,7 @@ export default function DateTimePicker({
     <div className={className}>
       
       {label && (
-        <label className="block text-[12px] font-semibold text-white/85 mb-1.5">
+        <label className="block text-[12px] md:text-[14px] font-medium text-white/85 mb-1.5">
           {label}
         </label>
       )}

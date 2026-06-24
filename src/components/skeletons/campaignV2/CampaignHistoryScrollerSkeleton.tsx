@@ -1,13 +1,15 @@
 export default function CampaignHistoryScrollerSkeleton() {
   return (
-    <div className="mt-6 mb-6 animate-pulse">
-      <div className="h-6 w-48 rounded bg-white/10 mb-4" />
-      <div className="flex items-center gap-2 mb-5">
+    <div className="mt-6 mb-6">
+      <h3 className="text-[20px] font-semibold text-white mb-4">
+        Các chiến dịch đã tạo
+      </h3>
+      <div className="flex items-center gap-2 mb-5 animate-pulse">
         {[0, 1, 2, 3, 4].map((item) => (
           <div key={item} className="h-9 w-28 rounded-full bg-white/10" />
         ))}
       </div>
-      <div className="flex gap-4 overflow-hidden">
+      <div className="flex gap-4 overflow-hidden animate-pulse">
         {[0, 1, 2].map((item) => (
           <div
             key={item}

@@ -23,7 +23,7 @@ function DefaultAvatar() {
 export default function CampaignLeaderboardTable({ entries, rankingType }: Props) {
   return (
     <div className="w-full text-left mt-6 bg-[#171717] rounded-2xl border border-white/5 overflow-hidden py-3">
-      <div className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-2 text-[11px] md:text-[13px] font-medium text-[#8B8B93]">
+      <div className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-2 text-[12px] font-normal text-[#8B8B93]">
         <span>Thứ hạng</span>
         <span>User ID</span>
         <span>{getRankingLabel(rankingType)}</span>
@@ -42,22 +42,22 @@ export default function CampaignLeaderboardTable({ entries, rankingType }: Props
               key={entry.id}
               className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-3 md:py-3.5 hover:bg-white/5 transition-colors"
             >
-              <div className="text-[13px] md:text-[14px] font-semibold text-white">
+              <div className="text-[16px] font-normal text-white">
                 {entry.rank}
               </div>
               <div className="flex items-center gap-2 md:gap-3 min-w-0">
                 <DefaultAvatar />
                 <div className="min-w-0">
-                  <p className="text-[13px] md:text-[14px] font-medium text-white truncate">
+                  <p className="text-[16px] font-normal text-white truncate">
                     {getMemberName(entry)}
                   </p>
-                  <p className="text-[11px] md:text-[12px] text-[#8B8B93] mt-0.5 truncate">
+                  <p className="text-[14px] font-normal text-[#8B8B93] mt-0.5 truncate">
                     UID: {entry.member.lpexUid}
                   </p>
                 </div>
               </div>
               <div className="flex items-center justify-start gap-2 shrink-0">
-                <span className="text-[13px] md:text-[14px] text-white whitespace-nowrap">
+                <span className="text-[16px] font-normal text-white whitespace-nowrap">
                   {getLeaderboardValue(entry, rankingType)}
                 </span>
               </div>

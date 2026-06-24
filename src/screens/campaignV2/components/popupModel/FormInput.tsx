@@ -13,7 +13,7 @@ const FormInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormInputPr
     const textareaProps = props as React.TextareaHTMLAttributes<HTMLTextAreaElement>;
     const baseClass = `w-full bg-[#111111] border ${
       error ? "border-red-500" : "border-white/10 focus:border-[#F7F0A1]/70"
-    } rounded-[8px] text-[13px] text-white placeholder-[#77777D] focus:outline-none transition-colors`;
+    } rounded-[8px] text-[13px] md:text-[14px] font-normal text-white placeholder-[#77777D] focus:outline-none transition-colors`;
     const paddingClass = icon ? "pl-9 pr-3 py-2.5" : "px-3 py-2.5";
 
     const handleIconClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -25,7 +25,7 @@ const FormInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormInputPr
 
     return (
       <div className={className}>
-        <label className="block text-[12px] font-semibold text-white/85 mb-1.5">
+        <label className="block text-[12px] md:text-[14px] font-medium text-white/85 mb-1.5">
           {label}
         </label>
         <div className="relative">

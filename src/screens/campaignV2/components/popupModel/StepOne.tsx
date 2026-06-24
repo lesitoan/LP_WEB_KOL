@@ -106,13 +106,13 @@ export default function StepOne({ mode = "create" }: StepOneProps) {
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <label className="text-[12px] font-semibold text-white/85">Tiêu chí xếp hạng</label>
+          <label className="text-[12px] md:text-[14px] font-medium text-white/85">Tiêu chí xếp hạng</label>
           <Controller
             control={control}
             name="rankingType"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
+                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] md:text-[14px] font-normal text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
                   {RANKING_TYPE_OPTIONS.find((opt) => opt.value === field.value)?.label || "Chọn tiêu chí"}
                 </SelectTrigger>
                 <SelectContent className="border-white/10 bg-[#171717] text-white z-[110]">
@@ -131,13 +131,13 @@ export default function StepOne({ mode = "create" }: StepOneProps) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-[12px] font-semibold text-white/85">Phạm vi áp dụng</label>
+          <label className="text-[12px] md:text-[14px] font-medium text-white/85">Phạm vi áp dụng</label>
           <Controller
             control={control}
             name="telegramGroupId"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange} disabled={isGroupsLoading}>
-                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
+                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] md:text-[14px] font-normal text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
                   {groupOptions.find((opt) => opt.value === field.value)?.label || "Chọn phạm vi"}
                 </SelectTrigger>
                 <SelectContent className="border-white/10 bg-[#171717] text-white z-[110] max-h-[200px]">
