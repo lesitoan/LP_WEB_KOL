@@ -16,6 +16,7 @@ interface Props {
   campaign: Campaign;
   isActive?: boolean;
   onViewCampaign: (campaignId: string) => void;
+  onDeleteCampaign?: (campaignId: string) => void;
 }
 
 function useCountdown(targetTime: string, paused: boolean) {
@@ -35,7 +36,7 @@ function useCountdown(targetTime: string, paused: boolean) {
   return timeLeft;
 }
 
-export default function CampaignCard({ campaign, isActive, onViewCampaign }: Props) {
+export default function CampaignCard({ campaign, isActive, onViewCampaign, onDeleteCampaign }: Props) {
   const status = getEffectiveStatus(campaign);
   const isWaiting = status === "UPCOMING";
   const isPaused = status === "DRAFT" || status === "ENDED" || status === "CANCELLED";
@@ -109,6 +110,7 @@ export default function CampaignCard({ campaign, isActive, onViewCampaign }: Pro
               <button
                 type="button"
                 aria-label="Delete campaign"
+                onClick={() => onDeleteCampaign?.(campaign.id)}
                 className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-white/10 text-white/70 hover:bg-white/5"
               >
                 <Trash2 className="h-4 w-4" />

@@ -14,6 +14,7 @@ interface Props {
   isFetching?: boolean;
   onFilterChange: (filter: CampaignHistoryFilter) => void;
   onSelectCampaign: (campaignId: string) => void;
+  onDeleteCampaign?: (campaignId: string) => void;
 }
 
 interface ArrowState {
@@ -46,6 +47,7 @@ export default function CampaignHistoryScroller({
   isFetching,
   onFilterChange,
   onSelectCampaign,
+  onDeleteCampaign,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const filterScrollRef = useRef<HTMLDivElement>(null);
@@ -194,6 +196,7 @@ export default function CampaignHistoryScroller({
                 campaign={campaign}
                 isActive={campaign.id === selectedCampaignId}
                 onViewCampaign={onSelectCampaign}
+                onDeleteCampaign={onDeleteCampaign}
               />
             </div>
           ))}

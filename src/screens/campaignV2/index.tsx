@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useGetCampaignByIdQuery, useGetCampaignsQuery } from "@/services/api/campaignApiV2";
+import { useDeleteCampaignMutation, useGetCampaignByIdQuery, useGetCampaignsQuery } from "@/services/api/campaignApiV2";
 import type { CampaignCounts, CampaignHistoryFilter, GetCampaignsQuery } from "@/types/api/campaignV2";
 import CampaignSummaryBanner from "./components/CampaignSummaryBanner";
 import CampaignLeaderboardSection from "./components/CampaignLeaderboardSection";
@@ -13,6 +13,7 @@ import CampaignSummaryBannerSkeleton from "../../components/skeletons/campaignV2
 import CampaignLeaderboardSectionSkeleton from "../../components/skeletons/campaignV2/CampaignLeaderboardSectionSkeleton";
 import CampaignHistoryScrollerSkeleton from "../../components/skeletons/campaignV2/CampaignHistoryScrollerSkeleton";
 import { getCountsFromCampaigns, getEmptyCounts } from "./components/campaignV2Utils";
+import { usePopup } from "@/hooks/usePopup";
 
 const CAMPAIGN_LIST_LIMIT = 100;
 const VALID_FILTERS: CampaignHistoryFilter[] = [
@@ -34,6 +35,8 @@ export default function CampaignScreen() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { showConfirm, Popup } = usePopup();
+  const [deleteCampaign] = useDeleteCampaignMutation();
 
   const initialFilter = useMemo(() => parseFilter(searchParams.get("status")), []);
   const initialCampaignId = useMemo(() => searchParams.get("campaignId"), []);
@@ -139,6 +142,24 @@ export default function CampaignScreen() {
     replaceCampaignUrl(activeFilter, campaignId);
   };
 
+  const handleDeleteCampaign = async (campaignId: string) => {
+    const confirmed = await showConfirm({
+      title: "Xóa chiến dịch",
+      description: "Bạn có chắc chắn muốn xóa chiến dịch này không? Hành động này không thể hoàn tác.",
+      confirmText: "Xóa",
+      cancelText: "Hủy",
+      destructive: true,
+    });
+
+    if (confirmed) {
+      try {
+        await deleteCampaign(campaignId).unwrap();
+      } catch (err: any) {
+        console.error("Xóa chiến dịch thất bại:", err);
+      }
+    }
+  };
+
   const renderHistory = () => (
     <CampaignHistoryScroller
       campaigns={campaigns}
@@ -148,6 +169,7 @@ export default function CampaignScreen() {
       isFetching={isFetching}
       onFilterChange={handleFilterChange}
       onSelectCampaign={handleSelectCampaign}
+      onDeleteCampaign={handleDeleteCampaign}
     />
   );
 
@@ -179,6 +201,7 @@ export default function CampaignScreen() {
       ) : (
         renderHistory()
       )}
+      <Popup />
     </div>
   );
 }
