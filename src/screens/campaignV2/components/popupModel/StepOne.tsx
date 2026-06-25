@@ -61,7 +61,7 @@ export default function StepOne({ mode = "create" }: StepOneProps) {
     <div className="space-y-4">
       <FormInput
         label="Tên chiến dịch"
-        placeholder="Nhập tên nhóm"
+        placeholder="Nhập tên chiến dịch"
         {...register("name")}
         error={errors.name?.message}
       />

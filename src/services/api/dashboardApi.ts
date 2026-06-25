@@ -7,6 +7,7 @@ import type {
   DashboardStats,
   KolDashboardGroupSummaryQuery,
   KolDashboardGroupStatsItem,
+  KolDashboardLatestVolumeGroupItem,
   KolDashboardSummary,
   KolDashboardSummaryQuery,
   KolDashboardStats,
@@ -49,7 +50,7 @@ export const dashboardApi = api.injectEndpoints({
         const queryString = searchParams.toString()
 
         return {
-          url: `${apiV1Path('/kol/dashboard')}${queryString ? `?${queryString}` : ''}`,
+          url: `${apiV1Path('/kol/dashboard/overview')}${queryString ? `?${queryString}` : ''}`,
           method: 'GET',
         }
       },
@@ -104,6 +105,39 @@ export const dashboardApi = api.injectEndpoints({
       transformResponse: (payload: ApiResponse<KolDashboardGroupStatsItem[]>) => {
         if (!payload || payload.status !== 'success' || !payload.data) {
           throw new Error(extractApiErrorMessage(payload, 'KhĂ´ng thá»ƒ táº£i thá»‘ng kĂª dashboard theo nhĂ³m'))
+        }
+
+        return payload.data
+      },
+      providesTags: ['Dashboard'],
+    }),
+
+    getKolDashboardLatestVolumeGroups: builder.query<KolDashboardLatestVolumeGroupItem[], KolDashboardGroupSummaryQuery | void>({
+      query: (params) => {
+        const searchParams = new URLSearchParams()
+
+        if (params?.startDate) {
+          searchParams.set('startDate', params.startDate)
+        }
+
+        if (params?.endDate) {
+          searchParams.set('endDate', params.endDate)
+        }
+
+        if (params?.groupId) {
+          searchParams.set('groupId', params.groupId)
+        }
+
+        const queryString = searchParams.toString()
+
+        return {
+          url: `${apiV1Path('/kol/dashboard/charts/volume-groups/latest')}${queryString ? `?${queryString}` : ''}`,
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: ApiResponse<KolDashboardLatestVolumeGroupItem[]>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(extractApiErrorMessage(payload, 'Không thể tải dữ liệu'))
         }
 
         return payload.data
@@ -220,6 +254,7 @@ export const dashboardApi = api.injectEndpoints({
 export const {
   useGetKolDashboardStatsQuery,
   useGetKolDashboardGroupStatsQuery,
+  useGetKolDashboardLatestVolumeGroupsQuery,
   useGetKolDashboardSummaryQuery,
   useGetKolRecentActivitiesQuery,
   // useGetMemberOverviewStatsQuery,

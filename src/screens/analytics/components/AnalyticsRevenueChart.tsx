@@ -24,7 +24,7 @@ const lineLabelByKey: Record<string, string> = {
 }
 
 export function formatVnd(value: number) {
-  return `${Math.round(value).toLocaleString("vi-VN")} VNĐ`
+  return `${Math.round(value).toLocaleString("en-US")} VNĐ`
 }
 
 type TooltipPayloadItem = {

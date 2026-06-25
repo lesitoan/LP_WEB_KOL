@@ -98,6 +98,21 @@ export interface KolDashboardGroupStatsItem extends KolDashboardStats {
   group: KolDashboardStatsGroup
 }
 
+export interface KolDashboardLatestVolumeGroupItem {
+  group: {
+    id: string
+    telegramGroupId?: string | null
+    title: string
+    iconKey?: string | null
+    tierLabel?: string | null
+    minVolumeRequired?: string | number | null
+    maxVolumeRequired?: string | number | null
+  }
+  sampledAt: string | null
+  totalVolumeSpot: number | null
+  totalVolumeFuture: number | null
+}
+
 export interface KolDashboardGroupSummaryPeriod {
   type: 'range'
   startDate: string

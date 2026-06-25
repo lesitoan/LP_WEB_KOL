@@ -1,3 +1,5 @@
+import type { KolDashboardLatestVolumeGroupItem } from "@/types/api"
+
 export const revenueData = [
   { label: "T1", current: 120000, target: 72000, baseline: 21000 },
   { label: "", current: 126000, target: 76000, baseline: 28000 },
@@ -21,12 +23,31 @@ export const revenueData = [
   { label: "", current: 171000, target: 104000, baseline: 90000 },
 ]
 
-export const growthData = [
-  { name: "VIP Platinum", volume: 320, members: 280, warning: 220 },
-  { name: "Gold Traders", volume: 380, members: 310, warning: 260 },
-  { name: "Silver Group", volume: 260, members: 210, warning: 200 },
-  { name: "The Gangs", volume: 330, members: 290, warning: 250 },
-]
+export interface AnalyticsGrowthChartDatum {
+  name: string
+  spot: number
+  future: number
+}
+
+const toVolumeMillions = (value: number | null | undefined) => {
+  const numericValue = Number(value ?? 0)
+
+  if (!Number.isFinite(numericValue)) {
+    return 0
+  }
+
+  return numericValue / 1_000_000
+}
+
+export function mapLatestVolumeGroupsToGrowthChartData(
+  items: KolDashboardLatestVolumeGroupItem[] = []
+): AnalyticsGrowthChartDatum[] {
+  return items.map((item) => ({
+    name: item.group.title,
+    spot: toVolumeMillions(item.totalVolumeSpot),
+    future: toVolumeMillions(item.totalVolumeFuture),
+  }))
+}
 
 export const groupRows = [
   { name: "VIP Platinum", members: 1000, joins: 50, change: 22, warning: 4, kicked: 4 },
