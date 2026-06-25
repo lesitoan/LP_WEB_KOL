@@ -12,15 +12,15 @@ export default function AnalyticsMembersTable() {
   return (
     <section className={`rounded-card border border-border bg-surface-card p-4 sm:p-5 ${isFetching ? "opacity-80" : ""}`}>
       <h2 className="mb-5 text-base font-medium">Thống kê thành viên theo từng nhóm</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] text-left text-sm">
+      <div className="overflow-auto thin-yellow-scrollbar max-h-[230px]">
+        <table className="w-full min-w-[720px] text-left text-sm relative border-collapse">
           <thead>
             <tr className="text-sm font-normal text-muted-foreground">
-              <th className="pb-4">Nhóm</th>
-              <th className="pb-4">Số lượng members</th>
-              <th className="pb-4">Số tham gia mới</th>
-              <th className="pb-4">Số đang bị cảnh báo</th>
-              <th className="pb-4">Số bị kick</th>
+              <th className="sticky top-0 bg-surface-card z-10 pb-4">Nhóm</th>
+              <th className="sticky top-0 bg-surface-card z-10 pb-4">Số lượng members</th>
+              <th className="sticky top-0 bg-surface-card z-10 pb-4">Số tham gia mới</th>
+              <th className="sticky top-0 bg-surface-card z-10 pb-4">Số đang bị cảnh báo</th>
+              <th className="sticky top-0 bg-surface-card z-10 pb-4">Số bị kick</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-transparent text-base font-normal">

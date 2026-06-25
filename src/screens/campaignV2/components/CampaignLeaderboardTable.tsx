@@ -21,6 +21,19 @@ function DefaultAvatar() {
 }
 
 export default function CampaignLeaderboardTable({ entries, rankingType }: Props) {
+  if (entries.length === 0) {
+    return (
+      <div className="w-full mt-6 bg-[#171717] rounded-2xl border border-white/5 flex flex-col items-center justify-center min-h-[260px] p-6 gap-3">
+        <img
+          src="/images/campaign/empty_leaderboard_icon.svg"
+          alt=""
+          className="w-[60px] h-[60px] shrink-0"
+        />
+        <p className="text-[20px] font-medium text-[#8B8B93]">Chưa có dữ liệu</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full text-left mt-6 bg-[#171717] rounded-2xl border border-white/5 overflow-hidden py-3">
       <div className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-2 text-[12px] font-normal text-[#8B8B93]">
@@ -29,42 +42,34 @@ export default function CampaignLeaderboardTable({ entries, rankingType }: Props
         <span>{getRankingLabel(rankingType)}</span>
       </div>
 
-      {entries.length === 0 ? (
-        <div className="px-4 py-8">
-          <div className="min-h-[88px] rounded-xl border border-white/5 bg-black/10 flex items-center justify-center text-[14px] text-[#8B8B93]">
-            Chưa có dữ liệu
-          </div>
-        </div>
-      ) : (
-        <div className="max-h-[260px] overflow-y-auto custom-scrollbar">
-          {entries.map((entry) => (
-            <div
-              key={entry.id || `${entry.memberId}-${entry.rank}`}
-              className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-3 md:py-3.5 hover:bg-white/5 transition-colors"
-            >
-              <div className="text-[16px] font-normal text-white">
-                {entry.rank}
-              </div>
-              <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                <DefaultAvatar />
-                <div className="min-w-0">
-                  <p className="text-[16px] font-normal text-white truncate">
-                    {getMemberName(entry)}
-                  </p>
-                  <p className="text-[14px] font-normal text-[#8B8B93] mt-0.5 truncate">
-                    UID: {entry.member.lpexUid}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-start gap-2 shrink-0">
-                <span className="text-[16px] font-normal text-white whitespace-nowrap">
-                  {getLeaderboardValue(entry, rankingType)}
-                </span>
+      <div className="max-h-[260px] overflow-y-auto custom-scrollbar">
+        {entries.map((entry) => (
+          <div
+            key={entry.id || `${entry.memberId}-${entry.rank}`}
+            className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-3 md:py-3.5 hover:bg-white/5 transition-colors"
+          >
+            <div className="text-[16px] font-normal text-white">
+              {entry.rank}
+            </div>
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <DefaultAvatar />
+              <div className="min-w-0">
+                <p className="text-[16px] font-normal text-white truncate">
+                  {getMemberName(entry)}
+                </p>
+                <p className="text-[14px] font-normal text-[#8B8B93] mt-0.5 truncate">
+                  UID: {entry.member.lpexUid}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="flex items-center justify-start gap-2 shrink-0">
+              <span className="text-[16px] font-normal text-white whitespace-nowrap">
+                {getLeaderboardValue(entry, rankingType)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

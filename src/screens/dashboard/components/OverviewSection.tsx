@@ -128,8 +128,8 @@ export default function OverviewSection() {
               </span>
               <span className="text-sm font-medium uppercase text-white">Tổng số hoa hồng</span>
             </div>
-            <div className="text-[40px] font-bold leading-tight tracking-normal text-white md:text-[40px]">
-              {formatVnd(totalCommission)} <span className="text-[32px] font-medium">VNĐ</span>
+            <div className="text-[28px] font-bold leading-tight tracking-normal text-white sm:text-[40px]">
+              {formatVnd(totalCommission)} <span className="text-[20px] font-medium sm:text-[32px]">VNĐ</span>
             </div>
           </div>
         </div>

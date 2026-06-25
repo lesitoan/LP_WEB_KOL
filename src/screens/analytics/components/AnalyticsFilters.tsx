@@ -98,7 +98,7 @@ export default function AnalyticsFilters() {
             </span>
           </span>
         </SelectTrigger>
-        <SelectContent className="max-w-[280px] border-border bg-surface-2 text-foreground">
+        <SelectContent className="max-w-[280px] max-h-[200px] border-border bg-surface-2 text-foreground">
           <SelectItem value={allGroupsValue}>
             <span className="block max-w-[220px] truncate">Tất cả</span>
           </SelectItem>

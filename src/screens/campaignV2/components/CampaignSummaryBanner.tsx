@@ -102,7 +102,7 @@ export default function CampaignSummaryBanner({ campaign }: Props) {
             <div className="flex items-center gap-1 md:gap-2 lg:gap-1.5 xl:gap-2 sm:mb-2 lg:mb-1.5 xl:mb-3">
               <img src="/images/campaign/Ic_filled_bitcoin-circle.png" alt="" className="w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[20px] xl:h-[20px] shrink-0 object-contain" />
               <p className="text-[#8B8B93] font-medium text-[10px] sm:text-[15px] lg:text-[12px] xl:text-[14px] whitespace-nowrap">
-                <span className="hidden sm:inline">Tổng </span>volume
+                Tổng volume
               </p>
             </div>
             <p className="font-bold text-white leading-none truncate text-[12px] sm:text-[14px] lg:text-[18px] xl:text-[24px]">

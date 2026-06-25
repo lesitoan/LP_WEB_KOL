@@ -106,9 +106,10 @@ const MEMBER_TYPE_TABS = [
 ] as const;
 
 function MemberTypeTabCount({ count, isLoading }: { count: number; isLoading: boolean }) {
+  if (isLoading) return null;
   return (
     <span className="grid h-6 min-w-6 place-items-center rounded-full bg-surface-control px-2 text-xs font-normal leading-none text-muted-foreground">
-      {isLoading ? "0" : count.toLocaleString("en-US")}
+      {count.toLocaleString("en-US")}
     </span>
   );
 }
@@ -161,7 +162,7 @@ export default function MembersTable() {
     () => ({
       ...query,
       page: 1,
-      limit: 1,
+      limit: 20,
       sortBy: undefined,
       sortOrder: undefined,
       eligibilityStatus: undefined,

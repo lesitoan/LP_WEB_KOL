@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
@@ -101,7 +101,7 @@ export default function TableFilterBar({
               <path d="m21 21-4.3-4.3" />
             </svg>
             <input
-              className="bg-transparent w-full text-sm font-normal text-foreground outline-none placeholder:text-muted-foreground"
+              className="bg-transparent w-full text-sm font-normal text-foreground outline-none placeholder:text-muted-foreground truncate placeholder:truncate"
               value={textValues[textFilter.key] ?? ''}
               onChange={(event) => onTextChange(textFilter.key, event.target.value)}
               placeholder={textFilter.placeholder}

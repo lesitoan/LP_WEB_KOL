@@ -7,7 +7,7 @@ import type {
 export const RANKING_TYPE_OPTIONS: Array<{ label: string; value: CampaignRankingType }> = [
   { label: "Volume giao dịch", value: "TOP_VOLUME" },
   { label: "Số lệnh giao dịch", value: "TOP_TRADE_COUNT" },
-  { label: "Tăng trưởng", value: "TOP_GROWTH" },
+  // { label: "Tăng trưởng", value: "TOP_GROWTH" },
 ];
 
 export const ANNOUNCE_FREQUENCY_OPTIONS: Array<{

@@ -312,7 +312,7 @@ export function GroupMembersScreen({ groupId }: GroupMembersScreenProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between gap-3">
         <Button type="button" variant="outline" onClick={() => router.push('/groups')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Quay lại nhóm

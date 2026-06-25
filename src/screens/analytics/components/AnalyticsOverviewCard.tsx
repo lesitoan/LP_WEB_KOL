@@ -83,7 +83,7 @@ export default function AnalyticsOverviewCard() {
   return (
     <section className={cn("mb-5 rounded-card border border-border bg-surface-card p-4 sm:p-5", (isFetching || isCommissionFetching) && "opacity-80")}>
       <h2 className="mb-4 text-base font-medium">Chỉ số tổng quan nhóm</h2>
-      <div className="grid gap-3 lg:grid-cols-[1.05fr_2.15fr]">
+      <div className="grid gap-3 xl:grid-cols-[1.05fr_2.15fr]">
         <div className="relative overflow-hidden rounded-control bg-surface-control/50 bg-[url('/images/analytics/hero_bg_gradient.png')] bg-cover bg-center p-6">
           <div className="relative flex min-h-[220px] flex-col items-start justify-center">
             <div className="mb-8 flex items-center gap-3">
@@ -97,8 +97,8 @@ export default function AnalyticsOverviewCard() {
                 Tổng số hoa hồng
               </span>
             </div>
-            <div className="text-[36px] font-bold leading-none tracking-tight text-foreground sm:text-[40px]">
-              {formatVnd(totalCommission)} <span className="text-[32px] font-medium">VNĐ</span>
+            <div className="text-[28px] font-bold leading-none tracking-tight text-foreground sm:text-[40px]">
+              {formatVnd(totalCommission)} <span className="text-[20px] font-medium sm:text-[32px]">VNĐ</span>
             </div>
           </div>
         </div>
