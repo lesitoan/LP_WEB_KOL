@@ -28,6 +28,7 @@ interface Props {
   onViewCampaign: (campaignId: string) => void;
   onEditCampaign?: (campaign: Campaign) => void;
   onDeleteCampaign?: (campaignId: string) => void;
+  onPublishCampaign?: (campaign: Campaign) => void;
 }
 
 function useCountdown(targetTime: string, paused: boolean) {
@@ -53,8 +54,10 @@ export default function CampaignCard({
   onViewCampaign,
   onEditCampaign,
   onDeleteCampaign,
+  onPublishCampaign,
 }: Props) {
   const status = getEffectiveStatus(campaign);
+  const isDraft = status === "DRAFT";
   const isWaiting = status === "UPCOMING";
   const isPaused = status === "DRAFT" || status === "ENDED" || status === "CANCELLED";
   const targetTime = isWaiting ? campaign.startAt : campaign.endAt;
@@ -110,25 +113,29 @@ export default function CampaignCard({
           <div className="flex items-center justify-between gap-2">
             <button
               type="button"
-              onClick={() => onViewCampaign(campaign.id)}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-3 py-2 text-[14px] font-semibold text-black hover:bg-gray-200 active:scale-[0.98]"
+              onClick={() => (isDraft ? onPublishCampaign?.(campaign) : onViewCampaign(campaign.id))}
+              className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-[14px] font-semibold text-black active:scale-[0.98] ${
+                isDraft ? "bg-[#F7F0A1] hover:brightness-105" : "bg-white hover:bg-gray-200"
+              }`}
             >
-              <EyeIcon className="w-[15px] h-[12px] shrink-0" />
-              Xem chiến dịch
+              {!isDraft && <EyeIcon className="w-[15px] h-[12px] shrink-0" />}
+              {isDraft ? "Phát hành" : "Xem chiến dịch"}
             </button>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Edit campaign"
-                onClick={() => onEditCampaign?.(campaign)}
-                className="h-9 w-9 shrink-0 hover:opacity-85 active:scale-95 transition-all"
-              >
-                <img
-                  src="/images/campaign/Button_edit.png"
-                  alt="Edit"
-                  className="h-full w-full object-contain"
-                />
-              </button>
+              {status !== "ENDED" && status !== "CANCELLED" && (
+                <button
+                  type="button"
+                  aria-label="Edit campaign"
+                  onClick={() => onEditCampaign?.(campaign)}
+                  className="h-9 w-9 shrink-0 hover:opacity-85 active:scale-95 transition-all"
+                >
+                  <img
+                    src="/images/campaign/Button_edit.png"
+                    alt="Edit"
+                    className="h-full w-full object-contain"
+                  />
+                </button>
+              )}
               <button
                 type="button"
                 aria-label="Delete campaign"

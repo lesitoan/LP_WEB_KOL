@@ -39,7 +39,7 @@ export default function CampaignLeaderboardTable({ entries, rankingType }: Props
         <div className="max-h-[260px] overflow-y-auto custom-scrollbar">
           {entries.map((entry) => (
             <div
-              key={entry.id}
+              key={entry.id || `${entry.memberId}-${entry.rank}`}
               className="grid grid-cols-[40px_1fr_auto] md:grid-cols-[80px_1fr_200px] items-center gap-2 md:gap-4 px-4 py-3 md:py-3.5 hover:bg-white/5 transition-colors"
             >
               <div className="text-[16px] font-normal text-white">

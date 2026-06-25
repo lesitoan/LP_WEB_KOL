@@ -16,6 +16,7 @@ interface Props {
   onSelectCampaign: (campaignId: string) => void;
   onEditCampaign?: (campaign: Campaign) => void;
   onDeleteCampaign?: (campaignId: string) => void;
+  onPublishCampaign?: (campaign: Campaign) => void;
 }
 
 interface ArrowState {
@@ -50,6 +51,7 @@ export default function CampaignHistoryScroller({
   onSelectCampaign,
   onEditCampaign,
   onDeleteCampaign,
+  onPublishCampaign,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const filterScrollRef = useRef<HTMLDivElement>(null);
@@ -200,6 +202,7 @@ export default function CampaignHistoryScroller({
                 onViewCampaign={onSelectCampaign}
                 onEditCampaign={onEditCampaign}
                 onDeleteCampaign={onDeleteCampaign}
+                onPublishCampaign={onPublishCampaign}
               />
             </div>
           ))}

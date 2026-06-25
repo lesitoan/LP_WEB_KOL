@@ -24,7 +24,7 @@ export default function CampaignLeaderboardTop({ entries, rewards, rankingType }
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-6 items-stretch lg:items-end">
       {entries.map((entry) => (
-        <div key={entry.id} className={`w-full flex ${getOrderClass(entry.rank)}`}>
+        <div key={entry.id || `${entry.memberId}-${entry.rank}`} className={`w-full flex ${getOrderClass(entry.rank)}`}>
           <TopLeaderboardCard
             entry={entry}
             rewards={rewards}

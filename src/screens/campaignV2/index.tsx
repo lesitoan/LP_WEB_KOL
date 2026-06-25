@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useDeleteCampaignMutation, useGetCampaignByIdQuery, useGetCampaignsQuery } from "@/services/api/campaignApiV2";
+import {
+  useDeleteCampaignMutation,
+  useGetCampaignByIdQuery,
+  useGetCampaignsQuery,
+  useUpdateCampaignMutation,
+} from "@/services/api/campaignApiV2";
 import type { Campaign, CampaignCounts, CampaignHistoryFilter, GetCampaignsQuery } from "@/types/api/campaignV2";
 import CampaignSummaryBanner from "./components/CampaignSummaryBanner";
 import CampaignLeaderboardSection from "./components/CampaignLeaderboardSection";
@@ -16,6 +21,7 @@ import CampaignLeaderboardSectionSkeleton from "../../components/skeletons/campa
 import CampaignHistoryScrollerSkeleton from "../../components/skeletons/campaignV2/CampaignHistoryScrollerSkeleton";
 import { getCountsFromCampaigns, getEmptyCounts } from "./components/campaignV2Utils";
 import { usePopup } from "@/hooks/usePopup";
+import { toast } from "@/hooks/useToast";
 
 const CAMPAIGN_LIST_LIMIT = 100;
 const VALID_FILTERS: CampaignHistoryFilter[] = [
@@ -30,7 +36,7 @@ const VALID_FILTERS: CampaignHistoryFilter[] = [
 function parseFilter(value: string | null): CampaignHistoryFilter {
   return VALID_FILTERS.includes(value as CampaignHistoryFilter)
     ? (value as CampaignHistoryFilter)
-    : "ALL";
+    : "ACTIVE";
 }
 
 export default function CampaignScreen() {
@@ -39,15 +45,13 @@ export default function CampaignScreen() {
   const searchParams = useSearchParams();
   const { showConfirm, Popup } = usePopup();
   const [deleteCampaign] = useDeleteCampaignMutation();
+  const [updateCampaign] = useUpdateCampaignMutation();
 
   const initialFilter = useMemo(() => parseFilter(searchParams.get("status")), []);
   const initialCampaignId = useMemo(() => searchParams.get("campaignId"), []);
 
-  const [activeFilter, setActiveFilter] = useState<CampaignHistoryFilter>("ALL");
+  const [activeFilter, setActiveFilter] = useState<CampaignHistoryFilter>(initialFilter);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(initialCampaignId);
-  const [allCounts, setAllCounts] = useState<CampaignCounts>(() => getEmptyCounts());
-  const [hasLoadedInitialAll, setHasLoadedInitialAll] = useState(false);
-  const [hasAppliedInitialFilter, setHasAppliedInitialFilter] = useState(initialFilter === "ALL");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
 
@@ -70,9 +74,9 @@ export default function CampaignScreen() {
       const queryString = params.toString();
       if (queryString === searchParams.toString()) return;
 
-      router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+      window.history.replaceState(null, "", queryString ? `${pathname}?${queryString}` : pathname);
     },
-    [pathname, router, searchParams],
+    [pathname, searchParams],
   );
 
   const campaignListQuery: GetCampaignsQuery = useMemo(() => {
@@ -84,6 +88,7 @@ export default function CampaignScreen() {
   }, [activeFilter]);
 
   const { data: campaignsData, isLoading, isFetching } = useGetCampaignsQuery(campaignListQuery);
+  const { data: allCampaignsData } = useGetCampaignsQuery({ page: 1, limit: CAMPAIGN_LIST_LIMIT });
   const { data: selectedCampaign, isLoading: isDetailLoading, isFetching: isDetailFetching } =
     useGetCampaignByIdQuery(selectedCampaignId ?? "", {
       skip: !selectedCampaignId,
@@ -91,24 +96,16 @@ export default function CampaignScreen() {
 
   const campaigns = campaignsData?.items ?? [];
   const firstCampaignId = campaigns[0]?.id ?? null;
-  const isInitialAllResponse = activeFilter === "ALL" && !isLoading && !!campaignsData;
+
+  const allCounts = useMemo(() => {
+    return getCountsFromCampaigns(allCampaignsData?.items ?? []);
+  }, [allCampaignsData]);
+
+  const hasLoadedInitialAll = !!allCampaignsData;
   const hasNoCampaigns = hasLoadedInitialAll && allCounts.ALL === 0;
-  const isPreparingInitialFilter = !hasAppliedInitialFilter;
 
   useEffect(() => {
-    if (!isInitialAllResponse) return;
-
-    setAllCounts(getCountsFromCampaigns(campaigns));
-    setHasLoadedInitialAll(true);
-
-    if (!hasAppliedInitialFilter) {
-      setActiveFilter(initialFilter);
-      setHasAppliedInitialFilter(true);
-    }
-  }, [campaigns, hasAppliedInitialFilter, initialFilter, isInitialAllResponse]);
-
-  useEffect(() => {
-    if (isPreparingInitialFilter || isLoading || !campaignsData) return;
+    if (!hasLoadedInitialAll || isLoading || !campaignsData) return;
 
     if (!firstCampaignId) {
       setSelectedCampaignId(null);
@@ -129,7 +126,7 @@ export default function CampaignScreen() {
     campaignsData,
     firstCampaignId,
     isLoading,
-    isPreparingInitialFilter,
+    hasLoadedInitialAll,
     replaceCampaignUrl,
     selectedCampaignId,
   ]);
@@ -137,7 +134,6 @@ export default function CampaignScreen() {
   const handleFilterChange = (filter: CampaignHistoryFilter) => {
     if ((allCounts[filter] ?? 0) === 0) return;
     setActiveFilter(filter);
-    setSelectedCampaignId(null);
     replaceCampaignUrl(filter, null);
   };
 
@@ -148,6 +144,39 @@ export default function CampaignScreen() {
 
   const handleEditCampaign = (campaign: Campaign) => {
     setEditingCampaign(campaign);
+  };
+
+  const handlePublishCampaign = async (campaign: Campaign) => {
+    const nextStatus = new Date(campaign.startAt).getTime() > Date.now() ? "UPCOMING" : "ACTIVE";
+    const confirmed = await showConfirm({
+      title: "Phát hành chiến dịch",
+      description:
+        nextStatus === "UPCOMING"
+          ? "Chiến dịch sẽ được chuyển sang trạng thái sắp diễn ra."
+          : "Chiến dịch sẽ được chuyển sang trạng thái đang diễn ra.",
+      confirmText: "Phát hành",
+      cancelText: "Hủy",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await updateCampaign({
+        campaignId: campaign.id,
+        body: { status: nextStatus },
+      }).unwrap();
+      toast({
+        title: "Phát hành chiến dịch thành công",
+        description: "Trạng thái chiến dịch đã được cập nhật.",
+        variant: "success",
+      });
+    } catch (err: any) {
+      toast({
+        title: "Phát hành chiến dịch thất bại",
+        description: err?.data?.externalMessage || err?.message || "Đã xảy ra lỗi",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDeleteCampaign = async (campaignId: string) => {
@@ -162,8 +191,17 @@ export default function CampaignScreen() {
     if (confirmed) {
       try {
         await deleteCampaign(campaignId).unwrap();
+        toast({
+          title: "Xóa chiến dịch thành công",
+          description: "Chiến dịch đã được xóa khỏi hệ thống.",
+          variant: "success",
+        });
       } catch (err: any) {
-        console.error("Xóa chiến dịch thất bại:", err);
+        toast({
+          title: "Xóa chiến dịch thất bại",
+          description: err?.data?.externalMessage || err?.message || "Đã xảy ra lỗi",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -179,6 +217,7 @@ export default function CampaignScreen() {
       onSelectCampaign={handleSelectCampaign}
       onEditCampaign={handleEditCampaign}
       onDeleteCampaign={handleDeleteCampaign}
+      onPublishCampaign={handlePublishCampaign}
     />
   );
 
@@ -189,7 +228,7 @@ export default function CampaignScreen() {
         onCreateClick={() => setIsCreateModalOpen(true)}
       />
 
-      {(isLoading && activeFilter === "ALL") || isPreparingInitialFilter ? (
+      {!hasLoadedInitialAll ? (
         <>
           <CampaignSummaryBannerSkeleton />
           <CampaignLeaderboardSectionSkeleton />

@@ -15,7 +15,6 @@ export const FILTER_TABS: { key: CampaignHistoryFilter; label: string }[] = [
   { key: "ACTIVE", label: "Đang diễn ra" },
   { key: "UPCOMING", label: "Sắp diễn ra" },
   { key: "DRAFT", label: "Bản nháp" },
-  { key: "CANCELLED", label: "Đã hủy" },
 ];
 
 export function getEmptyCounts(): CampaignCounts {
@@ -33,14 +32,16 @@ export function getEffectiveStatus(campaign: Campaign): CampaignStatus {
   if (campaign.status === "DRAFT") return "DRAFT";
   if (campaign.status === "CANCELLED") return "CANCELLED";
   if (campaign.status === "ENDED") return "ENDED";
+  if (campaign.status === "UPCOMING") return "UPCOMING";
+  return "ACTIVE";
 
-  const now = Date.now();
-  const startMs = new Date(campaign.startAt).getTime();
-  const endMs = new Date(campaign.endAt).getTime();
+  // const now = Date.now();
+  // const startMs = new Date(campaign.startAt).getTime();
+  // const endMs = new Date(campaign.endAt).getTime();
 
-  if (now > endMs) return "ENDED";
-  if (now >= startMs) return "ACTIVE";
-  return "UPCOMING";
+  // if (now > endMs) return "ENDED";
+  // if (now >= startMs) return "ACTIVE";
+  // return "UPCOMING";
 }
 
 export function getCountsFromCampaigns(campaigns: Campaign[]): CampaignCounts {
