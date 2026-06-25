@@ -57,7 +57,7 @@ export default function TierSummaryCard() {
       <div className="relative z-[1]">
         <h2 className="mb-5 text-base font-normal text-foreground">Tier hiện tại & Tỷ lệ hoa hồng</h2>
 
-        <div className="grid items-center gap-6 lg:grid-cols-[300px_1fr_124px] 2xl:grid-cols-[360px_1fr_124px]">
+        <div className="grid items-center gap-6 lg:grid-cols-[max-content_1fr_124px] 2xl:grid-cols-[max-content_1fr_124px]">
           <div className="flex items-center gap-5 border-border-strong lg:border-r lg:pr-7">
             <div className="relative grid h-[92px] w-[92px] shrink-0 place-items-center">
               <div className="absolute h-14 w-14 rounded-full bg-amber-500/30 blur-2xl" />
@@ -69,10 +69,10 @@ export default function TierSummaryCard() {
             </div>
 
             <div className="min-w-0">
-              <div className="truncate bg-[linear-gradient(90deg,#FCF19D_0%,#DAA440_100%)] bg-clip-text text-[36px] font-bold uppercase leading-none tracking-normal text-transparent">
+              <div className="truncate bg-[linear-gradient(90deg,#FCF19D_0%,#DAA440_100%)] bg-clip-text text-[24px] sm:text-[30px] lg:text-[24px] xl:text-[30px] 2xl:text-[36px] font-bold uppercase leading-none tracking-normal text-transparent">
                 {currentTierName}
               </div>
-              <p className="mt-4 text-xl font-medium text-zinc-300">Tier hiện tại</p>
+              <p className="mt-2 sm:mt-4 lg:mt-2 xl:mt-4 text-xl font-medium text-zinc-300">Tier hiện tại</p>
             </div>
           </div>
 
