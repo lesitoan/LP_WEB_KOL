@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Campaign } from "@/types/api/campaignV2";
 import {
   getEffectiveStatus,
@@ -19,24 +19,28 @@ const TROPHY_SRC = "/images/campaign/trophy_baner.svg";
 function getTitleFontClass(name: string) {
   const len = name?.length ?? 0;
   if (len <= 15) {
-    return "text-[28px] sm:text-[36px] lg:text-[32px] xl:text-[40px]";
+    return "text-[28px] sm:text-[36px] xl:text-[40px]";
   }
   if (len <= 30) {
-    return "text-[22px] sm:text-[28px] lg:text-[24px] xl:text-[32px]";
+    return "text-[22px] sm:text-[28px] xl:text-[32px] 2xl:text-[36px]";
   }
-  return "text-[18px] sm:text-[22px] lg:text-[18px] xl:text-[24px]";
+  if (len <= 40) {
+    return "text-[18px] sm:text-[22px] xl:text-[24px] 2xl:text-[28px]";
+  }
+
+  return "text-[16px] sm:text-[20px] xl:text-[20px] 2xl:text-[22px]";
 }
 
 function getTitleContainerClass(name: string) {
   const len = name?.length ?? 0;
-  const base = "shrink-0 lg:shrink lg:min-w-0 flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-0 lg:flex-1";
+  const base = "shrink-0 xl:shrink xl:min-w-0 flex flex-col items-center xl:items-start text-center xl:text-left w-full xl:w-0 xl:flex-1";
   if (len > 30) {
-    return `${base} lg:ml-[130px] xl:ml-[160px]`;
+    return `${base} xl:ml-[160px] 2xl:ml-[190px] 2xl:max-w-[380px]`;
   }
   if (len > 15) {
-    return `${base} lg:ml-[150px] xl:ml-[190px]`;
+    return `${base} xl:ml-[190px] 2xl:max-w-[420px]`;
   }
-  return `${base} lg:ml-[180px] xl:ml-[220px]`;
+  return `${base} xl:ml-[220px]`;
 }
 
 export default function CampaignSummaryBanner({ campaign }: Props) {
@@ -61,25 +65,71 @@ export default function CampaignSummaryBanner({ campaign }: Props) {
     return () => clearInterval(timer);
   }, [countdownTarget, isFinished]);
 
+  // Hard cap the title at 2 lines. The breakpoint-based classes above set a
+  // good *starting* size, but no fixed set of breakpoints can predict every
+  // combination of name length + actual available width. So after render we
+  // measure the real height and, only if it's taller than 2 lines, shrink
+  // the font in 1px steps until it fits (or we hit a floor) — never hiding
+  // text, just sizing it down further than the static classes alone would.
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  useLayoutEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+
+    const MAX_LINES = 2;
+    const MIN_FONT_SIZE = 14;
+    let cancelled = false;
+
+    const fitTitle = () => {
+      if (cancelled) return;
+      el.style.fontSize = ""; // reset to the CSS-driven size for this breakpoint first
+      let computed = window.getComputedStyle(el);
+      let lineHeight = parseFloat(computed.lineHeight);
+      let fontSize = parseFloat(computed.fontSize);
+      if (!lineHeight || !fontSize) return;
+
+      while (
+        el.scrollHeight > lineHeight * MAX_LINES + 1 &&
+        fontSize > MIN_FONT_SIZE
+      ) {
+        fontSize -= 1;
+        el.style.fontSize = `${fontSize}px`;
+        computed = window.getComputedStyle(el);
+        lineHeight = parseFloat(computed.lineHeight);
+      }
+    };
+
+    fitTitle();
+
+    const observer = new ResizeObserver(() => fitTitle());
+    observer.observe(el);
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+    };
+  }, [campaign.name]);
+
   return (
     <div className="relative overflow-hidden rounded-2xl mb-6 bg-[#13110C] border border-[#2A2416] flex flex-col justify-center min-h-[140px] md:min-h-[160px]">
       <img
         src={BG_SRC}
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover object-center lg:object-left opacity-60 lg:opacity-100 pointer-events-none select-none"
+        className="absolute inset-0 w-full h-full object-cover object-center xl:object-left opacity-60 xl:opacity-100 pointer-events-none select-none"
       />
 
       <img
         src={TROPHY_SRC}
         alt=""
         aria-hidden="true"
-        className="hidden lg:block absolute left-0 bottom-0 h-[90%] lg:h-[95%] w-auto object-contain object-left-bottom pointer-events-none select-none z-0"
+        className="hidden xl:block absolute left-0 bottom-0 h-[90%] xl:h-[95%] w-auto object-contain object-left-bottom pointer-events-none select-none z-0"
       />
 
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between w-full p-4 md:px-6 md:py-6 gap-4">
+      <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between w-full p-4 md:px-6 md:py-6 gap-4">
         <div className={getTitleContainerClass(campaign.name)}>
-          <h2 className={`mb-1 max-w-full bg-[linear-gradient(90deg,#FCF19D_0%,#DAA440_100%)] bg-clip-text font-bold uppercase leading-tight text-transparent drop-shadow-md break-words ${getTitleFontClass(campaign.name)}`}>
+          <h2 ref={titleRef} className={`mb-1 max-w-full bg-[linear-gradient(90deg,#FCF19D_0%,#DAA440_100%)] bg-clip-text font-bold uppercase leading-tight text-transparent drop-shadow-md break-words ${getTitleFontClass(campaign.name)}`}>
             {campaign.name}
           </h2>
         </div>

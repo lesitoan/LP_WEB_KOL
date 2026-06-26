@@ -55,6 +55,7 @@ export default function CampaignHistoryScroller({
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const filterScrollRef = useRef<HTMLDivElement>(null);
+  const scrollTargetRef = useRef<number | null>(null);
   const [campaignArrows, setCampaignArrows] = useState<ArrowState>({ left: false, right: false });
   const [filterArrows, setFilterArrows] = useState<ArrowState>({ left: false, right: false });
 
@@ -65,16 +66,21 @@ export default function CampaignHistoryScroller({
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ left: 0 });
+    scrollTargetRef.current = 0;
     const timer = setTimeout(updateArrows, 120);
     return () => clearTimeout(timer);
   }, [campaigns, updateArrows]);
 
   useEffect(() => {
-    const timer = setTimeout(updateArrows, 120);
-    window.addEventListener("resize", updateArrows);
+    const handleResize = () => {
+      scrollTargetRef.current = null;
+      updateArrows();
+    };
+    const timer = setTimeout(handleResize, 120);
+    window.addEventListener("resize", handleResize);
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("resize", updateArrows);
+      window.removeEventListener("resize", handleResize);
     };
   }, [counts, campaigns, updateArrows]);
 
@@ -84,7 +90,24 @@ export default function CampaignHistoryScroller({
 
     const firstItem = container.firstElementChild as HTMLElement | null;
     const step = firstItem?.clientWidth || container.clientWidth;
-    scrollElement(container, direction, step);
+
+    if (scrollTargetRef.current === null) {
+      scrollTargetRef.current = container.scrollLeft;
+    }
+
+    if (direction === "right") {
+      scrollTargetRef.current += step;
+    } else {
+      scrollTargetRef.current -= step;
+    }
+
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    scrollTargetRef.current = Math.max(0, Math.min(maxScroll, scrollTargetRef.current));
+
+    container.scrollTo({
+      left: scrollTargetRef.current,
+      behavior: "smooth",
+    });
   };
 
   return (

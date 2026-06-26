@@ -6,7 +6,7 @@ import { useGetKolCurrentTierQuery, useGetKolTiersQuery } from "@/services/api/t
 function getTierIconSrc(code?: string | null, name?: string | null) {
   const iconKey = (code || name || "").trim().toUpperCase();
 
-  return iconKey ? `/images/tier_icons/${iconKey}.png` : "/images/tier_icons/tier_logo.png";
+  return iconKey ? `/images/tier_icons/${iconKey}_icon_active.svg` : "/images/tier_icons/tier_logo.png";
 }
 
 
@@ -61,11 +61,13 @@ export default function TierSummaryCard() {
           <div className="flex items-center gap-5 border-border-strong lg:border-r lg:pr-7">
             <div className="relative grid h-[92px] w-[92px] shrink-0 place-items-center">
               <div className="absolute h-14 w-14 rounded-full bg-amber-500/30 blur-2xl" />
-              <img
-                src={getTierIconSrc(currentTierCode, currentTierName)}
-                alt={currentTierName === "—" ? "Tier" : currentTierName}
-                className="relative h-[78px] w-[78px] object-contain drop-shadow-[0_10px_26px_rgba(245,158,11,0.35)]"
-              />
+              <div className="relative h-[78px] w-[78px] filter drop-shadow-[0_10px_26px_rgba(245,158,11,0.35)]">
+                <img
+                  src={getTierIconSrc(currentTierCode, currentTierName)}
+                  alt={currentTierName === "—" ? "Tier" : currentTierName}
+                  className="h-full w-full object-contain"
+                />
+              </div>
             </div>
 
             <div className="min-w-0">

@@ -32,8 +32,9 @@ function getTierOptions(tier: KolTier): KolTierFeature[] {
   }))
 }
 
-function getTierIconSrc(code: string) {
-  return `/images/tier_icons/${code.toUpperCase()}.png`
+function getTierIconSrc(code: string, isCurrent: boolean) {
+  const suffix = isCurrent ? '_icon_active.svg' : '_icon.svg'
+  return `/images/tier_icons/${code.toUpperCase()}${suffix}`
 }
 
 function formatFeatureNote(value?: string | null) {
@@ -100,7 +101,7 @@ export default function TierColumn({ tier, isCurrent }: TierColumnProps) {
       <div className="border-b border-white/20 pb-4">
         <div className="flex items-center gap-3">
           <img
-            src={getTierIconSrc(tier.code)}
+            src={getTierIconSrc(tier.code, isCurrent)}
             alt={tier.name}
             className={cn('h-11 w-11 shrink-0 object-contain', isCurrent ? '' : 'opacity-85')}
           />

@@ -7,7 +7,10 @@ type PartnerTierCardProps = {
   tier: PartnerTier
 }
 
-const getTierIconSrc = (tierName: string) => `/images/tier_icons/${tierName.toUpperCase()}.png`
+const getTierIconSrc = (tierName: string, isActive: boolean) => {
+  const suffix = isActive ? '_icon_active.svg' : '_icon.svg'
+  return `/images/tier_icons/${tierName.trim().toUpperCase()}${suffix}`
+}
 
 function normalizeFeature(feature: PartnerTierFeature) {
   if (typeof feature !== 'string') {
@@ -58,7 +61,7 @@ export default function PartnerTierCard({ tier }: PartnerTierCardProps) {
             )}
           >
             <Image
-              src={getTierIconSrc(tier.name)}
+              src={getTierIconSrc(tier.name, isActive)}
               alt={`${tier.name} icon`}
               width={40}
               height={40}

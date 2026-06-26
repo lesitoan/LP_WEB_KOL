@@ -32,8 +32,8 @@ function getInitials(name?: string | null) {
 }
 
 function getTierIconSrc(code?: string | null, name?: string | null) {
-  const iconKey = (code || name || '').toUpperCase()
-  return iconKey ? `/images/tier_icons/${iconKey}.png` : '/images/tier_icons/tier_logo.png'
+  const iconKey = (code || name || '').trim().toUpperCase()
+  return iconKey ? `/images/tier_icons/${iconKey}_icon_active.svg` : '/images/tier_icons/tier_logo.png'
 }
 
 export default function Topbar({ onMenuClick }: TopbarProps) {
