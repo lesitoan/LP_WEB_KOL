@@ -264,7 +264,15 @@ function HistoryCard({ campaign, onViewCampaign, isActive }: { campaign: Campaig
               onClick={async () => {
                 const accepted = await showConfirm({
                   title: "Xác nhận xóa chiến dịch",
-                  description: `Bạn có chắc chắn muốn xóa chiến dịch "${campaign.name}"? Hành động này không thể hoàn tác.`,
+                  description: (
+                    <span>
+                      Bạn có chắc chắn muốn xóa chiến dịch{' '}
+                      <span className="font-bold text-foreground break-all">
+                        "{campaign.name}"
+                      </span>
+                      ? Hành động này không thể hoàn tác.
+                    </span>
+                  ),
                   confirmText: "Đồng ý",
                   cancelText: "Hủy bỏ",
                   destructive: true,

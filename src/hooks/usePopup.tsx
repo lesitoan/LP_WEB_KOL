@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, ReactNode } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +16,7 @@ type PopupMode = 'alert' | 'confirm'
 
 type PopupPayload = {
   title: string
-  description?: string
+  description?: ReactNode
   confirmText?: string
   cancelText?: string
   destructive?: boolean

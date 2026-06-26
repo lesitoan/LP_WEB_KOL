@@ -103,7 +103,15 @@ export function GroupBenefitsScreen({ groupId }: GroupBenefitsScreenProps) {
   const handleDeleteBenefit = async (benefit: GroupBenefit) => {
     const accepted = await showConfirm({
       title: 'Xác nhận xóa benefit',
-      description: `Bạn có chắc chắn muốn xóa benefit "${benefit.benefitName}"? Hành động này không thể hoàn tác.`,
+      description: (
+        <span>
+          Bạn có chắc chắn muốn xóa benefit{' '}
+          <span className="font-bold text-foreground break-all">
+            "{benefit.benefitName}"
+          </span>
+          ? Hành động này không thể hoàn tác.
+        </span>
+      ),
       confirmText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       destructive: true,

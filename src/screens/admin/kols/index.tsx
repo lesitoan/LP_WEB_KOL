@@ -134,7 +134,15 @@ export default function AdminKolsScreen() {
   const handleDeleteKol = async (kolId: string, label: string) => {
     const accepted = await showConfirm({
       title: 'Xác nhận xóa Partner',
-      description: `Bạn có chắc chắn muốn xóa Partner "${label}" không? Hành động này không thể hoàn tác.`,
+      description: (
+        <span>
+          Bạn có chắc chắn muốn xóa Partner{' '}
+          <span className="font-bold text-foreground break-all">
+            "{label}"
+          </span>{' '}
+          không? Hành động này không thể hoàn tác.
+        </span>
+      ),
       confirmText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       destructive: true,

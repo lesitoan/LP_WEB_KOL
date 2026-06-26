@@ -18,7 +18,7 @@ interface GroupSettingsCardProps {
   onDeleteGroup: (groupId: string, title: string) => Promise<void>
 }
 
-function truncateDescription(value: string | null, maxLength = 32) {
+function truncateDescription(value: string | null, maxLength = 20) {
   const description = (value || '').trim()
   if (!description) return 'Mô tả về group'
   return description.length > maxLength ? `${description.slice(0, maxLength)}...` : description
@@ -95,11 +95,24 @@ export function GroupSettingsCard({
         <div className="min-w-0 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
-                <h3 className="truncate text-base font-normal text-foreground">{group.title || 'Tên group'}</h3>
+                <h3 className="truncate text-base font-normal text-foreground">
+                  {group.title && group.title.trim().length > 15
+                    ? `${group.title.trim().slice(0, 15)}...`
+                    : group.title || 'Tên group'}
+                </h3>
               </TooltipTrigger>
               <TooltipContent>{group.title || 'Tên group'}</TooltipContent>
             </Tooltip>
-            <p className="truncate text-sm font-normal text-muted-foreground">{truncateDescription(group.description)}</p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="truncate text-sm font-normal text-muted-foreground cursor-help">
+                  {truncateDescription(group.description)}
+                </p>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[300px] break-words">
+                {group.description || 'Mô tả về group'}
+              </TooltipContent>
+            </Tooltip>
         </div>
 
         <div className="relative shrink-0">

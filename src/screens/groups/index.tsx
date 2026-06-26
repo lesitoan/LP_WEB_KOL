@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -85,7 +85,15 @@ export function GroupsScreen() {
   const handleDeleteGroup = async (groupId: string, title: string) => {
     const accepted = await showConfirm({
       title: 'Xác nhận xóa nhóm',
-      description: `Bạn có chắc chắn muốn xóa nhóm "${title}". Hành động này không thể hoàn tác.`,
+      description: (
+        <span>
+          Bạn có chắc chắn muốn xóa nhóm{' '}
+          <span className="font-bold text-foreground break-all">
+            "{title}"
+          </span>
+          . Hành động này không thể hoàn tác.
+        </span>
+      ),
       confirmText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       destructive: true,
