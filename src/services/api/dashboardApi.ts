@@ -16,6 +16,8 @@ import type {
   MemberMonthlyJoinsData,
   MemberOverviewStats,
   ReferralItem,
+  KolDashboardVolumeChartData,
+  KolDashboardVolumeChartQuery,
 } from '@/types/api'
 import { api, extractApiErrorMessage } from './baseApi'
 import { apiV1Path } from './apiPath'
@@ -170,6 +172,35 @@ export const dashboardApi = api.injectEndpoints({
       providesTags: ['Dashboard'],
     }),
 
+    getKolDashboardVolumeChart: builder.query<KolDashboardVolumeChartData, KolDashboardVolumeChartQuery>({
+      query: (params) => {
+        const searchParams = new URLSearchParams()
+        if (params.startDate) {
+          searchParams.set('startDate', params.startDate)
+        }
+        if (params.endDate) {
+          searchParams.set('endDate', params.endDate)
+        }
+        if (params.segment && params.segment !== 'all') {
+          searchParams.set('segment', params.segment)
+        }
+        
+        const queryString = searchParams.toString()
+
+        return {
+          url: `${apiV1Path('/kol/dashboard/charts/volume-groups')}${queryString ? `?${queryString}` : ''}`,
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: ApiResponse<KolDashboardVolumeChartData>) => {
+        if (!payload || payload.status !== 'success' || !payload.data) {
+          throw new Error(extractApiErrorMessage(payload, 'Không thể tải biểu đồ volume'))
+        }
+        return payload.data
+      },
+      providesTags: ['Dashboard'],
+    }),
+
     // 1. Member statistics overview
     // getMemberOverviewStats: builder.query<MemberOverviewStats, void>({
     //   query: () => ({
@@ -261,4 +292,5 @@ export const {
   // useGetCashbackGrowthSummaryQuery,
   // useGetCommissionGrowthSummaryQuery,
   // useGetReferralChartQuery,
+  useGetKolDashboardVolumeChartQuery,
 } = dashboardApi

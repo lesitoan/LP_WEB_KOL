@@ -24,6 +24,7 @@ export const revenueData = [
 ]
 
 export interface AnalyticsGrowthChartDatum {
+  id: string
   name: string
   spot: number
   future: number
@@ -42,11 +43,14 @@ const toVolumeMillions = (value: number | null | undefined) => {
 export function mapLatestVolumeGroupsToGrowthChartData(
   items: KolDashboardLatestVolumeGroupItem[] = []
 ): AnalyticsGrowthChartDatum[] {
-  return items.map((item) => ({
-    name: item.group.title,
-    spot: toVolumeMillions(item.totalVolumeSpot),
-    future: toVolumeMillions(item.totalVolumeFuture),
-  }))
+  return items
+    .map((item) => ({
+      id: item.group.id,
+      name: item.group.title?.trim() || "",
+      spot: toVolumeMillions(item.totalVolumeSpot),
+      future: toVolumeMillions(item.totalVolumeFuture),
+    }))
+    .filter((item) => item.name !== "")
 }
 
 export const groupRows = [

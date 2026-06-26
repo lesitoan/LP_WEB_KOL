@@ -298,3 +298,34 @@ export interface PartnerGroupSettings {
 export interface PartnerSettings {
   groups: PartnerGroupSettings[]
 }
+
+// Volume By Group Chart
+export interface KolDashboardVolumeChartQuery {
+  startDate?: string
+  endDate?: string
+  segment?: string
+}
+
+export interface KolDashboardVolumeGroupInfo {
+  id: string
+  telegramGroupId: string | null
+  title: string
+  iconKey: string | null
+  tierLabel: string | null
+  minVolumeRequired: string | number | null
+  maxVolumeRequired: string | number | null
+}
+
+export interface KolDashboardVolumeSeries {
+  group: KolDashboardVolumeGroupInfo
+  values: (number | null)[]
+}
+
+export interface KolDashboardVolumeChartData {
+  range: {
+    startDate: string
+    endDate: string
+  }
+  points: string[]
+  series: KolDashboardVolumeSeries[]
+}
