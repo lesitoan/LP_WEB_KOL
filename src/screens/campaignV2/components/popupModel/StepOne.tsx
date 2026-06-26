@@ -12,6 +12,10 @@ interface StepOneProps {
   mode?: "create" | "edit";
 }
 
+function isActiveGroupStatus(status?: string | null) {
+  return status === "ACTIVE" || status === "active";
+}
+
 export default function StepOne({ mode = "create" }: StepOneProps) {
   const {
     register,
@@ -42,10 +46,12 @@ export default function StepOne({ mode = "create" }: StepOneProps) {
     }
   }, [clearErrors, telegramGroupId]);
 
-  const loadedGroupOptions = (groupsData?.items ?? []).map((group) => ({
-    label: group.title,
-    value: group.id,
-  }));
+  const loadedGroupOptions = (groupsData?.items ?? [])
+    .filter((group) => isActiveGroupStatus(group.status))
+    .map((group) => ({
+      label: group.title,
+      value: group.id,
+    }));
   const hasSelectedGroupOption = loadedGroupOptions.some(
     (option) => option.value === telegramGroupId,
   );
@@ -56,6 +62,7 @@ export default function StepOne({ mode = "create" }: StepOneProps) {
       ? [{ label: isGroupsLoading ? "Đang tải..." : telegramGroupId, value: telegramGroupId }]
       : []),
   ];
+  const selectedGroupLabel = groupOptions.find((opt) => opt.value === telegramGroupId)?.label || "Chọn phạm vi";
 
   return (
     <div className="space-y-4">
@@ -137,15 +144,23 @@ export default function StepOne({ mode = "create" }: StepOneProps) {
             name="telegramGroupId"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange} disabled={isGroupsLoading}>
-                <SelectTrigger className="w-full bg-[#111111] border border-white/10 rounded-[8px] text-[13px] md:text-[14px] font-normal text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
-                  {groupOptions.find((opt) => opt.value === field.value)?.label || "Chọn phạm vi"}
-                </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#171717] text-white z-[110] max-h-[200px]">
-                  {groupOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
+                  <SelectTrigger className="w-full min-w-0 bg-[#111111] border border-white/10 rounded-[8px] text-[13px] md:text-[14px] font-normal text-white focus:border-[#F7F0A1]/70 h-10 px-3 py-2.5">
+                    <span className="block min-w-0 flex-1 truncate text-left" title={selectedGroupLabel}>
+                      {selectedGroupLabel}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] border-white/10 bg-[#171717] text-white z-[110] max-h-[200px]">
+                    {groupOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value} title={opt.label}>
+                        <span
+                          className="block overflow-hidden text-ellipsis whitespace-nowrap pr-4"
+                          style={{ maxWidth: "calc(var(--radix-select-trigger-width) - 44px)" }}
+                          title={opt.label}
+                        >
+                          {opt.label}
+                        </span>
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             )}

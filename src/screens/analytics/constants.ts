@@ -24,6 +24,7 @@ export const revenueData = [
 ]
 
 export interface AnalyticsGrowthChartDatum {
+  id: string
   name: string
   spot: number
   future: number
@@ -43,6 +44,7 @@ export function mapLatestVolumeGroupsToGrowthChartData(
   items: KolDashboardLatestVolumeGroupItem[] = []
 ): AnalyticsGrowthChartDatum[] {
   return items.map((item) => ({
+    id: item.group.id,
     name: item.group.title,
     spot: toVolumeMillions(item.totalVolumeSpot),
     future: toVolumeMillions(item.totalVolumeFuture),

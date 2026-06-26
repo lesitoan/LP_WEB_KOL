@@ -5,14 +5,16 @@ import { useSearchParams } from "next/navigation"
 import MultiLineGroupChart from "@/components/charts/MultiLineGroupChart"
 import {
   defaultLast30DaysDateRange,
-  formatCompactNumber,
   formatDateTimeTick,
   formatFullVnd,
+  formatRevenueAxis,
+  sumChartSeriesValues,
   transformVolumeChartApiData,
 } from "@/components/charts/multiLineGroupChartUtils"
+import { formatVnd } from "@/lib/formatMoney"
 import { useGetKolDashboardVolumeChartQuery } from "@/services/api/dashboardApi"
 
-export default function VolumeByGroupChart() {
+export default function RevenueStatisticsChart() {
   const searchParams = useSearchParams()
   const segment = searchParams.get("segment") || "all"
   const selectedGroupId = searchParams.get("groupId")
@@ -27,17 +29,18 @@ export default function VolumeByGroupChart() {
 
   return (
     <MultiLineGroupChart
-      title="Volume 30 ngày (theo nhóm)"
+      title="Thống kê doanh thu 30D"
+      summaryLabel={({ activeSeriesKeys, data }) => `${formatVnd(sumChartSeriesValues(data, activeSeriesKeys))} VNĐ`}
+      initialActiveSeriesKey={selectedGroupId}
       data={chartData.data}
       series={chartData.series}
       xKey="timestamp"
-      initialActiveSeriesKey={selectedGroupId}
       isLoading={isLoading}
       isFetching={isFetching}
       error={error}
-      variant="dashboard"
+      variant="analytics"
       formatXAxis={formatDateTimeTick}
-      formatYAxis={formatCompactNumber}
+      formatYAxis={formatRevenueAxis}
       formatTooltipValue={formatFullVnd}
     />
   )

@@ -1,9 +1,9 @@
 import AnalyticsGrowthChartSkeleton from "@/components/skeletons/analytics/AnalyticsGrowthChartSkeleton"
 import { useGetKolDashboardLatestVolumeGroupsQuery } from "@/services/api/dashboardApi"
+import { useSearchParams } from "next/navigation"
 import { useMemo } from "react"
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { mapLatestVolumeGroupsToGrowthChartData } from "../constants"
-import { useFakeAnalyticsLoading } from "./useFakeAnalyticsLoading"
 
 const growthLegendItems = [
   { label: "Spot", color: "#D4A74A" },
@@ -123,12 +123,15 @@ function renderXAxisTick({
 }
 
 export default function AnalyticsGrowthChart() {
-  const fakeLoading = useFakeAnalyticsLoading()
+  const searchParams = useSearchParams()
+  const selectedGroupId = searchParams.get("groupId")
   const { data, isFetching, isError } = useGetKolDashboardLatestVolumeGroupsQuery()
   
   const chartData = useMemo(() => {
     const rawData = mapLatestVolumeGroupsToGrowthChartData(data)
-    return rawData.map((item) => {
+    const filteredData = selectedGroupId ? rawData.filter((item) => item.id === selectedGroupId) : rawData
+
+    return filteredData.map((item) => {
       const spot = item.spot
       const future = item.future
       const smaller = Math.min(spot, future)
@@ -139,13 +142,13 @@ export default function AnalyticsGrowthChart() {
         diff: larger - smaller,
       }
     })
-  }, [data])
+  }, [data, selectedGroupId])
 
   const barSize = getGrowthBarSize(chartData.length)
   const xAxisTickInterval = getXAxisTickInterval(chartData.length)
   const hasData = chartData.length > 0
 
-  if (fakeLoading || isFetching) {
+  if (isFetching) {
     return <AnalyticsGrowthChartSkeleton />
   }
 

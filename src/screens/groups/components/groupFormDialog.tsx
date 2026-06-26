@@ -203,7 +203,7 @@ export function GroupFormDialog({
                   <FieldLabel className="text-xs font-semibold text-zinc-300">Tên group</FieldLabel>
                   <Input
                     className="h-10 border-border-strong bg-surface-1 text-sm font-normal text-foreground placeholder:font-normal placeholder:text-[#6E6E6E]"
-                    placeholder="Nhập tên chiến dịch"
+                    placeholder="Nhập tên nhóm"
                     {...register('title', {
                     required: 'Tên group không được để trống.',
                     validate: (value) => value.trim().length > 0 || 'Tên group không được để trống.',
