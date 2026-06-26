@@ -33,7 +33,7 @@ export const DAYS_OF_WEEK = [
 export const createCampaignSchema = z
   .object({
     name: z.string().trim().min(1, "Vui lòng nhập tên chiến dịch").max(40, "Tên chiến dịch không được dài quá 40 ký tự"),
-    description: z.string().optional(),
+    description: z.string().trim().min(1, "Vui lòng nhập mô tả chiến dịch"),
     startAt: z.string().min(1, "Vui lòng chọn thời gian bắt đầu"),
     endAt: z.string().min(1, "Vui lòng chọn thời gian kết thúc"),
     rankingType: z.enum(["TOP_VOLUME", "TOP_TRADE_COUNT", "TOP_GROWTH"]),

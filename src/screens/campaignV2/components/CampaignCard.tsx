@@ -1,6 +1,7 @@
 "use client";
 
 import type { Campaign } from "@/types/api/campaignV2";
+import { Rocket } from "lucide-react";
 
 function EyeIcon({ className }: { className?: string }) {
   return (
@@ -118,7 +119,11 @@ export default function CampaignCard({
                 isDraft ? "bg-[#F7F0A1] hover:brightness-105" : "bg-white hover:bg-gray-200"
               }`}
             >
-              {!isDraft && <EyeIcon className="w-[15px] h-[12px] shrink-0" />}
+              {isDraft ? (
+                <Rocket className="w-4 h-4 shrink-0" />
+              ) : (
+                <EyeIcon className="w-[15px] h-[12px] shrink-0" />
+              )}
               {isDraft ? "Phát hành" : "Xem chiến dịch"}
             </button>
             <div className="flex items-center gap-2">

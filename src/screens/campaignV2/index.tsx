@@ -109,7 +109,12 @@ export default function CampaignScreen() {
 
     if (!firstCampaignId) {
       setSelectedCampaignId(null);
-      replaceCampaignUrl(activeFilter, null);
+      if (activeFilter !== "ALL") {
+        setActiveFilter("ALL");
+        replaceCampaignUrl("ALL", null);
+      } else {
+        replaceCampaignUrl(activeFilter, null);
+      }
       return;
     }
 
