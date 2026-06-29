@@ -134,11 +134,14 @@ export const campaignApiV2 = api.injectEndpoints({
       }),
       transformResponse: (payload: CampaignEnvelope) =>
         ensureData(payload, 'Unable to update campaign'),
-      invalidatesTags: (result, error, arg) => [
-        'Campaigns',
-        { type: 'Campaigns', id: arg.campaignId },
-        { type: 'Campaigns', id: `${arg.campaignId}-leaderboard` },
-      ],
+      invalidatesTags: (result, error, arg) =>
+        error
+          ? []
+          : [
+              'Campaigns',
+              { type: 'Campaigns', id: arg.campaignId },
+              { type: 'Campaigns', id: `${arg.campaignId}-leaderboard` },
+            ],
     }),
 
     deleteCampaignV2: builder.mutation<Campaign, string>({

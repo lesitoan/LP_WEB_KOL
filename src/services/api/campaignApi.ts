@@ -78,7 +78,7 @@ export const campaignApi = api.injectEndpoints({
       }),
       transformResponse: (payload: CampaignEnvelope) =>
         ensureData(payload, 'Không thể cập nhật chiến dịch'),
-      invalidatesTags: ['Campaigns'],
+      invalidatesTags: (_result, error) => (error ? [] : ['Campaigns']),
     }),
 
     // DELETE /kol/campaigns/:id
