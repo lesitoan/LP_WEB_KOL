@@ -1,0 +1,41 @@
+import React from 'react'
+import { forwardRatesByContent } from '../constants'
+
+const colorMap = {
+  green: 'bg-[#12B76A]',
+  gold: 'bg-[#D4A74A]',
+  orange: 'bg-[#E18308]',
+}
+
+export default function ForwardRateByContent() {
+  return (
+    <div className="bg-surface-card border border-border rounded-2xl p-4 md:p-6 flex flex-col justify-between h-full space-y-6">
+      <div className="space-y-1">
+        <h4 className="text-sm md:text-base font-semibold text-white">Tỷ lệ forward / lượt nhận</h4>
+        <p className="text-xs md:text-sm text-[#A8A8A9]">Hiệu quả tương đối — quan trọng hơn số tuyệt đối</p>
+      </div>
+
+      <div className="flex-1 flex flex-col gap-3 w-full pt-2">
+        {forwardRatesByContent.map((item, index) => (
+          <React.Fragment key={item.title}>
+            {index > 0 && <div className="w-full h-px bg-surface-control" />}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm md:text-base font-semibold text-white">{item.title}</span>
+                <span className="text-sm md:text-base font-normal text-white">{item.rateText}</span>
+              </div>
+              
+              {/* Progress Bar Container */}
+              <div className="w-full h-2 bg-[#282828] rounded-full overflow-hidden relative">
+                <div
+                  className={`h-full ${colorMap[item.color]} rounded-full transition-all duration-500`}
+                  style={{ width: `${item.rate}%` }}
+                />
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  )
+}

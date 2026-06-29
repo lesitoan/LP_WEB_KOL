@@ -137,6 +137,9 @@ const config: Config = {
         card: "14px",
         control: "8px",
       },
+      boxShadow: {
+        "brand-glow": "0 0 16px hsl(var(--brand-glow))",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

@@ -1,0 +1,60 @@
+import React from 'react'
+import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
+import { tierDistribution } from '../constants'
+
+export default function KolTierDistribution() {
+  const totalKols = tierDistribution.reduce((sum, item) => sum + item.value, 0)
+
+  return (
+    <div className="bg-surface-card border border-border rounded-2xl p-4 md:p-6 flex flex-col justify-between h-full space-y-6">
+      <div className="space-y-1">
+        <h4 className="text-sm md:text-base font-semibold text-white">Cơ cấu KOL theo tier</h4>
+        <p className="text-xs md:text-sm text-muted-foreground">Phân bổ {totalKols} KOL</p>
+      </div>
+
+      {/* Donut Chart Container */}
+      <div className="relative h-[200px] w-full flex items-center justify-center">
+        <div className="absolute inset-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={tierDistribution}
+                cx="50%"
+                cy="50%"
+                innerRadius={65}
+                outerRadius={85}
+                paddingAngle={3}
+                dataKey="value"
+              >
+                {tierDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} stroke="transparent" />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Centered Content */}
+        <div className="text-center z-10">
+          <span className="text-[32px] font-bold text-white block leading-[48px]">{totalKols}</span>
+          <span className="text-sm font-normal text-white block">KOL</span>
+        </div>
+      </div>
+
+      {/* Horizontal Legend */}
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-2">
+        {tierDistribution.map((item) => (
+          <div key={item.name} className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full shrink-0"
+              style={{ backgroundColor: item.color }}
+            />
+            <span className="text-xs md:text-sm font-normal text-white">
+              {item.name}: <span className="font-semibold">{item.value}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,142 @@
+export interface PublishedPost {
+  id: string
+  title: string
+  category: string
+  categoryColor: 'error' | 'blue-light' | 'warning' | 'success'
+  categoryLabel: string
+  adminName: string
+  adminAvatarColor: string
+  publishTime: string
+  tier: string
+  status: string
+  actionType: 'sent' | 'request'
+  actionStatusText?: string
+  mainContent?: string
+  sources?: string
+}
+
+export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
+  {
+    id: '1',
+    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
+    category: 'Breaking News Alert',
+    categoryColor: 'error',
+    categoryLabel: 'Breaking News Alert',
+    adminName: 'Admin 01',
+    adminAvatarColor: '#9B692C',
+    publishTime: '06:30 - Hôm nay',
+    tier: 'Tất cả tier',
+    status: 'Đang hiển thị',
+    actionType: 'sent',
+    actionStatusText: 'Chờ admin duyệt',
+    mainContent: 'Strategy bán ra 50,000 BTC lần đầu tiên sau 4 năm nắm giữ. Dòng tiền ròng ETF BTC ghi nhận mức rút kỷ lục vượt quá 1.2 tỷ USD chỉ trong 24 giờ. Tổng vốn hóa thị trường tiền mã hóa bốc hơi 140 tỷ USD, đẩy giá BTC xuống dưới mốc hỗ trợ quan trọng 61,000 USD.',
+    sources: 'CryptoQuant, Bloomberg Terminal',
+  },
+  {
+    id: '2',
+    title: 'Morning Brief — 05/06/2026: BTC thủng 70.000$ về 63.300$, F&G chạm 12 (Sợ hãi tột độ), thị trường nín thở chờ NFP',
+    category: 'Morning Market Brief',
+    categoryColor: 'blue-light',
+    categoryLabel: 'Morning Market Brief',
+    adminName: 'Admin 02',
+    adminAvatarColor: '#9B692C',
+    publishTime: '07:30 - Hôm nay',
+    tier: 'ELITE - LEGEND',
+    status: 'Đang hiển thị',
+    actionType: 'sent',
+    actionStatusText: 'Chờ admin duyệt',
+    mainContent: 'Bản tin sáng ngày 05/06/2026 ghi nhận mức giảm mạnh của BTC từ 70k về 63.3k. Chỉ số Fear & Greed Index (F&G) chạm mức cực thấp là 12, báo hiệu tâm lý hoảng loạn tột độ của đám đông. Thị trường hiện đang chuyển sang chế độ phòng thủ và chờ đợi số liệu Non-Farm Payrolls (NFP) công bố tối nay.',
+    sources: 'Glassnode, Alternative.me',
+  },
+  {
+    id: '3',
+    title: 'On-chain Insight — 05/06/2026',
+    category: 'Cảnh báo rủi ro',
+    categoryColor: 'warning',
+    categoryLabel: 'Cảnh báo rủi ro',
+    adminName: 'Admin 03',
+    adminAvatarColor: '#9B692C',
+    publishTime: '08:30 - Hôm nay',
+    tier: 'Tất cả tier',
+    status: 'Đang hiển thị',
+    actionType: 'sent',
+    actionStatusText: 'Chờ admin duyệt',
+    mainContent: 'Dữ liệu on-chain cho thấy các ví cá voi (holding > 1,000 BTC) đang tăng tốc di chuyển tiền lên các sàn giao dịch giao ngay (spot exchanges) như Binance và Coinbase. Áp lực bán tiềm tàng tăng vọt, người dùng cần quản trị rủi ro vị thế margin/futures.',
+    sources: 'CryptoQuant On-chain Engine',
+  },
+  {
+    id: '4',
+    title: 'CẢNH BÁO BIẾN ĐỘNG — 18:08 04/06/2026: BTC thủng $62K (đáy 4 tháng), ~$1,72 tỷ thanh lý 24h',
+    category: 'Tổng kết cuối ngày',
+    categoryColor: 'success',
+    categoryLabel: 'Tổng kết cuối ngày',
+    adminName: 'Admin 04',
+    adminAvatarColor: '#9B692C',
+    publishTime: '19:30 - Hôm nay',
+    tier: 'ELITE - LEGEND',
+    status: 'Đang hiển thị',
+    actionType: 'request',
+    mainContent: 'Cú sụt giảm mạnh chiều nay đã đẩy BTC phá vỡ mốc hỗ trợ cứng 62,000 USD (thiết lập đáy mới trong 4 tháng qua). Sự sụt giảm kéo theo làn sóng thanh lý khổng lồ trị giá 1.72 tỷ USD của các vị thế Long đòn bẩy trên toàn thị trường.',
+    sources: 'Coinglass Futures Tracker',
+  },
+  {
+    id: '5',
+    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
+    category: 'Morning Market Brief',
+    categoryColor: 'blue-light',
+    categoryLabel: 'Morning Market Brief',
+    adminName: 'Admin 05',
+    adminAvatarColor: '#9B692C',
+    publishTime: '7:30 - Hôm nay',
+    tier: 'Tất cả tier',
+    status: 'Đang hiển thị',
+    actionType: 'request',
+    mainContent: 'Cập nhật diễn biến dòng tiền ETF rút ròng gây hoang mang diện rộng. BTC phản ứng tiêu cực khi mất mốc 61,000 USD trong đêm.',
+    sources: 'SEC Filings, Farside Investors',
+  },
+  {
+    id: '6',
+    title: 'On-chain Insight — 05/06/2026',
+    category: 'Cảnh báo rủi ro',
+    categoryColor: 'warning',
+    categoryLabel: 'Cảnh báo rủi ro',
+    adminName: 'Admin 06',
+    adminAvatarColor: '#9B692C',
+    publishTime: '06:30 - Hôm nay',
+    tier: 'ELITE - LEGEND',
+    status: 'Đang hiển thị',
+    actionType: 'request',
+    mainContent: 'Các chỉ số MVRV Z-Score và SOPR đồng loạt rơi vào vùng quá bán ngắn hạn. Biến động cực mạnh sắp xảy ra.',
+    sources: 'Glassnode API',
+  },
+  {
+    id: '7',
+    title: 'CẢNH BÁO BIẾN ĐỘNG — 18:08 04/06/2026: BTC thủng $62K (đáy 4 tháng), ~$1,72 tỷ thanh lý 24h',
+    category: 'Tổng kết cuối ngày',
+    categoryColor: 'success',
+    categoryLabel: 'Tổng kết cuối ngày',
+    adminName: 'Admin 07',
+    adminAvatarColor: '#9B692C',
+    publishTime: '20:30 - Hôm nay',
+    tier: 'Tất cả tier',
+    status: 'Đang hiển thị',
+    actionType: 'request',
+    mainContent: 'Tổng kết các số liệu thanh lý đòn bẩy khổng lồ của các sàn phái sinh hàng đầu trong phiên giao dịch.',
+    sources: 'Coinglass Dashboard',
+  },
+  {
+    id: '8',
+    title: 'On-chain Insight — 05/06/2026',
+    category: 'Cảnh báo rủi ro',
+    categoryColor: 'warning',
+    categoryLabel: 'Cảnh báo rủi ro',
+    adminName: 'Admin 08',
+    adminAvatarColor: '#9B692C',
+    publishTime: '06:30 - Hôm nay',
+    tier: 'ELITE - LEGEND',
+    status: 'Đang hiển thị',
+    actionType: 'request',
+    mainContent: 'Nhận định về xu hướng tích lũy dài hạn của các địa chỉ ví tích lũy (Accumulation Addresses).',
+    sources: 'Glassnode Studio',
+  },
+]
