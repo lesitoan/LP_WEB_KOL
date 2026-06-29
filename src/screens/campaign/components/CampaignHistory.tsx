@@ -140,19 +140,18 @@ function HistoryCard({ campaign, onViewCampaign, isActive }: { campaign: Campaig
     try {
       const now = Date.now();
       const startMs = new Date(campaign.startAt).getTime();
+      const endMs = new Date(campaign.endAt).getTime();
 
-      // Chỉ cho phép phát hành TRƯỚC khi chiến dịch diễn ra
-      if (now >= startMs) {
+      if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || startMs >= endMs || now >= endMs) {
         toast({
           title: "Không thể phát hành",
-          description: "Thời gian bắt đầu của chiến dịch này đã trôi qua nên không thể phát hành.",
+          description: "thời gian diễn ra campaign không hợp lệ",
           variant: "destructive",
         });
         return;
       }
 
-      // Trạng thái sẽ luôn là UPCOMING do đã chặn thời gian quá khứ ở trên
-      const newStatus = "UPCOMING";
+      const newStatus = now >= startMs ? "ACTIVE" : "UPCOMING";
 
       await updateCampaign({ id: campaign.id, body: { status: newStatus } }).unwrap();
 
