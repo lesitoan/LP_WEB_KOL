@@ -50,7 +50,7 @@ export default function CampaignHeader({ hasNoCampaigns, onCreateClick }: Props)
   };
 
   return (
-    <div className="flex flex-col gap-4 mb-6 justify-between sm:flex-row sm:items-end">
+    <div className="flex flex-col gap-4 mb-6 justify-between lg:flex-row lg:items-end">
       <div>
         <h1 className="text-[24px] font-semibold tracking-tight mb-0.5 text-foreground">
           Chiến dịch đang diễn ra
@@ -59,7 +59,7 @@ export default function CampaignHeader({ hasNoCampaigns, onCreateClick }: Props)
           Leaderboard real-time - có lớp chống gian lận (integrity)
         </p>
       </div>
-      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-end">
+      <div className="grid w-full grid-cols-1 items-stretch gap-3 sm:grid-cols-2 lg:flex lg:w-auto lg:items-start lg:justify-end">
         <Select
           value={selectedGroupId}
           onValueChange={handleGroupChange}
@@ -67,7 +67,7 @@ export default function CampaignHeader({ hasNoCampaigns, onCreateClick }: Props)
         >
           <SelectTrigger
             aria-label="Chọn nhóm"
-            className="h-10 w-full min-w-0 max-w-full overflow-hidden rounded-lg border-border bg-surface-2 text-foreground sm:w-[260px]"
+            className="h-10 min-h-10 w-full min-w-0 max-w-full overflow-hidden rounded-lg border-border bg-surface-2 text-foreground lg:w-[260px]"
             title={selectedGroup?.title ?? "Tất cả"}
           >
             <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
@@ -105,7 +105,7 @@ export default function CampaignHeader({ hasNoCampaigns, onCreateClick }: Props)
           <button
             type="button"
             onClick={onCreateClick}
-            className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-[14px] font-semibold text-black transition-all hover:bg-brand-bright active:scale-[0.98] sm:w-auto"
+            className="inline-flex h-10 min-h-10 w-full items-center justify-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-[14px] font-semibold text-black transition-all hover:bg-brand-bright active:scale-[0.98] lg:w-auto"
           >
             <Plus className="size-4" aria-hidden="true" />
             Tạo campaign
