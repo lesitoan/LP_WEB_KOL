@@ -89,6 +89,7 @@ export interface GetCampaignsQuery {
   status?: CampaignStatus
   rankingType?: CampaignRankingType
   search?: string
+  telegramGroupId?: string
 }
 
 export interface GetCampaignLeaderboardQuery {

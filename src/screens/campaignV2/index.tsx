@@ -49,6 +49,7 @@ export default function CampaignScreen() {
 
   const initialFilter = useMemo(() => parseFilter(searchParams.get("status")), []);
   const initialCampaignId = useMemo(() => searchParams.get("campaignId"), []);
+  const selectedTelegramGroupId = searchParams.get("telegramGroupId");
 
   const [activeFilter, setActiveFilter] = useState<CampaignHistoryFilter>(initialFilter);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(initialCampaignId);
@@ -84,11 +85,22 @@ export default function CampaignScreen() {
     if (activeFilter !== "ALL") {
       query.status = activeFilter;
     }
+    if (selectedTelegramGroupId) {
+      query.telegramGroupId = selectedTelegramGroupId;
+    }
     return query;
-  }, [activeFilter]);
+  }, [activeFilter, selectedTelegramGroupId]);
 
   const { data: campaignsData, isLoading, isFetching } = useGetCampaignsQuery(campaignListQuery);
-  const { data: allCampaignsData } = useGetCampaignsQuery({ page: 1, limit: CAMPAIGN_LIST_LIMIT });
+  const {
+    data: allCampaignsData,
+    isFetching: isAllCampaignsFetching,
+  } = useGetCampaignsQuery({
+    page: 1,
+    limit: CAMPAIGN_LIST_LIMIT,
+    ...(selectedTelegramGroupId ? { telegramGroupId: selectedTelegramGroupId } : {}),
+  });
+  const { data: globalCampaignsData } = useGetCampaignsQuery({ page: 1, limit: 1 });
   const { data: selectedCampaign, isLoading: isDetailLoading, isFetching: isDetailFetching } =
     useGetCampaignByIdQuery(selectedCampaignId ?? "", {
       skip: !selectedCampaignId,
@@ -102,10 +114,12 @@ export default function CampaignScreen() {
   }, [allCampaignsData]);
 
   const hasLoadedInitialAll = !!allCampaignsData;
-  const hasNoCampaigns = hasLoadedInitialAll && allCounts.ALL === 0;
+  const hasNoCampaignsInCurrentView = hasLoadedInitialAll && allCounts.ALL === 0;
+  const hasNoCampaigns = !!globalCampaignsData && (globalCampaignsData.pagination.totalItems ?? 0) === 0;
+  const isCampaignViewLoading = !hasLoadedInitialAll || isLoading || isFetching || isAllCampaignsFetching;
 
   useEffect(() => {
-    if (!hasLoadedInitialAll || isLoading || !campaignsData) return;
+    if (isCampaignViewLoading || !campaignsData) return;
 
     if (!firstCampaignId) {
       setSelectedCampaignId(null);
@@ -130,7 +144,7 @@ export default function CampaignScreen() {
     campaigns,
     campaignsData,
     firstCampaignId,
-    isLoading,
+    isCampaignViewLoading,
     hasLoadedInitialAll,
     replaceCampaignUrl,
     selectedCampaignId,
@@ -233,14 +247,14 @@ export default function CampaignScreen() {
         onCreateClick={() => setIsCreateModalOpen(true)}
       />
 
-      {!hasLoadedInitialAll ? (
+      {isCampaignViewLoading ? (
         <>
           <CampaignSummaryBannerSkeleton />
           <CampaignLeaderboardSectionSkeleton />
           <CampaignHistoryScrollerSkeleton />
         </>
-      ) : hasNoCampaigns ? (
-        <EmptyCampaign onCreateClick={() => setIsCreateModalOpen(true)} />
+      ) : hasNoCampaignsInCurrentView ? (
+        <EmptyCampaign />
       ) : selectedCampaignId ? (
         <>
           {isDetailLoading || isDetailFetching || !selectedCampaign ? (
