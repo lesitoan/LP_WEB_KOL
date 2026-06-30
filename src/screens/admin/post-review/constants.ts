@@ -1,48 +1,218 @@
-export type PostCategory = 'khẩn' | 'insight' | 'summary' | 'morning'
+import type {
+  AdminInsight,
+  AdminInsightDetail,
+  AdminInsightDistributionPreview,
+  ContentItemStatus,
+  ContentTypeCode,
+  UpdateAdminInsightBody,
+} from '@/types/api/adminInsight'
 
 export interface CategoryConfig {
-  id: PostCategory
+  id: ContentTypeCode
   label: string
   bgClass: string
   textClass: string
   iconColor: string
 }
 
-export const CATEGORIES: Record<PostCategory, CategoryConfig> = {
-  khẩn: {
-    id: 'khẩn',
+export const CONTENT_STATUS_VALUES: ContentItemStatus[] = [
+  'PENDING_REVIEW',
+  'DRAFT',
+  'SCHEDULED',
+  'PUBLISHING',
+  'PUBLISHED',
+  'FLAGGED',
+  'RECALLED',
+  'SKIPPED',
+  'REJECTED',
+]
+
+export const PUBLISHABLE_INSIGHT_STATUSES = ['DRAFT', 'SCHEDULED', 'PUBLISHING'] as const
+export const RECALLABLE_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHING', 'PUBLISHED'] as const
+
+export function isPublishableInsightStatus(status: ContentItemStatus): boolean {
+  return PUBLISHABLE_INSIGHT_STATUSES.includes(status as (typeof PUBLISHABLE_INSIGHT_STATUSES)[number])
+}
+
+export function isRecallableInsightStatus(status: ContentItemStatus): boolean {
+  return RECALLABLE_INSIGHT_STATUSES.includes(status as (typeof RECALLABLE_INSIGHT_STATUSES)[number])
+}
+
+export type PostReviewTab = 'ALL' | ContentItemStatus
+
+export const POST_REVIEW_TABS: { id: PostReviewTab; label: string }[] = [
+  { id: 'ALL', label: 'Tất cả' },
+  { id: 'PENDING_REVIEW', label: 'Chờ duyệt' },
+  { id: 'DRAFT', label: 'Bản nháp' },
+  { id: 'SCHEDULED', label: 'Đã lên lịch' },
+  { id: 'PUBLISHING', label: 'Đang đăng' },
+  { id: 'PUBLISHED', label: 'Đã đăng' },
+  { id: 'FLAGGED', label: 'Cần xử lý' },
+  { id: 'RECALLED', label: 'Đã thu hồi' },
+  { id: 'SKIPPED', label: 'Đã bỏ qua' },
+  { id: 'REJECTED', label: 'Từ chối' },
+]
+
+export const CATEGORIES: Record<ContentTypeCode, CategoryConfig> = {
+  ALERT: {
+    id: 'ALERT',
     label: 'Tin tức khẩn',
     bgClass: 'bg-[#5C120C]',
     textClass: 'text-[#F5827A]',
     iconColor: '#F5827A',
   },
-  insight: {
-    id: 'insight',
+  PRE_EVENT: {
+    id: 'PRE_EVENT',
+    label: 'Trước sự kiện',
+    bgClass: 'bg-[#5C120C]',
+    textClass: 'text-[#F5827A]',
+    iconColor: '#F5827A',
+  },
+  LEGAL_VN: {
+    id: 'LEGAL_VN',
+    label: 'Pháp lý Việt Nam',
+    bgClass: 'bg-[#5C120C]',
+    textClass: 'text-[#F5827A]',
+    iconColor: '#F5827A',
+  },
+  WHALES_DAILY: {
+    id: 'WHALES_DAILY',
     label: 'On-chain Insight',
     bgClass: 'bg-[#002D67]',
     textClass: 'text-[#549BF8]',
     iconColor: '#54C2FF',
   },
-  summary: {
-    id: 'summary',
+  WHALES_ALERT: {
+    id: 'WHALES_ALERT',
+    label: 'Whales Alert',
+    bgClass: 'bg-[#002D67]',
+    textClass: 'text-[#549BF8]',
+    iconColor: '#54C2FF',
+  },
+  MARKET_STRUCTURE: {
+    id: 'MARKET_STRUCTURE',
+    label: 'Cấu trúc thị trường',
+    bgClass: 'bg-[#002D67]',
+    textClass: 'text-[#549BF8]',
+    iconColor: '#54C2FF',
+  },
+  SECTOR_DAILY: {
+    id: 'SECTOR_DAILY',
+    label: 'Sector & Narrative',
+    bgClass: 'bg-[#002D67]',
+    textClass: 'text-[#549BF8]',
+    iconColor: '#54C2FF',
+  },
+  SENTIMENT: {
+    id: 'SENTIMENT',
+    label: 'Sentiment',
+    bgClass: 'bg-[#002D67]',
+    textClass: 'text-[#549BF8]',
+    iconColor: '#54C2FF',
+  },
+  DEEP_DIVE: {
+    id: 'DEEP_DIVE',
+    label: 'Research Report',
+    bgClass: 'bg-[#002D67]',
+    textClass: 'text-[#549BF8]',
+    iconColor: '#54C2FF',
+  },
+  BAN_TIN_0630: {
+    id: 'BAN_TIN_0630',
+    label: 'Bản tin thị trường sáng',
+    bgClass: 'bg-[#F0F9FF]',
+    textClass: 'text-[#0074B5]',
+    iconColor: '#0074B5',
+  },
+  BAN_TIN_1300: {
+    id: 'BAN_TIN_1300',
+    label: 'Tổng kết giữa ngày',
+    bgClass: 'bg-[#06301C]',
+    textClass: 'text-[#60CF9B]',
+    iconColor: '#60CF9B',
+  },
+  BAN_TIN_1900: {
+    id: 'BAN_TIN_1900',
     label: 'Tổng kết cuối ngày',
     bgClass: 'bg-[#06301C]',
     textClass: 'text-[#60CF9B]',
     iconColor: '#60CF9B',
   },
-  morning: {
-    id: 'morning',
-    label: 'Bản tin thị trường sáng',
+  WEEKLY_CALENDAR: {
+    id: 'WEEKLY_CALENDAR',
+    label: 'Lịch tuần',
     bgClass: 'bg-[#F0F9FF]',
     textClass: 'text-[#0074B5]',
     iconColor: '#0074B5',
   },
 }
 
+export const STATUS_CONFIGS: Record<ContentItemStatus, {
+  label: string
+  bgClass: string
+  textClass: string
+  iconColor: string
+}> = {
+  PENDING_REVIEW: {
+    label: 'Chờ duyệt',
+    bgClass: 'bg-[#4D2C03]',
+    textClass: 'text-[#FAB55A]',
+    iconColor: '#FAB55A',
+  },
+  DRAFT: {
+    label: 'Bản nháp',
+    bgClass: 'bg-[#282828]',
+    textClass: 'text-[#D7D8D9]',
+    iconColor: '#D7D8D9',
+  },
+  SCHEDULED: {
+    label: 'Đã lên lịch',
+    bgClass: 'bg-[#002D67]',
+    textClass: 'text-[#549BF8]',
+    iconColor: '#549BF8',
+  },
+  PUBLISHING: {
+    label: 'Đang đăng',
+    bgClass: 'bg-[#002D67]',
+    textClass: 'text-[#549BF8]',
+    iconColor: '#549BF8',
+  },
+  PUBLISHED: {
+    label: 'Đã đăng',
+    bgClass: 'bg-[#06301C]',
+    textClass: 'text-[#60CF9B]',
+    iconColor: '#60CF9B',
+  },
+  FLAGGED: {
+    label: 'Cần xử lý',
+    bgClass: 'bg-[#4D2C03]',
+    textClass: 'text-[#FAB55A]',
+    iconColor: '#FAB55A',
+  },
+  RECALLED: {
+    label: 'Đã thu hồi',
+    bgClass: 'bg-[#282828]',
+    textClass: 'text-[#D7D8D9]',
+    iconColor: '#D7D8D9',
+  },
+  SKIPPED: {
+    label: 'Đã bỏ qua',
+    bgClass: 'bg-[#282828]',
+    textClass: 'text-[#D7D8D9]',
+    iconColor: '#D7D8D9',
+  },
+  REJECTED: {
+    label: 'Từ chối',
+    bgClass: 'bg-[#5C120C]',
+    textClass: 'text-[#F5827A]',
+    iconColor: '#F5827A',
+  },
+}
+
 export interface ReviewPost {
   id: string
-  category: PostCategory
-  time: string
+  contentType: ContentTypeCode
+  time?: string
   title: string
   mainContent: string
   historyComparison: string
@@ -52,129 +222,111 @@ export interface ReviewPost {
   authorTask: string
   traderInsight: string
   kolToolPosted: string
-  status: 'pending' | 'processed'
-  subStatus: 'waiting' | 't2_required' | 'published' | 'scheduled'
-  scheduledTime?: string
-  author?: string
+  status: ContentItemStatus
+  scheduledAt: string | null
+  distributionPlans?: AdminInsightDetail['distributionPlans']
+  distributionPreview?: AdminInsightDistributionPreview
+  createdByUserId?: string | null
+  reviewedByUserId?: string | null
+  publishedByUserId?: string | null
+  isLocalDraft?: boolean
 }
 
-export const MOCK_POSTS: ReviewPost[] = [
-  {
-    id: '1',
-    category: 'khẩn',
-    time: '19:00',
-    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
-    mainContent: `SỰ KIỆN: Thị trường crypto trải qua đợt bán tháo mạnh nhất nhiều tháng, vốn hoá bốc hơi ~140 tỷ$ trong 24h. BTC thủng $61,360 trong đêm (mức thấp tương đương giai đoạn pre-war), hiện hồi về ~$64,450 (-3.5% / 24h). ETH chạm đáy $1,717, hiện ~$1,792 (-3.8%). Hai chất xúc tác chính: (1) Strategy (MicroStrategy) của Michael Saylor BÁN BTC LẦN ĐẦU sau gần 4 năm — phá vỡ narrative 'tay to không bao giờ bán'; (2) ETF spot BTC tại Mỹ rút ròng KỶ LỤC ~3.4–3.45 tỷ$ trong tuần, chuỗi 11 phiên rút liên tiếp, dẫn đầu là BlackRock & Fidelity — mức rút lớn nhất kể từ khi ra mắt 2024. Macro cộng hưởng: Fed bỏ ngôn ngữ 'tiến triển về mục tiêu 2%', kỳ vọng cắt lãi suất bị đẩy sang 2027; lợi suất TPCP Mỹ 10 năm +18bps lên 4.82%; căng thẳng Mỹ–Iran đẩy giá dầu/lạm phát; dòng tiền xoay sang AI/IPO. Khoảng ~3 tỷ$ vị thế đòn bẩy bị thanh lý trong 2 ngày (~1.7 tỷ$ trong 24h).
+function formatDisplayTime(value: string | null): string | undefined {
+  if (!value) return undefined
 
-PHẢN ỨNG GIÁ (intraday/1h): BTC bật từ đáy $61.3k lên ~$64.4k (~+5% từ đáy) — bounce kỹ thuật từ vùng quá bán, CHƯA xác nhận đảo chiều. ETH hồi từ $1,717 → $1,792.
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return undefined
 
-CHUỖI SỰ KIỆN: Nối tiếp đà giảm 2–3/6 (BTC từ ~$66k). So với đỉnh gần nhất $74,500 cuối tháng 5, BTC đã giảm >13%. Đây là leg giảm sâu thứ hai trong chuỗi risk-off do rút ETF kéo dài + lo ngại lãi suất.`,
-    historyComparison: `1) ĐỨC BÁN BTC TỊCH THU (6–7/2024, ~50k BTC): BTC giảm từ ~$66k về ~$54k; sau khi bán hết, phục hồi hình V về $60k+ trong vài tuần. Áp lực bán từ holder lớn thường tạo đáy cục bộ rồi bật.
-2) YEN CARRY UNWIND (5/8/2024): BTC sập ~$58k→$49k (~-16% trong ngày), >1 tỷ$ thanh lý; phục hồi hình V, lấy lại trên $60k trong ~3 tuần — thị trường over-react vài ngày.
-3) ĐIỀU CHỈNH KÈM RÚT ETF Q1/2025 (lo ngại thuế quan): BTC từ >$100k về ~$78–80k, ETF rút mạnh; phục hồi CHẬM hơn (hình U/L) kéo dài nhiều tháng vì dòng rút dai dẳng + macro xấu.
+  return date.toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+}
 
-PATTERN: Bán tháo do deleveraging/holder lớn + macro thường over-react 2–5 ngày rồi V-bounce; nhưng khi đi kèm dòng rút ETF dai dẳng và lãi suất tăng, phục hồi có xu hướng chậm (U/L). Lần này HỘI TỤ cả hai yếu tố → thận trọng với bounce sớm.`,
-    kolInsight: `1) VÌ SAO QUAN TRỌNG CHO RETAIL VIỆT: Lần đầu Saylor/Strategy bán BTC — phá narrative 'tay to không bao giờ bán', dễ kích hoạt panic dây chuyền. KOL nên giải thích đây có thể là quản trị treasury/thanh khoản, không nhất thiết là tín hiệu bear dài hạn.
-2) PATTERN OVER-REACT: Nhắc lại các đợt bán của holder lớn (Đức 2024, Mt.Gox) thường tạo đáy cục bộ và bật lại — tránh khuếch đại hoảng loạn, nhấn mạnh dữ liệu lịch sử.
-3) PHÂN BIỆT NGUYÊN NHÂN: Đây chủ yếu là risk-off VĨ MÔ (Fed/lãi suất/dầu) + rotation sang AI, KHÔNG phải lỗi nội tại crypto (không có hack/sập sàn). Giúp cộng đồng giữ bình tĩnh và nhìn đúng bản chất.`,
-    investorInsight: `1) VÙNG THEO DÕI — BTC: hỗ trợ $61k (đáy hôm nay) và vùng $58–60k (vùng gom Q1/2025); kháng cự $66–67k. ETH: hỗ trợ $1,700, kháng cự $1,860.
-2) CẨN TRỌNG FOMO BẮT ĐÁY SỚM: Khi ETF còn rút ròng và lợi suất TPCP tăng, bounce có thể là 'dead-cat'. Tín hiệu xác nhận đáng tin hơn là dòng ETF đảo chiều sang mua ròng.
-3) Quản trị rủi ro đòn bẩy trong môi trường thanh lý cao (~3 tỷ$/2 ngày). LƯU Ý: đây là thông tin tham khảo, KHÔNG phải khuyến nghị mua/bán.`,
-    sources: `- CoinDesk (4/6, worst two-day liquidation): https://www.coindesk.com/markets/2026/06/04/bitcoin-steadies-above-usd60-000-while-derivatives-send-an-unambiguous-warning
-- CoinDesk (2/6, ETF selloff $3.4B): https://www.coindesk.com/markets/2026/06/02/bitcoin-s-biggest-etf-selloff-yet-hits-usd3-4-billion-as-ai-stocks-keep-climbing
-- Coinfomania (ETF outflow kỷ lục): https://coinfomania.com/bitcoin-etf-outflows-june-2026-record-selloff/
-- Bitcoin.com News (Strategy sale + ETF): https://news.bitcoin.com/bitcoin-falls-under-66000-etf-outflows-strategy-sale/
-- Yahoo Finance (Crypto News Today June 4): https://finance.yahoo.com/markets/crypto/articles/crypto-news-today-june-4-083742992.html
-- Coinpedia (BTC below $61,500): https://coinpedia.org/news/crypto-crash-today-bitcoin-price-drops-below-61500-analysts-divided/`,
-    authorTask: 'breaking-news-alert',
-    traderInsight: '',
-    kolToolPosted: '',
-    status: 'pending',
-    subStatus: 't2_required',
-    author: 'Admin 01',
-  },
-  {
-    id: '2',
-    category: 'insight',
-    time: '19:00',
-    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
-    mainContent: 'Nội dung phân tích on-chain dữ liệu ví MicroStrategy di chuyển coin...',
-    historyComparison: '',
-    kolInsight: '',
-    investorInsight: '',
-    sources: '',
-    authorTask: '',
-    traderInsight: '',
-    kolToolPosted: '',
-    status: 'pending',
-    subStatus: 'waiting',
-  },
-  {
-    id: '3',
-    category: 'summary',
-    time: '19:00',
-    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
-    mainContent: 'Tổng kết hoạt động thị trường crypto cuối ngày...',
-    historyComparison: '',
-    kolInsight: '',
-    investorInsight: '',
-    sources: '',
-    authorTask: '',
-    traderInsight: '',
-    kolToolPosted: '',
-    status: 'pending',
-    subStatus: 'waiting',
-  },
-  {
-    id: '4',
-    category: 'morning',
-    time: '07:00',
-    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
-    mainContent: 'Bản tin nhận định thị trường crypto buổi sáng sớm...',
-    historyComparison: '',
-    kolInsight: '',
-    investorInsight: '',
-    sources: '',
-    authorTask: '',
-    traderInsight: '',
-    kolToolPosted: '',
-    status: 'pending',
-    subStatus: 'waiting',
-  },
-  // Processed posts
-  {
-    id: '5',
-    category: 'khẩn',
-    time: '19:00',
-    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
-    mainContent: 'Đã đăng thành công lên các kênh tier...',
-    historyComparison: '',
-    kolInsight: '',
-    investorInsight: '',
-    sources: '',
-    authorTask: '',
-    traderInsight: '',
-    kolToolPosted: '',
-    status: 'processed',
-    subStatus: 'published',
-    author: 'Admin 01',
-  },
-  {
-    id: '6',
-    category: 'insight',
-    time: '19:00',
-    title: 'TIN NÓNG — 21:12 04/06/2026 | Strategy bán BTC lần đầu sau ~4 năm + ETF rút ròng kỷ lục: thị trường bốc hơi ~140 tỷ$, BTC thủng $61k',
-    mainContent: 'Đã lên lịch phát sóng vào lúc 10:00 ngày mai...',
-    historyComparison: '',
-    kolInsight: '',
-    investorInsight: '',
-    sources: '',
-    authorTask: '',
-    traderInsight: '',
-    kolToolPosted: '',
-    status: 'processed',
-    subStatus: 'scheduled',
-    scheduledTime: '10:00',
-    author: 'Admin 01',
-  },
-]
+function formatSources(value: unknown): string {
+  if (value === null || value === undefined) return ''
+  if (typeof value === 'string') return value
+
+  try {
+    return JSON.stringify(value, null, 2)
+  } catch {
+    return ''
+  }
+}
+
+function normalizeRequiredText(value: string): string {
+  return value.trim()
+}
+
+function normalizeNullableText(value: string): string | null {
+  const nextValue = value.trim()
+  return nextValue.length > 0 ? nextValue : null
+}
+
+function parseSources(value: string): unknown | null {
+  const nextValue = value.trim()
+
+  if (nextValue.length === 0) return null
+
+  try {
+    return JSON.parse(nextValue)
+  } catch {
+    return nextValue
+  }
+}
+
+function areApiValuesEqual(left: unknown, right: unknown): boolean {
+  return JSON.stringify(left) === JSON.stringify(right)
+}
+
+function assignIfChanged<TValue>(
+  body: UpdateAdminInsightBody,
+  key: keyof UpdateAdminInsightBody,
+  originalValue: TValue,
+  updatedValue: TValue
+) {
+  if (!areApiValuesEqual(originalValue, updatedValue)) {
+    body[key] = updatedValue as never
+  }
+}
+
+export function buildUpdateAdminInsightBody(original: ReviewPost, updated: ReviewPost): UpdateAdminInsightBody | null {
+  const body: UpdateAdminInsightBody = {}
+
+  assignIfChanged(body, 'title', normalizeRequiredText(original.title), normalizeRequiredText(updated.title))
+  assignIfChanged(body, 'body', normalizeRequiredText(original.mainContent), normalizeRequiredText(updated.mainContent))
+  assignIfChanged(body, 'historicalComparison', normalizeNullableText(original.historyComparison), normalizeNullableText(updated.historyComparison))
+  assignIfChanged(body, 'insightForKol', normalizeNullableText(original.kolInsight), normalizeNullableText(updated.kolInsight))
+  assignIfChanged(body, 'insightForInvestor', normalizeNullableText(original.investorInsight), normalizeNullableText(updated.investorInsight))
+  assignIfChanged(body, 'insightForTrader', normalizeNullableText(original.traderInsight), normalizeNullableText(updated.traderInsight))
+  assignIfChanged(body, 'sources', parseSources(original.sources), parseSources(updated.sources))
+  assignIfChanged(body, 'authorTask', normalizeNullableText(original.authorTask), normalizeNullableText(updated.authorTask))
+  assignIfChanged(body, 'kolToolPosted', normalizeNullableText(original.kolToolPosted), normalizeNullableText(updated.kolToolPosted))
+
+  return Object.keys(body).length > 0 ? body : null
+}
+
+export function mapInsightToReviewPost(insight: AdminInsight | AdminInsightDetail): ReviewPost {
+  return {
+    id: insight.id,
+    contentType: insight.contentType,
+    time: formatDisplayTime(insight.scheduledAt),
+    title: insight.title,
+    mainContent: insight.body,
+    historyComparison: insight.historicalComparison ?? '',
+    kolInsight: insight.insightForKol ?? '',
+    investorInsight: insight.insightForInvestor ?? '',
+    sources: formatSources(insight.sources),
+    authorTask: insight.authorTask ?? '',
+    traderInsight: insight.insightForTrader ?? '',
+    kolToolPosted: insight.kolToolPosted ?? '',
+    status: insight.status,
+    scheduledAt: insight.scheduledAt,
+    distributionPlans: 'distributionPlans' in insight ? insight.distributionPlans : undefined,
+    createdByUserId: insight.createdByUserId,
+    reviewedByUserId: insight.reviewedByUserId,
+    publishedByUserId: insight.publishedByUserId,
+  }
+}

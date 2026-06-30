@@ -8,7 +8,8 @@ interface RevokePostModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   postTitle: string
-  onConfirm: () => void
+  onConfirm: () => Promise<void> | void
+  isLoading?: boolean
 }
 
 export default function RevokePostModal({
@@ -16,6 +17,7 @@ export default function RevokePostModal({
   onOpenChange,
   postTitle,
   onConfirm,
+  isLoading = false,
 }: RevokePostModalProps) {
   const [reason, setReason] = useState('')
 
@@ -26,13 +28,21 @@ export default function RevokePostModal({
     }
   }, [open])
 
-  const handleConfirm = () => {
-    if (!reason.trim()) return
-    onConfirm()
+  const handleConfirm = async () => {
+    if (isLoading) return
+
+    try {
+      await onConfirm()
+    } catch {
+      // Parent shows the error toast and keeps the modal open for retry/cancel.
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(nextOpen) => {
+      if (isLoading) return
+      onOpenChange(nextOpen)
+    }}>
       <DialogContent
         showCloseButton={false}
         className="w-[calc(100vw-2rem)] max-w-[577px] gap-0 rounded-2xl border border-[#282828] bg-[#171717] p-0 text-white shadow-2xl"
@@ -52,7 +62,8 @@ export default function RevokePostModal({
           <DialogClose asChild>
             <button
               type="button"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#282828] text-[#FDFDFD] transition-colors hover:bg-[#333333]"
+              disabled={isLoading}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#282828] text-[#FDFDFD] transition-colors hover:bg-[#333333] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <X className="h-5 w-5" />
               <span className="sr-only">Đóng</span>
@@ -73,14 +84,14 @@ export default function RevokePostModal({
           {/* Reason Field */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-1">
-              <span className="text-sm font-medium text-white">Lý do thu hồi</span>
-              <span className="text-sm font-medium text-[#EB4E40]">*</span>
+              <span className="text-sm font-medium text-white">Lý do thu hồi (tuỳ chọn)</span>
             </div>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="Nhập lý do thu hồi (Vd: Phát hiện sai sót / rủi ro truyền thông...)"
-              className="min-h-[96px] w-full rounded-lg border border-[#282828] bg-[#121212] px-3 py-4 text-base font-normal text-white placeholder:text-[#828283] focus:border-[#545454] focus:outline-none resize-none leading-6"
+              disabled={isLoading}
+              placeholder="Nhập lý do thu hồi nếu cần (Vd: Phát hiện sai sót / rủi ro truyền thông...)"
+              className="min-h-[96px] w-full rounded-lg border border-[#282828] bg-[#121212] px-3 py-4 text-base font-normal text-white placeholder:text-[#828283] focus:border-[#545454] focus:outline-none resize-none leading-6 disabled:cursor-not-allowed disabled:opacity-60"
             />
           </div>
         </div>
@@ -92,19 +103,20 @@ export default function RevokePostModal({
           <DialogClose asChild>
             <button
               type="button"
-              className="h-9 rounded-lg bg-[#FDFDFD] px-4 text-sm font-semibold text-black transition-colors hover:bg-white/80 max-sm:w-full"
+              disabled={isLoading}
+              className="h-9 rounded-lg bg-[#FDFDFD] px-4 text-sm font-semibold text-black transition-colors hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-50 max-sm:w-full"
             >
               Huỷ
             </button>
           </DialogClose>
           <button
             type="button"
-            disabled={!reason.trim()}
+            disabled={isLoading}
             onClick={handleConfirm}
             className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-[#F7F0A1] px-4 text-sm font-semibold text-black transition-colors hover:bg-[#e8e09c] disabled:cursor-not-allowed disabled:opacity-50 max-sm:w-full"
           >
             <RotateCcw className="h-5 w-5 text-black" />
-            Xác nhận thu hồi
+            {isLoading ? 'Đang thu hồi...' : 'Xác nhận thu hồi'}
           </button>
         </div>
       </DialogContent>

@@ -1,35 +1,58 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { CheckCircle2, X } from 'lucide-react'
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
-import type { PostCategory } from '../constants'
+import type { ContentTypeCode } from '@/types/api/adminInsight'
 
 const MANUAL_NEWS_TYPES = [
-  { id: 'pulse-morning', label: 'Pulse sáng', schedule: '6h30', category: 'morning' as const },
-  { id: 'pulse-noon', label: 'Pulse trưa', schedule: '12h', category: 'summary' as const },
-  { id: 'pulse-evening', label: 'Pulse tối', schedule: '19:00', category: 'summary' as const },
-  { id: 'market-alert', label: 'Cảnh báo thị trường', schedule: 'Realtime', category: 'khẩn' as const },
-  { id: 'event-alert', label: 'Cảnh báo trước sự kiện', schedule: 'Trước 60 - 120′', category: 'khẩn' as const },
-  { id: 'weekly-calendar', label: 'Lịch tuần', schedule: 'Thứ 2, 08:00', category: 'morning' as const },
-  { id: 'whale-analysis', label: 'Phân tích whales', schedule: 'Hàng ngày - 10:00', category: 'insight' as const },
-  { id: 'market-structure', label: 'Cấu trúc thị trường', schedule: '08:00', category: 'insight' as const },
-  { id: 'sector-narrative', label: 'Sector & Narrative', schedule: '12:00', category: 'insight' as const },
-  { id: 'research-report', label: 'Research Report', schedule: 'Khi phát sinh', category: 'insight' as const },
-  { id: 'vietnam-legal', label: 'Pháp lý Việt Nam', schedule: 'Khi có văn bản', category: 'khẩn' as const },
+  { id: 'pulse-morning', label: 'Pulse sáng', schedule: '6h30', contentType: 'BAN_TIN_0630' as const, time: { hour: 6, minute: 30 } },
+  { id: 'pulse-noon', label: 'Pulse trưa', schedule: '12h', contentType: 'BAN_TIN_1300' as const, time: { hour: 12, minute: 0 } },
+  { id: 'pulse-evening', label: 'Pulse tối', schedule: '19:00', contentType: 'BAN_TIN_1900' as const, time: { hour: 19, minute: 0 } },
+  { id: 'market-alert', label: 'Cảnh báo thị trường', schedule: 'Realtime', contentType: 'ALERT' as const },
+  { id: 'event-alert', label: 'Cảnh báo trước sự kiện', schedule: 'Trước 60 - 120′', contentType: 'PRE_EVENT' as const },
+  { id: 'weekly-calendar', label: 'Lịch tuần', schedule: 'Thứ 2, 08:00', contentType: 'WEEKLY_CALENDAR' as const, time: { hour: 8, minute: 0 } },
+  { id: 'whale-analysis', label: 'Phân tích whales', schedule: 'Hàng ngày - 10:00', contentType: 'WHALES_DAILY' as const, time: { hour: 10, minute: 0 } },
+  { id: 'market-structure', label: 'Cấu trúc thị trường', schedule: '08:00', contentType: 'MARKET_STRUCTURE' as const, time: { hour: 8, minute: 0 } },
+  { id: 'sector-narrative', label: 'Sector & Narrative', schedule: '12:00', contentType: 'SECTOR_DAILY' as const, time: { hour: 12, minute: 0 } },
+  { id: 'research-report', label: 'Research Report', schedule: 'Khi phát sinh', contentType: 'DEEP_DIVE' as const },
+  { id: 'vietnam-legal', label: 'Pháp lý Việt Nam', schedule: 'Khi có văn bản', contentType: 'LEGAL_VN' as const },
 ]
 
 interface CreatePostModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCreate: (category: PostCategory, time: string, title: string) => void
+  onCreate: (payload: {
+    contentType: ContentTypeCode
+    title: string
+    scheduledAt: string
+  }) => void
+  isCreating?: boolean
 }
 
-export default function CreatePostModal({ open, onOpenChange, onCreate }: CreatePostModalProps) {
+function buildDefaultTitle(label: string) {
+  return `${label.toUpperCase()} — ${new Date().toLocaleDateString('vi-VN')}`
+}
+
+function buildScheduledAt(type: (typeof MANUAL_NEWS_TYPES)[number]) {
+  const date = new Date()
+
+  if (type.time) {
+    date.setHours(type.time.hour, type.time.minute, 0, 0)
+  }
+
+  return date.toISOString()
+}
+
+export default function CreatePostModal({ open, onOpenChange, onCreate, isCreating = false }: CreatePostModalProps) {
   const [selectedManualTypeId, setSelectedManualTypeId] = useState('pulse-evening')
 
-  // Reset selection when modal opens
+  const selectedType = useMemo(
+    () => MANUAL_NEWS_TYPES.find((type) => type.id === selectedManualTypeId) ?? MANUAL_NEWS_TYPES[0],
+    [selectedManualTypeId]
+  )
+
   useEffect(() => {
     if (open) {
       setSelectedManualTypeId('pulse-evening')
@@ -37,10 +60,13 @@ export default function CreatePostModal({ open, onOpenChange, onCreate }: Create
   }, [open])
 
   const handleCreate = () => {
-    const selectedType =
-      MANUAL_NEWS_TYPES.find((type) => type.id === selectedManualTypeId) ?? MANUAL_NEWS_TYPES[0]
-    const title = `${selectedType.label.toUpperCase()} — ${new Date().toLocaleDateString('vi-VN')}`
-    onCreate(selectedType.category, selectedType.schedule, title)
+    if (isCreating) return
+
+    onCreate({
+      contentType: selectedType.contentType,
+      title: buildDefaultTitle(selectedType.label),
+      scheduledAt: buildScheduledAt(selectedType),
+    })
   }
 
   return (
@@ -74,8 +100,7 @@ export default function CreatePostModal({ open, onOpenChange, onCreate }: Create
         <div className="h-px bg-[#282828]" />
 
         <div className="px-6 py-5 text-sm font-normal leading-[21px] text-[#A8A8A9]">
-          Chọn <span className="font-medium text-white">loại tin</span> — giờ đăng và tier nhận sẽ tự áp theo cấu hình
-          phân phối. Bạn chỉ cần viết nội dung.
+          Chọn <span className="font-medium text-white">loại tin</span>. Hệ thống sẽ tạo form nhập để bạn nhập nội dung.
         </div>
 
         <div className="px-6 pb-5">
@@ -87,9 +112,10 @@ export default function CreatePostModal({ open, onOpenChange, onCreate }: Create
                 <button
                   key={type.id}
                   type="button"
+                  disabled={isCreating}
                   onClick={() => setSelectedManualTypeId(type.id)}
                   className={cn(
-                    "min-h-[52px] rounded-lg px-2 py-1.5 text-left transition-colors",
+                    "min-h-[52px] rounded-lg px-2 py-1.5 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                     isSelected
                       ? "min-w-[108px] flex-1 border border-[#D4A74A] bg-[#FEFEF6] text-black"
                       : "bg-[#282828] text-white hover:bg-[#333333]"
@@ -118,17 +144,19 @@ export default function CreatePostModal({ open, onOpenChange, onCreate }: Create
           <DialogClose asChild>
             <button
               type="button"
-              className="h-9 rounded-lg bg-[#FDFDFD] px-4 text-sm font-semibold text-black transition-colors hover:bg-white/80 max-sm:w-full"
+              disabled={isCreating}
+              className="h-9 rounded-lg bg-[#FDFDFD] px-4 text-sm font-semibold text-black transition-colors hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-60 max-sm:w-full"
             >
-              Huỷ
+              Hủy
             </button>
           </DialogClose>
           <button
             type="button"
             onClick={handleCreate}
-            className="h-9 rounded-lg bg-[#F7F0A1] px-4 text-sm font-semibold text-black transition-colors hover:bg-[#e8e09c] max-sm:w-full"
+            disabled={isCreating}
+            className="h-9 rounded-lg bg-[#F7F0A1] px-4 text-sm font-semibold text-black transition-colors hover:bg-[#e8e09c] disabled:cursor-not-allowed disabled:opacity-60 max-sm:w-full"
           >
-            Tạo tin
+            {isCreating ? 'Đang tạo...' : 'Tạo tin'}
           </button>
         </div>
       </DialogContent>
