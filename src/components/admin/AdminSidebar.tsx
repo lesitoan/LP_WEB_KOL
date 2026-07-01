@@ -3,7 +3,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { usePopup } from '@/hooks/usePopup'
 import { useAdminAuthSession } from '@/hooks/admin/useAdminAuthSession'
+import { ADMIN_ROUTE_PATHS, canViewAdminNavItem, getAdminRoleLabel, type AdminNavItemId } from '@/lib/adminPermissions'
 
 type SidebarProps = {
   onItemClick?: () => void
@@ -39,28 +41,40 @@ const navSections = [
   },
 ]
 
-const screenPaths: Record<string, string> = {
-  'post-review': '/admin/post-review',
-  'distribution': '/admin/distribution',
-  'analytics-kols': '/admin/analytics/kols',
-  'analytics-content': '/admin/analytics/content',
-  'reviews': '/admin/reviews',
-  'users': '/admin/users',
-  'settings': '/admin/settings',
-  'published-post': '/admin/published-post',
-}
-
 export default function AdminSidebar({ onItemClick }: SidebarProps) {
   const pathname = usePathname()
   const { profile, logout } = useAdminAuthSession()
+  const { showConfirm, Popup } = usePopup()
 
-  const getIsActive = (id: string) => {
-    const path = screenPaths[id]
+  const handleLogout = async () => {
+    const accepted = await showConfirm({
+      title: 'Đăng xuất',
+      description: 'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?',
+      confirmText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      destructive: true,
+    })
+
+    if (accepted) {
+      logout()
+    }
+  }
+
+  const getIsActive = (id: AdminNavItemId) => {
+    const path = ADMIN_ROUTE_PATHS[id]
     if (!path) return false
     return pathname === path || pathname.startsWith(`${path}/`)
   }
 
+  const visibleSections = navSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => canViewAdminNavItem(profile?.role, item.id as AdminNavItemId)),
+    }))
+    .filter((section) => section.items.length > 0)
+
   return (
+    <>
     <aside className="bg-surface-1 border-r border-border flex h-dvh min-h-dvh flex-col justify-between w-[250px] shrink-0 overflow-y-auto [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/60 hover:[&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/90">
       <div className="flex flex-col flex-1">
         {/* Brand Header */}
@@ -70,14 +84,15 @@ export default function AdminSidebar({ onItemClick }: SidebarProps) {
 
         {/* Main Navigation */}
         <nav className="px-4 flex-1 space-y-4">
-          {navSections.map((section) => (
+          {visibleSections.map((section) => (
             <div key={section.label} className="space-y-1">
               <div className="text-xs font-normal text-[#828283] uppercase px-0 pt-2 pb-1">
                 {section.label}
               </div>
 
               {section.items.map((item) => {
-                const isActive = getIsActive(item.id)
+                const itemId = item.id as AdminNavItemId
+                const isActive = getIsActive(itemId)
                 const iconSrc = isActive
                   ? `/images/admin/side-bar/${item.icon}-icon-active.svg`
                   : `/images/admin/side-bar/${item.icon}-icon.svg`
@@ -85,7 +100,7 @@ export default function AdminSidebar({ onItemClick }: SidebarProps) {
                 return (
                   <Link
                     key={item.id}
-                    href={screenPaths[item.id] || '#'}
+                    href={ADMIN_ROUTE_PATHS[itemId] || '#'}
                     onClick={onItemClick}
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal mb-[1px] transition-all relative',
@@ -115,14 +130,15 @@ export default function AdminSidebar({ onItemClick }: SidebarProps) {
       {/* Settings & User Profile Footer */}
       <div className="pt-4 pb-8 px-4 border-t border-[#282828] flex flex-col gap-4">
         {(() => {
+          const canViewSettings = canViewAdminNavItem(profile?.role, 'settings')
           const isSettingsActive = getIsActive('settings')
           const settingsIconSrc = isSettingsActive
             ? '/images/admin/side-bar/setting-icon-active.svg'
             : '/images/admin/side-bar/setting-icon.svg'
 
-          return (
+          return canViewSettings ? (
             <Link
-              href={screenPaths.settings}
+              href={ADMIN_ROUTE_PATHS.settings}
               onClick={onItemClick}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal transition-all relative',
@@ -137,28 +153,32 @@ export default function AdminSidebar({ onItemClick }: SidebarProps) {
               <img src={settingsIconSrc} alt="Cài đặt" className="w-5 h-5 shrink-0" />
               <span>Cài đặt</span>
             </Link>
-          )
+          ) : null
         })()}
 
         {/* Profile Card */}
         <div className="w-full p-2 bg-[#171717] rounded-full flex items-center justify-between gap-3 relative">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 shrink-0 rounded-full bg-[#9B692C] flex items-center justify-center text-white font-semibold text-sm">
-              {profile?.name ? profile.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'OR'}
+            <div className="w-10 h-10 shrink-0 rounded-full bg-[#9B692C] overflow-hidden">
+              <img
+                src="/images/avatar_default.png"
+                alt={profile?.name || 'Admin'}
+                className="h-full w-full object-cover"
+              />
             </div>
             <div className="flex flex-col min-w-0">
               <div className="text-sm font-semibold text-white truncate leading-tight">
                 {profile?.name || 'Olivia Rhye'}
               </div>
               <div className="text-sm font-normal text-[#A8A8A9] truncate">
-                {profile?.role || 'GFI Super Admin'}
+                {getAdminRoleLabel(profile?.role)}
               </div>
             </div>
           </div>
           
           <button
             type="button"
-            onClick={() => logout()}
+            onClick={handleLogout}
             className="p-1 rounded-lg hover:bg-surface-2 transition-colors shrink-0 mr-1"
             title="Đăng xuất"
           >
@@ -169,5 +189,7 @@ export default function AdminSidebar({ onItemClick }: SidebarProps) {
         </div>
       </div>
     </aside>
+    <Popup />
+    </>
   )
 }

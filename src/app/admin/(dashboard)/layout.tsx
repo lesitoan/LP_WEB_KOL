@@ -3,8 +3,10 @@
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import AdminNotFoundContent from '@/components/admin/AdminNotFoundContent'
 import AdminAppLayout from '@/layouts/admin/AdminAppLayout'
 import { useAdminAuthSession } from '@/hooks/admin/useAdminAuthSession'
+import { canAccessAdminPath } from '@/lib/adminPermissions'
 import { PageLoading as SharedPageLoading } from '@/components/ui/pageLoading'
 
 export default function AdminDashboardLayout({
@@ -14,7 +16,7 @@ export default function AdminDashboardLayout({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { hasToken, hydrated: authHydrated, isCheckingSession } = useAdminAuthSession()
+  const { hasToken, hydrated: authHydrated, isCheckingSession, profile } = useAdminAuthSession()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -27,6 +29,14 @@ export default function AdminDashboardLayout({
 
   if (!mounted || !authHydrated || !hasToken || isCheckingSession) {
     return <SharedPageLoading />
+  }
+
+  if (pathname === '/admin/not-found' || !canAccessAdminPath(profile?.role, pathname)) {
+    return (
+      <AdminAppLayout>
+        <AdminNotFoundContent role={profile?.role} />
+      </AdminAppLayout>
+    )
   }
 
   return <AdminAppLayout>{children}</AdminAppLayout>

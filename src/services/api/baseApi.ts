@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import {
+  handleForbiddenAdminRoute,
   handleUnauthorizedAdminSession,
   handleUnauthorizedSession,
   readAdminAuthSession,
@@ -126,6 +127,12 @@ const adminBaseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBa
   }
 
   let result = await adminBaseQuery(args, api, extraOptions)
+  const method = typeof args === 'string' ? 'GET' : (args.method || 'GET').toUpperCase()
+
+  if (result.error?.status === 403 && method === 'GET') {
+    handleForbiddenAdminRoute()
+    return new Promise<never>(() => {})
+  }
 
   if (result.error?.status !== 401) {
     return result

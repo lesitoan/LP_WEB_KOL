@@ -17,6 +17,7 @@ import { toast } from '@/hooks/useToast'
 import { adminApi, extractApiErrorMessage } from '@/services/api/baseApi'
 import { useAdminLoginMutation, useVerifyAdminTwoFactorLoginMutation } from '@/services/api/admin/authApi'
 import { readAdminAuthSession, writeAdminAuthSession } from '@/lib/authSession'
+import { canAccessAdminPath, getDefaultAdminPath } from '@/lib/adminPermissions'
 import type { AdminLoginAttemptResponse, AdminTwoFactorChallenge } from '@/types/admin/auth'
 
 const schema = z.object({
@@ -64,14 +65,18 @@ export default function AdminLoginScreen() {
 
   useEffect(() => {
     if (hydrated && hasToken && !hasSubmittedLogin.current) {
-      router.replace('/admin/dashboard')
+      const session = readAdminAuthSession()
+      router.replace(getDefaultAdminPath(session.user?.role))
     }
   }, [hasToken, hydrated, router])
 
   const finishLogin = (result: Exclude<AdminLoginAttemptResponse, AdminTwoFactorChallenge>) => {
     writeAdminAuthSession(result)
     dispatch(adminApi.util.resetApiState())
-    const redirect = searchParams.get('redirect') || '/admin/dashboard'
+    const requestedRedirect = searchParams.get('redirect')
+    const redirect = requestedRedirect && canAccessAdminPath(result.user.role, requestedRedirect)
+      ? requestedRedirect
+      : getDefaultAdminPath(result.user.role)
     router.push(redirect)
   }
 

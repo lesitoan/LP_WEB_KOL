@@ -129,6 +129,7 @@ export function clearAdminAuthSession() {
 
 let unauthorizedRedirectTriggered = false
 let unauthorizedAdminRedirectTriggered = false
+let forbiddenAdminRedirectTriggered = false
 
 export function handleUnauthorizedSession() {
   if (typeof window === 'undefined') return
@@ -150,4 +151,12 @@ export function handleUnauthorizedAdminSession() {
 
   unauthorizedAdminRedirectTriggered = true
   window.location.replace('/admin/login')
+}
+
+export function handleForbiddenAdminRoute() {
+  if (typeof window === 'undefined') return
+  if (forbiddenAdminRedirectTriggered) return
+
+  forbiddenAdminRedirectTriggered = true
+  window.location.replace('/admin/not-found')
 }
