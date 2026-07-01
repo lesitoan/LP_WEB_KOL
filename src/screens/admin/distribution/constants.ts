@@ -1,24 +1,27 @@
+import type {
+  AdminDistributionConfig,
+  AdminDistributionContentTypeConfig,
+  DistributionTierCode,
+  UpdateAdminDistributionConfigBody,
+  UpdateAdminDistributionContentTypeConfigBodyItem,
+} from '@/types/api/adminDistributionConfig'
+import type { ContentTypeCode } from '@/types/api/adminInsight'
+
 export type TierId = 'starter' | 'partner' | 'elite' | 'legend'
 
 export interface TierConfig {
   id: TierId
+  tierCode: DistributionTierCode
   label: string
   range: string
-  kolCount: number
-  offsetMinutes: number  // null-like 0 = "Ngay"
-  commission: number     // e.g. 30 = 30%
-  icon: string           // public path
+  kolCount?: number | null
+  offsetMinutes: number
+  commission: number
+  icon: string
 }
 
-export const TIERS: TierConfig[] = [
-  { id: 'starter', label: 'STARTER', range: '0–49',    kolCount: 88, offsetMinutes: 20, commission: 30, icon: '/images/tier_icons/STARTER_icon_active.svg' },
-  { id: 'partner', label: 'PARTNER', range: '50–199',  kolCount: 23, offsetMinutes: 15, commission: 40, icon: '/images/tier_icons/PARTNER_icon_active.svg' },
-  { id: 'elite',   label: 'ELITE',   range: '200–999', kolCount: 31, offsetMinutes: 10, commission: 50, icon: '/images/tier_icons/ELITE_icon_active.svg' },
-  { id: 'legend',  label: 'LEGEND',  range: '1000+',   kolCount: 16, offsetMinutes: 0,  commission: 60, icon: '/images/tier_icons/LEGEND_icon_active.svg' },
-]
-
 export interface NewsTypeRow {
-  id: string
+  id: ContentTypeCode
   name: string
   subtext: string
   enabled: Record<TierId, boolean>
@@ -30,46 +33,182 @@ export interface NewsCategory {
   items: NewsTypeRow[]
 }
 
-export const NEWS_CATEGORIES: NewsCategory[] = [
-  {
-    id: 'daily',
-    label: 'A. Tin trong ngày',
-    items: [
-      { id: 'pulse_0630', name: 'Pulse sáng 6h30',      subtext: 'pulse_0630 · 06:30',      enabled: { starter: false, partner: true,  elite: false, legend: true  } },
-      { id: 'pulse_1300', name: 'Pulse trưa 12h',        subtext: 'pulse_1300 · 13:00',      enabled: { starter: true,  partner: true,  elite: true,  legend: true  } },
-      { id: 'pulse_1900', name: 'Pulse tối 19h',         subtext: 'pulse_1900 · 19:00',      enabled: { starter: true,  partner: true,  elite: true,  legend: true  } },
-    ],
-  },
-  {
-    id: 'alerts',
-    label: 'B. Tin nóng & cảnh báo',
-    items: [
-      { id: 'alert',         name: 'Cảnh báo thị trường',    subtext: 'alert · Realtime',           enabled: { starter: true, partner: true, elite: true, legend: true } },
-      { id: 'pre_event',     name: 'Cảnh báo trước sự kiện', subtext: 'pre_event · Trước 60–120\'', enabled: { starter: true, partner: true, elite: true, legend: true } },
-      { id: 'weekly_calendar',name: 'Lịch tuần',              subtext: 'weekly_calendar · Thứ 2, 08:00', enabled: { starter: true, partner: true, elite: true, legend: true } },
-    ],
-  },
-  {
-    id: 'whales',
-    label: 'C. Whales insights',
-    items: [
-      { id: 'whales_daily', name: 'Phân tích whales', subtext: 'whales_daily · 10:00', enabled: { starter: true, partner: true, elite: true, legend: true } },
-    ],
-  },
-  {
-    id: 'market',
-    label: 'D. Phân tích thị trường',
-    items: [
-      { id: 'market_structure', name: 'Cấu trúc thị trường',  subtext: 'market_structure · 08:00', enabled: { starter: true, partner: true, elite: true, legend: true } },
-      { id: 'sector_daily',     name: 'Sector & Narrative',    subtext: 'ector_daily · 12:00',      enabled: { starter: true, partner: true, elite: true, legend: true } },
-    ],
-  },
-  {
-    id: 'research',
-    label: 'E. Research & báo cáo',
-    items: [
-      { id: 'deep_dive', name: 'Research Report',  subtext: 'deep_dive · Khi phát sinh', enabled: { starter: true, partner: true, elite: true, legend: true } },
-      { id: 'legal_vn',  name: 'Pháp lý Việt Nam', subtext: 'legal_vn · Khi có văn bản', enabled: { starter: true, partner: true, elite: true, legend: true } },
-    ],
-  },
-]
+export interface DistributionDraft {
+  tiers: TierConfig[]
+  categories: NewsCategory[]
+  toggles: Record<string, Record<TierId, boolean>>
+}
+
+export const TIER_IDS: TierId[] = ['starter', 'partner', 'elite', 'legend']
+
+export const TIER_CODE_BY_ID: Record<TierId, DistributionTierCode> = {
+  starter: 'STARTER',
+  partner: 'PARTNER',
+  elite: 'ELITE',
+  legend: 'LEGEND',
+}
+
+export const TIER_ID_BY_CODE: Record<DistributionTierCode, TierId> = {
+  STARTER: 'starter',
+  PARTNER: 'partner',
+  ELITE: 'elite',
+  LEGEND: 'legend',
+}
+
+export const TIER_CARD_ICONS: Record<DistributionTierCode, string> = {
+  STARTER: '/images/tier_icons/STARTER_icon_active.svg',
+  PARTNER: '/images/tier_icons/PARTNER_icon_active.svg',
+  ELITE: '/images/tier_icons/ELITE_icon_active.svg',
+  LEGEND: '/images/tier_icons/LEGEND_icon_active.svg',
+}
+
+export const TABLE_TIER_ICONS: Record<TierId, string> = {
+  starter: '/images/admin/distribution/starter_small_icon.svg',
+  partner: '/images/admin/distribution/partner_small_icon.svg',
+  elite: '/images/admin/distribution/elite_small_icon.svg',
+  legend: '/images/admin/distribution/legend_small_icon.svg',
+}
+
+const GROUP_LABELS: Record<string, string> = {
+  A: 'A. Tin trong ngày',
+  B: 'B. Tin nóng & cảnh báo',
+  C: 'C. Whales insights',
+  D: 'D. Phân tích thị trường',
+  E: 'E. Research & báo cáo',
+  daily: 'A. Tin trong ngày',
+  alerts: 'B. Tin nóng & cảnh báo',
+  whales: 'C. Whales insights',
+  market: 'D. Phân tích thị trường',
+  research: 'E. Research & báo cáo',
+}
+
+const CONTENT_TYPE_ALIAS: Partial<Record<ContentTypeCode, string>> = {
+  BAN_TIN_0630: 'ban_tin_0630',
+  BAN_TIN_1300: 'ban_tin_1300',
+  BAN_TIN_1900: 'ban_tin_1900',
+}
+
+function formatHourMinute(hour: number | null, minute: number | null) {
+  if (typeof hour !== 'number' || typeof minute !== 'number') return null
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+}
+
+function formatContentTypeSubtext(item: AdminDistributionContentTypeConfig) {
+  const codeLabel = CONTENT_TYPE_ALIAS[item.code] ?? item.code.toLowerCase()
+  const timeLabel =
+    item.defaultTimeLabel ||
+    formatHourMinute(item.defaultHour, item.defaultMinute) ||
+    (item.defaultScheduleType === 'REALTIME'
+      ? 'Realtime'
+      : item.defaultScheduleType === 'RELATIVE'
+        ? `${item.relativeMinutesMin ?? 0}-${item.relativeMinutesMax ?? 0}'`
+        : item.triggerCondition || item.defaultScheduleType)
+
+  return `${codeLabel} · ${timeLabel}`
+}
+
+function groupLabel(groupKey: string) {
+  return GROUP_LABELS[groupKey] ?? groupKey
+}
+
+function cloneToggles(toggles: Record<string, Record<TierId, boolean>>) {
+  return Object.fromEntries(
+    Object.entries(toggles).map(([rowId, rowToggles]) => [rowId, { ...rowToggles }]),
+  ) as Record<string, Record<TierId, boolean>>
+}
+
+export function mapDistributionConfigToDraft(config: AdminDistributionConfig): DistributionDraft {
+  const tiers = config.tiers.map((tier) => ({
+    id: TIER_ID_BY_CODE[tier.tierCode],
+    tierCode: tier.tierCode,
+    label: tier.tierCode,
+    range: tier.memberRangeLabel.replace(/\s*TV$/i, ''),
+    kolCount: null,
+    offsetMinutes: tier.offsetMinutes,
+    commission: tier.commissionRatePct,
+    icon: TIER_CARD_ICONS[tier.tierCode],
+  }))
+
+  const toggles: Record<string, Record<TierId, boolean>> = {}
+  const categoriesByKey = new Map<string, NewsCategory>()
+
+  for (const item of config.contentTypes) {
+    const enabled = { ...item.enabledTiers }
+    toggles[item.code] = enabled
+
+    const category = categoriesByKey.get(item.groupKey) ?? {
+      id: item.groupKey,
+      label: groupLabel(item.groupKey),
+      items: [],
+    }
+
+    category.items.push({
+      id: item.code,
+      name: item.label,
+      subtext: formatContentTypeSubtext(item),
+      enabled,
+    })
+
+    categoriesByKey.set(item.groupKey, category)
+  }
+
+  return {
+    tiers,
+    categories: Array.from(categoriesByKey.values()),
+    toggles,
+  }
+}
+
+export function cloneDistributionDraft(draft: DistributionDraft): DistributionDraft {
+  return {
+    tiers: draft.tiers.map((tier) => ({ ...tier })),
+    categories: draft.categories.map((category) => ({
+      ...category,
+      items: category.items.map((item) => ({ ...item, enabled: { ...item.enabled } })),
+    })),
+    toggles: cloneToggles(draft.toggles),
+  }
+}
+
+export function buildDistributionUpdateBody(
+  initial: DistributionDraft,
+  draft: DistributionDraft,
+): UpdateAdminDistributionConfigBody | null {
+  const initialTierByCode = new Map(initial.tiers.map((tier) => [tier.tierCode, tier]))
+  const tiers = draft.tiers
+    .filter((tier) => initialTierByCode.get(tier.tierCode)?.offsetMinutes !== tier.offsetMinutes)
+    .map((tier) => ({
+      tierCode: tier.tierCode,
+      offsetMinutes: tier.offsetMinutes,
+    }))
+
+  const contentTypes: UpdateAdminDistributionContentTypeConfigBodyItem[] = []
+
+  for (const [rowId, rowToggles] of Object.entries(draft.toggles)) {
+    const initialRowToggles = initial.toggles[rowId]
+    if (!initialRowToggles) continue
+
+    const changedItem: UpdateAdminDistributionContentTypeConfigBodyItem = {
+      code: rowId as ContentTypeCode,
+    }
+
+    for (const tierId of TIER_IDS) {
+      if (rowToggles[tierId] !== initialRowToggles[tierId]) {
+        if (tierId === 'starter') changedItem.starterEnabled = rowToggles[tierId]
+        if (tierId === 'partner') changedItem.partnerEnabled = rowToggles[tierId]
+        if (tierId === 'elite') changedItem.eliteEnabled = rowToggles[tierId]
+        if (tierId === 'legend') changedItem.legendEnabled = rowToggles[tierId]
+      }
+    }
+
+    if (Object.keys(changedItem).length > 1) {
+      contentTypes.push(changedItem)
+    }
+  }
+
+  const body: UpdateAdminDistributionConfigBody = {}
+  if (tiers.length > 0) body.tiers = tiers
+  if (contentTypes.length > 0) body.contentTypes = contentTypes
+
+  return body.tiers || body.contentTypes ? body : null
+}

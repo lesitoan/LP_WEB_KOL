@@ -2,20 +2,17 @@
 
 import React from 'react'
 import { Switch } from '@/components/ui/switch'
-import { TIERS, NEWS_CATEGORIES, type TierId } from '../constants'
+import { TABLE_TIER_ICONS, type NewsCategory, type TierConfig, type TierId } from '../constants'
 
-const TABLE_TIER_ICONS: Record<TierId, string> = {
-  starter: '/images/admin/distribution/starter_small_icon.svg',
-  partner: '/images/admin/distribution/partner_small_icon.svg',
-  elite: '/images/admin/distribution/elite_small_icon.svg',
-  legend: '/images/admin/distribution/legend_small_icon.svg',
-}
 interface NewsTypeTableProps {
+  tiers: TierConfig[]
+  categories: NewsCategory[]
   toggles: Record<string, Record<TierId, boolean>>
   onToggle: (rowId: string, tierId: TierId, value: boolean) => void
+  disabled?: boolean
 }
 
-export default function NewsTypeTable({ toggles, onToggle }: NewsTypeTableProps) {
+export default function NewsTypeTable({ tiers, categories, toggles, onToggle, disabled }: NewsTypeTableProps) {
   return (
     <div className="bg-[#171717] rounded-xl sm:rounded-2xl p-3 sm:p-6 flex flex-col max-h-[calc(100vh-360px)] min-h-[250px] overflow-hidden">
       {/* Scroll container without top padding so sticky top-0 sits flush at the very top */}
@@ -24,7 +21,7 @@ export default function NewsTypeTable({ toggles, onToggle }: NewsTypeTableProps)
           {/* Table header - Sticky flush at top-0 with solid background */}
           <div className="sticky top-0 z-20 bg-[#171717] pt-1 pb-3 sm:pb-4 grid grid-cols-[minmax(150px,1.4fr)_repeat(4,minmax(92px,1fr))] sm:grid-cols-[minmax(200px,1.5fr)_repeat(4,minmax(110px,1fr))] border-b border-[#282828] shrink-0">
             <div className="text-xs font-normal text-[#A8A8A9] flex items-center">Loại tin</div>
-            {TIERS.map((tier) => (
+            {tiers.map((tier) => (
               <div key={tier.id} className="flex flex-col items-start gap-0.5">
                 <div className="flex items-center gap-1">
                   <img
@@ -44,12 +41,12 @@ export default function NewsTypeTable({ toggles, onToggle }: NewsTypeTableProps)
 
           {/* Rows body */}
           <div className="flex flex-col gap-0">
-            {NEWS_CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <div key={cat.id} className="flex flex-col">
                 {/* Category label row */}
                 <div className="grid grid-cols-[minmax(150px,1.4fr)_repeat(4,minmax(92px,1fr))] sm:grid-cols-[minmax(200px,1.5fr)_repeat(4,minmax(110px,1fr))] py-2.5 sm:py-3 border-b border-[#282828]">
                   <div className="text-sm font-semibold text-[#DAA440]">{cat.label}</div>
-                  {TIERS.map((t) => <div key={t.id} />)}
+                  {tiers.map((t) => <div key={t.id} />)}
                 </div>
 
                 {/* Item rows */}
@@ -62,10 +59,11 @@ export default function NewsTypeTable({ toggles, onToggle }: NewsTypeTableProps)
                       <span className="text-sm sm:text-base font-normal text-white">{item.name}</span>
                       <span className="text-xs sm:text-sm font-normal text-[#A8A8A9]">{item.subtext}</span>
                     </div>
-                    {TIERS.map((tier) => (
+                    {tiers.map((tier) => (
                       <div key={tier.id} className="flex justify-start items-center">
                         <Switch
                           checked={toggles[item.id]?.[tier.id] ?? item.enabled[tier.id]}
+                          disabled={disabled}
                           onCheckedChange={(v) => onToggle(item.id, tier.id, v)}
                           className="w-[38px] h-6 data-[state=checked]:!bg-[#12B76A] data-[state=unchecked]:!bg-[#828283] p-[2px] [&_[data-slot=switch-thumb]]:!bg-white [&_[data-slot=switch-thumb]]:!size-5 [&_[data-slot=switch-thumb]]:data-[state=checked]:!translate-x-[14px] [&_[data-slot=switch-thumb]]:data-[state=unchecked]:!translate-x-0 transition-colors cursor-pointer"
                         />
