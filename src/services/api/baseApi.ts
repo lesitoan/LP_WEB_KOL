@@ -194,7 +194,7 @@ export const api = createApi({
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: adminBaseQueryWithReauth,
-  tagTypes: ['Auth', 'Members', 'Groups', 'Dashboard', 'Kols', 'Tiers', 'Referrals', 'Partner', 'Cashback', 'Benefits', 'Insights'],
+  tagTypes: ['Auth', 'Members', 'Groups', 'Dashboard', 'Kols', 'Tiers', 'Referrals', 'Partner', 'Cashback', 'Benefits', 'Insights', 'AdminUsers'],
   endpoints: () => ({}),
 })
 

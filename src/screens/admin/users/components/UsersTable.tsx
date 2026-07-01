@@ -1,9 +1,13 @@
 "use client"
 
-import React, { useState } from 'react'
 import Image from 'next/image'
-import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
-import { adminUsersData, ROLE_STYLES, type AdminUserRow } from '../constants'
+import { DataTable, type DataTableColumn, type DataTablePagination } from '@/components/ui/dataTable'
+import {
+  ROLE_STYLES,
+  STATUS_STYLES,
+  UI_STATUS_LABELS,
+  type AdminUserRow,
+} from '../constants'
 
 interface RoleBadgeProps { role: AdminUserRow['role'] }
 function RoleBadge({ role }: RoleBadgeProps) {
@@ -20,25 +24,26 @@ function RoleBadge({ role }: RoleBadgeProps) {
 }
 
 function StatusBadge({ status }: { status: AdminUserRow['status'] }) {
-  const isActive = status === 'active'
+  const s = STATUS_STYLES[status]
   return (
     <span
       className="inline-flex items-center gap-1 px-[6px] py-[2px] rounded-full text-xs font-normal leading-[18px]"
-      style={{ background: '#06301C', color: '#41C588' }}
+      style={{ background: s.bg, color: s.text }}
     >
-      <span className="w-[6px] h-[6px] rounded-full shrink-0" style={{ background: isActive ? '#41C588' : '#828283' }} />
-      {isActive ? 'Hoạt động' : 'Không hoạt động'}
+      <span className="w-[6px] h-[6px] rounded-full shrink-0" style={{ background: s.dot }} />
+      {UI_STATUS_LABELS[status]}
     </span>
   )
 }
 
 interface UsersTableProps {
+  users: AdminUserRow[]
+  pagination: DataTablePagination
+  isLoading: boolean
   onEdit: (user: AdminUserRow) => void
 }
 
-export default function UsersTable({ onEdit }: UsersTableProps) {
-  const [currentPage, setCurrentPage] = useState(1)
-
+export default function UsersTable({ users, pagination, isLoading, onEdit }: UsersTableProps) {
   const columns: DataTableColumn<AdminUserRow>[] = [
     {
       id: 'name',
@@ -95,22 +100,15 @@ export default function UsersTable({ onEdit }: UsersTableProps) {
     },
   ]
 
-  const pagination = {
-    page: currentPage,
-    totalPages: 13,
-    totalItems: 742,
-    limit: 8,
-    onPageChange: setCurrentPage,
-    summaryText: `Hiển thị ${(currentPage - 1) * 8 + 1}-${Math.min(currentPage * 8, 742)} / 742`,
-  }
-
   return (
     <div className="bg-[#171717] rounded-2xl p-4 md:p-6 flex flex-col gap-4">
       <h2 className="text-[18px] font-medium text-white leading-[30px]">Danh sách người dùng</h2>
       <DataTable
         columns={columns}
-        data={adminUsersData}
+        data={users}
         rowKey={(row) => row.id}
+        isLoading={isLoading}
+        emptyContent="Chưa có dữ liệu"
         pagination={pagination}
         className="bg-transparent border-none p-0"
       />
