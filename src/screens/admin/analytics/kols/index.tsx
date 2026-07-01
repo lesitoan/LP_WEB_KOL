@@ -32,7 +32,7 @@ export default function AdminKolAnalyticsScreen() {
       </div>
 
       {/* Row 1: Overview Cards */}
-      <KolOverviewMetrics />
+      <KolOverviewMetrics dateRange={dateRange} />
 
       {/* Row 2: Charts and Tables */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">

@@ -7,11 +7,14 @@ import type {
   AdminDashboardKolCommissions,
   AdminDashboardKolCommissionsQuery,
   AdminDashboardKolTierDistribution,
+  AdminDashboardOverviewStats,
+  AdminDashboardOverviewStatsQuery,
 } from '@/types/api/adminDashboard'
 
 type AdminDashboardGrowthChartEnvelope = ApiResponse<AdminDashboardGrowthChart>
 type AdminDashboardKolTierDistributionEnvelope = ApiResponse<AdminDashboardKolTierDistribution>
 type AdminDashboardKolCommissionsEnvelope = ApiResponse<AdminDashboardKolCommissions>
+type AdminDashboardOverviewStatsEnvelope = ApiResponse<AdminDashboardOverviewStats>
 
 function ensureData<T>(payload: ApiResponse<T>, fallback: string): T {
   if (!payload || payload.status !== 'success' || !payload.data) {
@@ -29,6 +32,28 @@ function appendIfPresent(params: URLSearchParams, key: string, value: string | u
 
 export const adminDashboardApi = adminApi.injectEndpoints({
   endpoints: (builder) => ({
+    getAdminDashboardOverviewStats: builder.query<AdminDashboardOverviewStats, AdminDashboardOverviewStatsQuery | void>({
+      query: (queryArg) => {
+        const query = queryArg ?? {}
+        const params = new URLSearchParams()
+
+        appendIfPresent(params, 'search', query.search)
+        appendIfPresent(params, 'status', query.status)
+        appendIfPresent(params, 'startDate', query.startDate)
+        appendIfPresent(params, 'endDate', query.endDate)
+
+        const queryString = params.toString()
+
+        return {
+          url: apiV1Path(`/admin/dashboard/overview/stats${queryString ? `?${queryString}` : ''}`),
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: AdminDashboardOverviewStatsEnvelope) =>
+        ensureData(payload, 'Khong the tai thong ke tong quan dashboard'),
+      providesTags: ['Dashboard'],
+    }),
+
     getAdminDashboardGrowthChart: builder.query<AdminDashboardGrowthChart, AdminDashboardGrowthChartQuery | void>({
       query: (queryArg) => {
         const query = queryArg ?? {}
@@ -93,6 +118,7 @@ export const adminDashboardApi = adminApi.injectEndpoints({
 })
 
 export const {
+  useGetAdminDashboardOverviewStatsQuery,
   useGetAdminDashboardGrowthChartQuery,
   useGetAdminDashboardKolCommissionsQuery,
   useGetAdminDashboardKolTierDistributionQuery,

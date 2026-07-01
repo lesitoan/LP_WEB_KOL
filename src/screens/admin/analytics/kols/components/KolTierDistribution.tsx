@@ -1,11 +1,16 @@
 import React from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import { useKolTierDistributionData } from '../hooks/useKolTierDistributionData'
+import { KolTierDistributionSkeleton } from '@/components/skeletons/admin/KolAnalyticsSkeletons'
 
 export default function KolTierDistribution() {
   const { data, isEmpty, query, totalKols } = useKolTierDistributionData()
   const isLoading = query.isLoading || query.isFetching
   const showChart = !isLoading && !query.isError && data.length > 0
+
+  if (isLoading) {
+    return <KolTierDistributionSkeleton />
+  }
 
   return (
     <div className="bg-surface-card border border-border rounded-2xl p-4 md:p-6 flex flex-col justify-between h-full space-y-6">
@@ -14,12 +19,7 @@ export default function KolTierDistribution() {
         <p className="text-xs md:text-sm text-muted-foreground">Phân bổ {totalKols} KOL</p>
       </div>
 
-      {/* Donut Chart Container */}
       <div className="relative h-[200px] w-full flex items-center justify-center">
-        {isLoading ? (
-          <div className="h-full w-full animate-pulse rounded-lg bg-white/5" />
-        ) : null}
-
         {query.isError ? (
           <div className="flex h-full items-center justify-center rounded-lg border border-border bg-black/10 px-4 text-center text-sm text-muted-foreground">
             Không thể tải dữ liệu phân bổ tier
@@ -54,7 +54,6 @@ export default function KolTierDistribution() {
               </ResponsiveContainer>
             </div>
 
-            {/* Centered Content */}
             <div className="text-center z-10">
               <span className="text-[32px] font-bold text-white block leading-[48px]">{totalKols}</span>
               <span className="text-sm font-normal text-white block">KOL</span>
@@ -63,7 +62,6 @@ export default function KolTierDistribution() {
         ) : null}
       </div>
 
-      {/* Horizontal Legend */}
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-2">
         {data.map((item) => (
           <div key={item.code} className="flex items-center gap-2">

@@ -1,9 +1,9 @@
 "use client"
 
 import React from 'react'
-import TierConfigSection from '../../../components/skeletons/distribution/TierConfigSection'
+import TierConfigSection from '../../../components/skeletons/admin/distribution/TierConfigSection'
 import NewsTypeTable from './components/NewsTypeTable'
-import { DistributionSkeleton } from '../../../components/skeletons/distribution/DistributionSkeleton'
+import { DistributionSkeleton } from '../../../components/skeletons/admin/distribution/DistributionSkeleton'
 import { useDistributionConfigActions } from './hooks/useDistributionConfigActions'
 import { useDistributionConfigData } from './hooks/useDistributionConfigData'
 import { useDistributionConfigDraft } from './hooks/useDistributionConfigDraft'

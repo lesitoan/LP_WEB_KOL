@@ -3,6 +3,7 @@ import {
   type KolAnalyticsDateRange,
 } from '../hooks/useKolGrowthChartData'
 import { useTopKolsCommissionData } from '../hooks/useTopKolsCommissionData'
+import { TopKolsTableSkeleton } from '@/components/skeletons/admin/KolAnalyticsSkeletons'
 
 interface TopKolsTableProps {
   dateRange: KolAnalyticsDateRange
@@ -13,6 +14,10 @@ export default function TopKolsTable({ dateRange }: TopKolsTableProps) {
   const isLoading = query.isLoading || query.isFetching
   const showRows = !isLoading && !query.isError && rows.length > 0
 
+  if (isLoading) {
+    return <TopKolsTableSkeleton />
+  }
+
   return (
     <div className="bg-surface-card border border-border rounded-2xl p-4 md:p-6 flex flex-col justify-between h-full">
       <div className="space-y-1 pb-4">
@@ -21,10 +26,6 @@ export default function TopKolsTable({ dateRange }: TopKolsTableProps) {
       </div>
 
       <div className="flex-1 overflow-x-auto">
-        {isLoading ? (
-          <div className="h-full min-h-[220px] w-full animate-pulse rounded-lg bg-white/5" />
-        ) : null}
-
         {query.isError ? (
           <div className="flex min-h-[220px] items-center justify-center rounded-lg border border-border bg-black/10 px-4 text-center text-sm text-muted-foreground">
             Không thể tải dữ liệu hoa hồng

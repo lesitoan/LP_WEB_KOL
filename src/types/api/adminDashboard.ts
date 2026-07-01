@@ -7,6 +7,37 @@ export interface AdminDashboardGrowthChartQuery {
   endDate?: string
 }
 
+export interface AdminDashboardOverviewStatsQuery {
+  search?: string
+  status?: AdminKolStatus
+  startDate?: string
+  endDate?: string
+}
+
+export interface AdminDashboardMetricTrend {
+  current: number
+  previous: number
+  delta: number
+  growthPercentage: number
+}
+
+export interface AdminDashboardOverviewStats {
+  comparisonPeriod: {
+    current: {
+      startDate: string
+      endDate: string
+    }
+    previous: {
+      startDate: string
+      endDate: string
+    }
+  }
+  metrics: {
+    totalKols: AdminDashboardMetricTrend
+    totalMembers: AdminDashboardMetricTrend
+  }
+}
+
 export type AdminDashboardKolCommissionsSortBy =
   | 'totalCommission'
   | 'totalVolume'

@@ -13,6 +13,7 @@ import {
   type KolAnalyticsDateRange,
   useKolGrowthChartData,
 } from '../hooks/useKolGrowthChartData'
+import { KolGrowthChartSkeleton } from '@/components/skeletons/admin/KolAnalyticsSkeletons'
 
 interface KolGrowthChartProps {
   dateRange: KolAnalyticsDateRange
@@ -23,6 +24,10 @@ export default function KolGrowthChart({ dateRange }: KolGrowthChartProps) {
   const isLoading = query.isLoading || query.isFetching
   const showChart = !isLoading && !query.isError && data.length > 0
 
+  if (isLoading) {
+    return <KolGrowthChartSkeleton />
+  }
+
   return (
     <div className="bg-surface-card border border-border rounded-2xl p-4 md:p-6 flex flex-col justify-between h-full space-y-6">
       <div className="space-y-1">
@@ -31,10 +36,6 @@ export default function KolGrowthChart({ dateRange }: KolGrowthChartProps) {
       </div>
 
       <div className="flex-1 w-full min-h-[220px] md:min-h-[280px]">
-        {isLoading ? (
-          <div className="h-full w-full animate-pulse rounded-lg bg-white/5" />
-        ) : null}
-
         {query.isError ? (
           <div className="flex h-full items-center justify-center rounded-lg border border-border bg-black/10 px-4 text-center text-sm text-muted-foreground">
             Không thể tải dữ liệu biểu đồ

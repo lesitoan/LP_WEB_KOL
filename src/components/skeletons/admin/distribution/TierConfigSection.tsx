@@ -1,8 +1,8 @@
 "use client"
 
 import React from 'react'
-import type { TierConfig, TierId } from '../../../screens/admin/distribution/constants'
-import TierCard from '../../../screens/admin/distribution/components/TierCard'
+import type { TierConfig, TierId } from '../../../../screens/admin/distribution/constants'
+import TierCard from '../../../../screens/admin/distribution/components/TierCard'
 
 interface TierConfigSectionProps {
   tiers: TierConfig[]
