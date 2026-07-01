@@ -1,27 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import DateRangeFilter from '@/components/filters/DateRangeFilter'
 import KolOverviewMetrics from './components/KolOverviewMetrics'
 import KolGrowthChart from './components/KolGrowthChart'
 import TopKolsTable from './components/TopKolsTable'
 import KolTierDistribution from './components/KolTierDistribution'
 import KolTierCommission from './components/KolTierCommission'
+import { useKolAnalyticsDateRangeUrlState } from './hooks/useKolAnalyticsDateRangeUrlState'
 
 export default function AdminKolAnalyticsScreen() {
-  const [dateRange, setDateRange] = useState({
-    from: '2026-03-05',
-    to: '2026-03-06',
-    isGetAllTime: false,
-  })
-
-  const handleDateChange = (range: { from?: string; to?: string; isGetAllTime?: boolean }) => {
-    setDateRange({
-      from: range.from ?? '',
-      to: range.to ?? '',
-      isGetAllTime: range.isGetAllTime ?? false,
-    })
-  }
+  const { dateRange, setDateRange } = useKolAnalyticsDateRangeUrlState()
 
   return (
     <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden animate-fade-in">
@@ -38,7 +27,7 @@ export default function AdminKolAnalyticsScreen() {
           from={dateRange.from}
           to={dateRange.to}
           isGetAllTime={dateRange.isGetAllTime}
-          onChange={handleDateChange}
+          onChange={setDateRange}
         />
       </div>
 
@@ -48,10 +37,10 @@ export default function AdminKolAnalyticsScreen() {
       {/* Row 2: Charts and Tables */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">
         <div className="xl:col-span-7 h-full">
-          <KolGrowthChart />
+          <KolGrowthChart dateRange={dateRange} />
         </div>
         <div className="xl:col-span-5 h-full">
-          <TopKolsTable />
+          <TopKolsTable dateRange={dateRange} />
         </div>
       </div>
 
