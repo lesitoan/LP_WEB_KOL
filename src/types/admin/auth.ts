@@ -8,18 +8,39 @@ export interface AdminProfile {
   email: string
   name: string
   role?: string
+  status?: string
+  lastLoginAt?: string | null
   twoFactorEnabled?: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface AdminUserApiData {
+  id: string
+  email: string
+  fullName: string | null
+  role?: string
+  status?: string
+  lastLoginAt?: string | null
+  twoFactorEnabled?: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface AdminPermissionProfile {
+  [key: string]: unknown
+}
+
+export interface AdminMeResult {
+  user: AdminUserApiData
+  permissionProfile?: AdminPermissionProfile | null
 }
 
 export interface AdminLoginResult {
   accessToken: string
   refreshToken: string
-  user: {
-    id: string
-    email: string
-    fullName: string
-    role?: string
-    twoFactorEnabled?: boolean
+  user: AdminUserApiData & {
+    permissionProfile?: AdminPermissionProfile | null
   }
 }
 

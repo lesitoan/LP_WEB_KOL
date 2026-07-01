@@ -8,13 +8,13 @@ import { getDefaultAdminPath } from '@/lib/adminPermissions'
 
 export default function AdminDashboardPage() {
   const router = useRouter()
-  const { hydrated, profile } = useAdminAuthSession()
+  const { hydrated, isCheckingSession, profile } = useAdminAuthSession()
 
   useEffect(() => {
-    if (hydrated) {
-      router.replace(getDefaultAdminPath(profile?.role))
+    if (hydrated && !isCheckingSession && profile) {
+      router.replace(getDefaultAdminPath(profile.role))
     }
-  }, [hydrated, profile?.role, router])
+  }, [hydrated, isCheckingSession, profile, router])
 
   return <PageLoading />
 }

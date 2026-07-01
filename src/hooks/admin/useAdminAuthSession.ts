@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
+import { useGetCurrentAdminQuery } from '@/services/api/admin/authApi'
 import { adminApi } from '@/services/api/baseApi'
 import { clearAdminAuthSession, readAdminAuthSession } from '@/lib/authSession'
 import type { AdminProfile } from '@/types/admin/auth'
@@ -34,6 +35,13 @@ export function useAdminAuthSession() {
     })
   }, [])
 
+  const { data: currentAdmin, isLoading, isFetching } = useGetCurrentAdminQuery(undefined, {
+    skip: !session.hydrated || !session.accessToken,
+  })
+
+  const isCheckingSession = Boolean(session.hydrated && session.accessToken && (isLoading || isFetching))
+  const profile = currentAdmin ?? null
+
   const logout = () => {
     dispatch(adminApi.util.resetApiState())
     clearAdminAuthSession()
@@ -49,10 +57,10 @@ export function useAdminAuthSession() {
   return {
     accessToken: session.accessToken,
     refreshToken: session.refreshToken,
-    profile: session.profile,
+    profile,
     hydrated: session.hydrated,
     hasToken: Boolean(session.accessToken),
-    isCheckingSession: false,
+    isCheckingSession,
     logout,
     setSession,
   }

@@ -1,10 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import {
-  handleForbiddenAdminRoute,
   handleUnauthorizedAdminSession,
   handleUnauthorizedSession,
-  readAdminAuthSession,
   readAuthSession,
   writeAdminAuthSession,
   writeAuthSession,
@@ -127,11 +125,9 @@ const adminBaseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBa
   }
 
   let result = await adminBaseQuery(args, api, extraOptions)
-  const method = typeof args === 'string' ? 'GET' : (args.method || 'GET').toUpperCase()
 
-  if (result.error?.status === 403 && method === 'GET') {
-    handleForbiddenAdminRoute()
-    return new Promise<never>(() => {})
+  if (result.error?.status === 403) {
+    return silentLogout()
   }
 
   if (result.error?.status !== 401) {
@@ -174,17 +170,15 @@ const adminBaseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBa
     return silentLogout()
   }
 
-  const currentSession = readAdminAuthSession()
-
   writeAdminAuthSession({
     accessToken: payload.data.accessToken,
     refreshToken: payload.data.refreshToken,
-    user: currentSession.user,
+    user: null,
   })
 
   result = await adminBaseQuery(args, api, extraOptions)
 
-  if (result.error?.status === 401) {
+  if (result.error?.status === 401 || result.error?.status === 403) {
     return silentLogout()
   }
 

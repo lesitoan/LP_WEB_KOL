@@ -27,11 +27,11 @@ export default function AdminDashboardLayout({
     }
   }, [authHydrated, hasToken, pathname, router])
 
-  if (!mounted || !authHydrated || !hasToken || isCheckingSession) {
+  if (!mounted || !authHydrated || !hasToken || isCheckingSession || !profile) {
     return <SharedPageLoading />
   }
 
-  if (pathname === '/admin/not-found' || !canAccessAdminPath(profile?.role, pathname)) {
+  if (pathname === '/admin/not-found' || !canAccessAdminPath(profile.role, pathname)) {
     return (
       <AdminAppLayout>
         <AdminNotFoundContent role={profile?.role} />

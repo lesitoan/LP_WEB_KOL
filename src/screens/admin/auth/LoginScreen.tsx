@@ -65,8 +65,7 @@ export default function AdminLoginScreen() {
 
   useEffect(() => {
     if (hydrated && hasToken && !hasSubmittedLogin.current) {
-      const session = readAdminAuthSession()
-      router.replace(getDefaultAdminPath(session.user?.role))
+      router.replace('/admin/dashboard')
     }
   }, [hasToken, hydrated, router])
 

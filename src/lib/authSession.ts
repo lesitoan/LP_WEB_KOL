@@ -55,13 +55,11 @@ export function readAdminAuthSession(): AdminAuthSession {
 
   const accessToken = getCookie('adminAccessToken')
   const refreshToken = getCookie('adminRefreshToken')
-  const userRaw = typeof window !== 'undefined' ? localStorage.getItem('adminUser') : null
-  const user = userRaw ? (JSON.parse(userRaw) as AdminProfile) : null
 
   return {
     accessToken,
     refreshToken,
-    user,
+    user: null,
   }
 }
 
@@ -87,11 +85,9 @@ export function writeAdminAuthSession(session: AdminAuthSession) {
   if (typeof document === 'undefined') return
 
   if (typeof window !== 'undefined') {
-    if (session.user) {
-      localStorage.setItem('adminUser', JSON.stringify(session.user))
-    } else {
-      localStorage.removeItem('adminUser')
-    }
+    localStorage.removeItem('adminUser')
+    localStorage.removeItem('adminAccessToken')
+    localStorage.removeItem('adminRefreshToken')
   }
 
   const cookieBase = 'path=/'
