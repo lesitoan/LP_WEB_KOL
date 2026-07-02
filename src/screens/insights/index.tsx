@@ -1,38 +1,78 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
-import type { InsightCategory } from '@/types/insights'
+import type { PublishKolInsightTarget } from '@/types/api/kolInsight'
+import type { InsightListItem, InsightModalMode } from '@/types/insights'
+import InsightEditModal from './components/InsightEditModal'
 import InsightsGrid from './components/InsightsGrid'
+import InsightsHeader from './components/InsightsHeader'
 import InsightsTabs from './components/InsightsTabs'
-import { insights, insightTabs } from './constants'
+import PublishInsightModal from './components/PublishInsightModal'
+import { useInsightActions } from './hooks/useInsightActions'
+import { useInsightDetail } from './hooks/useInsightDetail'
+import { useInsightsData } from './hooks/useInsightsData'
+import { useInsightsUrlState } from './hooks/useInsightsUrlState'
 
 export default function InsightsScreen() {
-  const [activeTab, setActiveTab] = useState<InsightCategory>('market')
+  const [detailMode, setDetailMode] = useState<InsightModalMode>('view')
+  const [selectedInsightId, setSelectedInsightId] = useState<string | null>(null)
+  const [publishingInsight, setPublishingInsight] = useState<InsightListItem | null>(null)
 
-  const visibleInsights = useMemo(
-    () => insights.filter((insight) => insight.category === activeTab),
-    [activeTab],
-  )
+  const urlState = useInsightsUrlState()
+  const data = useInsightsData({ activeTab: urlState.activeTab })
+  const detail = useInsightDetail(selectedInsightId)
+  const actions = useInsightActions()
+
+  const handleOpenDetail = (insight: InsightListItem, mode: InsightModalMode) => {
+    setDetailMode(mode)
+    setSelectedInsightId(insight.id)
+  }
+
+  const handleDetailModalOpenChange = (open: boolean) => {
+    if (!open) {
+      setSelectedInsightId(null)
+    }
+  }
+
+  const handlePublish = (insightId: string, targets: PublishKolInsightTarget[]) =>
+    actions.handlePublish({ insightId, targets })
 
   return (
     <div className="w-full animate-fade-in">
-      <div className="w-full">
-        <header className="mb-6 space-y-2">
-          <h1 className="text-2xl font-semibold leading-tight text-white">
-            Insights
-          </h1>
-          <p className="text-sm font-medium leading-5 text-muted-foreground">
-            Baseline chất lượng cho mọi tier - context + risk, không phải khuyến nghị mua/bán
-          </p>
-        </header>
-        <InsightsTabs
-          tabs={insightTabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-      </div>
-      <InsightsGrid insights={visibleInsights} />
+      <InsightsHeader />
+      <InsightsTabs
+        tabs={data.tabs}
+        activeTab={urlState.activeTab}
+        onTabChange={urlState.setActiveTab}
+      />
+      <InsightsGrid
+        insights={data.insights}
+        isLoading={data.isLoading}
+        onViewInsight={(insight) => handleOpenDetail(insight, 'view')}
+        onEditInsight={(insight) => handleOpenDetail(insight, 'edit')}
+        onPublishInsight={setPublishingInsight}
+      />
+      <InsightEditModal
+        detail={detail.detail}
+        mode={detailMode}
+        open={Boolean(selectedInsightId)}
+        isLoading={detail.isLoading}
+        isSaving={actions.isSaving}
+        onOpenChange={handleDetailModalOpenChange}
+        onSave={actions.handleSaveCustomization}
+      />
+      <PublishInsightModal
+        insight={publishingInsight}
+        open={Boolean(publishingInsight)}
+        isPublishing={actions.isPublishing}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPublishingInsight(null)
+          }
+        }}
+        onPublish={handlePublish}
+      />
     </div>
   )
 }

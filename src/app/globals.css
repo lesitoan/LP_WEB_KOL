@@ -394,3 +394,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   width: 100% !important;
 }
 
+/* Thin brand-colored scrollbar */
+.scrollbar-thin-brand {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(247, 240, 161, 0.35) transparent;
+}
+.scrollbar-thin-brand::-webkit-scrollbar {
+  width: 2px;
+}
+.scrollbar-thin-brand::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin-brand::-webkit-scrollbar-thumb {
+  background: rgba(247, 240, 161, 0.35);
+  border-radius: 9999px;
+}
+.scrollbar-thin-brand::-webkit-scrollbar-thumb:hover {
+  background: rgba(247, 240, 161, 0.55);
+}

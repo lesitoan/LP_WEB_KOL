@@ -1,92 +1,42 @@
-import type { Insight, InsightTab } from '@/types/insights'
+import type { ContentTypeCode } from '@/types/api/adminInsight'
+import type { InsightTab } from '@/types/insights'
 
-export const insightTabs: InsightTab[] = [
-  { id: 'market', label: 'Thị trường & Vĩ mô' },
-  { id: 'onchain', label: 'On-chain & Whale' },
-  { id: 'risk', label: 'Rủi ro & Pháp lý' },
-  { id: 'narrative', label: 'Narrative & Tâm lý thị trường' },
-  { id: 'research', label: 'Research Reports' },
+export const insightContentTypeOrder: ContentTypeCode[] = [
+  'BAN_TIN_0630',
+  'BAN_TIN_1300',
+  'BAN_TIN_1900',
+  'ALERT',
+  'PRE_EVENT',
+  'WEEKLY_CALENDAR',
+  'WHALES_DAILY',
+  'WHALES_ALERT',
+  'MARKET_STRUCTURE',
+  'SECTOR_DAILY',
+  'SENTIMENT',
+  'DEEP_DIVE',
+  'LEGAL_VN',
 ]
 
-export const insights: Insight[] = [
-  {
-    id: 'market-btc-smart-money-1',
-    category: 'market',
-    title: 'Smart Money L/S - BTC',
-    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
-    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
-    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
-  },
-  {
-    id: 'market-btc-smart-money-2',
-    category: 'market',
-    title: 'Smart Money L/S - BTC',
-    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
-    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
-    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
-  },
-  {
-    id: 'market-btc-smart-money-3',
-    category: 'market',
-    title: 'Smart Money L/S - BTC',
-    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
-    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
-    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
-  },
-  {
-    id: 'market-btc-smart-money-4',
-    category: 'market',
-    title: 'Smart Money L/S - BTC',
-    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
-    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
-    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
-  },
-  {
-    id: 'market-btc-smart-money-5',
-    category: 'market',
-    title: 'Smart Money L/S - BTC',
-    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
-    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
-    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
-  },
-  {
-    id: 'market-btc-smart-money-6',
-    category: 'market',
-    title: 'Smart Money L/S - BTC',
-    risk: 'Rủi ro: Dễ đảo chiều quanh tin tức; lưu ý position sizing.',
-    dataPoint: 'Long 64% / Short 36% - +8% trong 4h - Net vol dương',
-    context: 'Nghiêng mua ngắn hạn; chưa xác nhận xu hướng.',
-  },
-  {
-    id: 'onchain-whale-flow',
-    category: 'onchain',
-    title: 'Whale Exchange Flow - ETH',
-    risk: 'Rủi ro: Dòng nạp sàn tăng có thể tạo biến động ngắn hạn.',
-    dataPoint: 'Net inflow +12.4K ETH - Ví lớn hoạt động mạnh trong 6h',
-    context: 'Theo dõi vùng thanh khoản trước khi xác nhận hướng đi.',
-  },
-  {
-    id: 'risk-regulatory-watch',
-    category: 'risk',
-    title: 'Regulatory Watch - Stablecoins',
-    risk: 'Rủi ro: Tin pháp lý có thể ảnh hưởng liquidity trong phiên Mỹ.',
-    dataPoint: 'Headline risk cao - Spread stablecoin vẫn trong ngưỡng ổn định',
-    context: 'Ưu tiên kịch bản phòng thủ, hạn chế đòn bẩy cao.',
-  },
-  {
-    id: 'narrative-ai-rotation',
-    category: 'narrative',
-    title: 'Narrative Rotation - AI',
-    risk: 'Rủi ro: FOMO tăng nhanh sau các cú break thiếu volume xác nhận.',
-    dataPoint: 'Social volume +18% - Funding trung tính - Dòng tiền phân hóa',
-    context: 'Narrative còn khỏe nhưng cần lọc token theo thanh khoản.',
-  },
-  {
-    id: 'research-weekly-brief',
-    category: 'research',
-    title: 'Weekly Market Brief',
-    risk: 'Rủi ro: Báo cáo mang tính tham khảo, không phải khuyến nghị.',
-    dataPoint: 'BTC dominance ổn định - Alt beta thấp hơn tuần trước',
-    context: 'Thị trường ưu tiên chọn lọc hơn là risk-on toàn diện.',
-  },
+export const contentTypeLabels: Record<ContentTypeCode, string> = {
+  BAN_TIN_0630: 'Bản tin 06:30',
+  BAN_TIN_1300: 'Bản tin 13:00',
+  BAN_TIN_1900: 'Bản tin 19:00',
+  ALERT: 'Tin nóng',
+  PRE_EVENT: 'Trước sự kiện',
+  WEEKLY_CALENDAR: 'Lịch tuần',
+  WHALES_DAILY: 'On-chain Insight',
+  WHALES_ALERT: 'Whales Alert',
+  MARKET_STRUCTURE: 'Cấu trúc thị trường',
+  SECTOR_DAILY: 'Sector & Narrative',
+  SENTIMENT: 'Sentiment',
+  DEEP_DIVE: 'Research Report',
+  LEGAL_VN: 'Pháp lý Việt Nam',
+}
+
+export const insightTabs: InsightTab[] = [
+  { id: 'ALL', label: 'Tất cả' },
+  ...insightContentTypeOrder.map((contentType) => ({
+    id: contentType,
+    label: contentTypeLabels[contentType],
+  })),
 ]
