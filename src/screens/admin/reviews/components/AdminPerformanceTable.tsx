@@ -1,11 +1,24 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Image from 'next/image'
-import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
-import { adminPerformanceData, type AdminPerformanceRow } from '../constants'
+import { AdminPerformanceTableSkeleton } from '@/components/skeletons/admin/reviews/AdminPerformanceTableSkeleton'
+import { DataTable, type DataTableColumn, type DataTablePagination } from '@/components/ui/dataTable'
+import type { AdminPerformanceRow } from '../constants'
 
-export default function AdminPerformanceTable() {
-  const [currentPage, setCurrentPage] = useState(1)
+interface AdminPerformanceTableProps {
+  rows: AdminPerformanceRow[]
+  pagination: DataTablePagination
+  isLoading: boolean
+}
 
+function formatHours(activeHours: number | null) {
+  return activeHours === null ? '-' : `${activeHours.toFixed(1)} giờ`
+}
+
+export default function AdminPerformanceTable({
+  rows,
+  pagination,
+  isLoading,
+}: AdminPerformanceTableProps) {
   const columns: DataTableColumn<AdminPerformanceRow>[] = [
     {
       id: 'name',
@@ -71,17 +84,12 @@ export default function AdminPerformanceTable() {
       header: 'Giờ trực',
       headerClassName: '!text-xs !font-normal !text-[#A8A8A9]',
       cellClassName: '!text-base !font-normal !text-white',
-      cell: (row) => <span className="text-base text-white font-normal">{row.activeHours.toFixed(1)} giờ</span>,
+      cell: (row) => <span className="text-base text-white font-normal">{formatHours(row.activeHours)}</span>,
     },
   ]
 
-  const pagination = {
-    page: currentPage,
-    totalPages: 13,
-    totalItems: 742,
-    limit: 8,
-    onPageChange: (page: number) => setCurrentPage(page),
-    summaryText: `Hiển thị ${(currentPage - 1) * 8 + 1}-${Math.min(currentPage * 8, 742)} / 742`,
+  if (isLoading) {
+    return <AdminPerformanceTableSkeleton />
   }
 
   return (
@@ -93,9 +101,10 @@ export default function AdminPerformanceTable() {
       <div className="flex-1 min-w-0">
         <DataTable
           columns={columns}
-          data={adminPerformanceData}
-          rowKey={(row) => row.name}
+          data={rows}
+          rowKey={(row) => row.id}
           pagination={pagination}
+          emptyContent="Không có dữ liệu"
           className="bg-transparent border-none p-0"
         />
       </div>

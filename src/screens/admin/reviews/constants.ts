@@ -31,22 +31,23 @@ export const hourlyTimelineData: TimelineSlot[] = [
 ]
 
 export interface AdminPerformanceRow {
+  id: string
   name: string
   avatarColor: string
   reviewedCount: number
   avgResponseTime: number
   editRate: number
   recallRate: number
-  activeHours: number
+  activeHours: number | null
 }
 
 export const adminPerformanceData: AdminPerformanceRow[] = [
-  { name: 'Admin 01', avatarColor: '#9B692C', reviewedCount: 68, avgResponseTime: 4.2, editRate: 41, recallRate: 1.5, activeHours: 8.5 },
-  { name: 'Admin 02', avatarColor: '#9B692C', reviewedCount: 52, avgResponseTime: 11.8, editRate: 22, recallRate: 5.8, activeHours: 7.0 },
-  { name: 'Admin 03', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 6.1, editRate: 38, recallRate: 0, activeHours: 3.5 },
-  { name: 'Admin 04', avatarColor: '#9B692C', reviewedCount: 52, avgResponseTime: 11.8, editRate: 41, recallRate: 5.8, activeHours: 7.0 },
-  { name: 'Admin 05', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 4.2, editRate: 38, recallRate: 1.5, activeHours: 8.5 },
-  { name: 'Admin 06', avatarColor: '#9B692C', reviewedCount: 52, avgResponseTime: 11.8, editRate: 41, recallRate: 5.8, activeHours: 8.5 },
-  { name: 'Admin 07', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 4.2, editRate: 38, recallRate: 1.5, activeHours: 7.0 },
-  { name: 'Admin 08', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 4.2, editRate: 38, recallRate: 1.5, activeHours: 8.5 },
+  { id: 'admin-01', name: 'Admin 01', avatarColor: '#9B692C', reviewedCount: 68, avgResponseTime: 4.2, editRate: 41, recallRate: 1.5, activeHours: 8.5 },
+  { id: 'admin-02', name: 'Admin 02', avatarColor: '#9B692C', reviewedCount: 52, avgResponseTime: 11.8, editRate: 22, recallRate: 5.8, activeHours: 7.0 },
+  { id: 'admin-03', name: 'Admin 03', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 6.1, editRate: 38, recallRate: 0, activeHours: 3.5 },
+  { id: 'admin-04', name: 'Admin 04', avatarColor: '#9B692C', reviewedCount: 52, avgResponseTime: 11.8, editRate: 41, recallRate: 5.8, activeHours: 7.0 },
+  { id: 'admin-05', name: 'Admin 05', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 4.2, editRate: 38, recallRate: 1.5, activeHours: 8.5 },
+  { id: 'admin-06', name: 'Admin 06', avatarColor: '#9B692C', reviewedCount: 52, avgResponseTime: 11.8, editRate: 41, recallRate: 5.8, activeHours: 8.5 },
+  { id: 'admin-07', name: 'Admin 07', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 4.2, editRate: 38, recallRate: 1.5, activeHours: 7.0 },
+  { id: 'admin-08', name: 'Admin 08', avatarColor: '#9B692C', reviewedCount: 22, avgResponseTime: 4.2, editRate: 38, recallRate: 1.5, activeHours: 8.5 },
 ]

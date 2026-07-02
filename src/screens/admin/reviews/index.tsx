@@ -4,25 +4,29 @@ import React, { useState } from 'react'
 import DateRangeFilter from '@/components/filters/DateRangeFilter'
 import ReviewCoverageCard from './components/ReviewCoverageCard'
 import AdminPerformanceTable from './components/AdminPerformanceTable'
+import { useAdminPerformanceData } from './hooks/useAdminPerformanceData'
+import { useAdminReviewsUrlState } from './hooks/useAdminReviewsUrlState'
 
 export default function AdminReviewsScreen() {
   const [mode, setMode] = useState<1 | 2>(1)
-  const [dateRange, setDateRange] = useState({
-    from: '2026-03-05',
-    to: '2026-03-06',
-    isGetAllTime: false,
-  })
+  const { dateRange, page, setDateRange, setPage } = useAdminReviewsUrlState()
+  const adminPerformance = useAdminPerformanceData({ dateRange, page })
 
   const handleToggleMode = () => {
     setMode((prev) => (prev === 1 ? 2 : 1))
   }
 
-  const handleDateChange = (newRange: { from?: string; to?: string; isGetAllTime?: boolean }) => {
-    setDateRange({
-      from: newRange.from || '',
-      to: newRange.to || '',
-      isGetAllTime: !!newRange.isGetAllTime,
-    })
+  const { pagination } = adminPerformance
+  const startItem = pagination.totalItems === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1
+  const endItem = Math.min(pagination.page * pagination.limit, pagination.totalItems)
+  const tablePagination = {
+    page: pagination.page,
+    totalPages: pagination.totalPages,
+    totalItems: pagination.totalItems,
+    limit: pagination.limit,
+    isDisabled: adminPerformance.isLoading,
+    onPageChange: setPage,
+    summaryText: `Hiển thị ${startItem}-${endItem} / ${pagination.totalItems}`,
   }
 
   return (
@@ -47,7 +51,7 @@ export default function AdminReviewsScreen() {
               from={dateRange.from}
               to={dateRange.to}
               isGetAllTime={dateRange.isGetAllTime}
-              onChange={handleDateChange}
+              onChange={setDateRange}
             />
           </div>
 
@@ -74,7 +78,11 @@ export default function AdminReviewsScreen() {
       {/* Stack of Components */}
       <div className="flex flex-col gap-6">
         <ReviewCoverageCard mode={mode} />
-        <AdminPerformanceTable />
+        <AdminPerformanceTable
+          rows={adminPerformance.rows}
+          pagination={tablePagination}
+          isLoading={adminPerformance.isLoading}
+        />
       </div>
     </div>
   )

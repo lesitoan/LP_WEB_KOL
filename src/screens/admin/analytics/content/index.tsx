@@ -1,26 +1,15 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import DateRangeFilter from '@/components/filters/DateRangeFilter'
 import ContentOverviewMetrics from './components/ContentOverviewMetrics'
 import ForwardsByContent from './components/ForwardsByContent'
 import ForwardRateByContent from './components/ForwardRateByContent'
 import ContentStrategySuggestions from './components/ContentStrategySuggestions'
+import { useContentAnalyticsDateRangeUrlState } from './hooks/useContentAnalyticsDateRangeUrlState'
 
 export default function AdminContentAnalyticsScreen() {
-  const [dateRange, setDateRange] = useState({
-    from: '2026-03-05',
-    to: '2026-03-06',
-    isGetAllTime: false,
-  })
-
-  const handleDateChange = (range: { from?: string; to?: string; isGetAllTime?: boolean }) => {
-    setDateRange({
-      from: range.from ?? '',
-      to: range.to ?? '',
-      isGetAllTime: range.isGetAllTime ?? false,
-    })
-  }
+  const { dateRange, setDateRange } = useContentAnalyticsDateRangeUrlState()
 
   return (
     <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden animate-fade-in">
@@ -37,17 +26,17 @@ export default function AdminContentAnalyticsScreen() {
           from={dateRange.from}
           to={dateRange.to}
           isGetAllTime={dateRange.isGetAllTime}
-          onChange={handleDateChange}
+          onChange={setDateRange}
         />
       </div>
 
       {/* Row 1: Overview Cards */}
-      <ContentOverviewMetrics />
+      <ContentOverviewMetrics dateRange={dateRange} />
 
       {/* Row 2: Forwards count and rate lists */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 items-stretch">
         <div className="h-full">
-          <ForwardsByContent />
+          <ForwardsByContent dateRange={dateRange} />
         </div>
         <div className="h-full">
           <ForwardRateByContent />
