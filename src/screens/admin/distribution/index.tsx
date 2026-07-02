@@ -56,9 +56,7 @@ export default function AdminDistributionScreen() {
             disabled={!draftState.dirty || isSaving}
             className="h-9 px-4 bg-[#F7F0A1] rounded-lg text-sm font-semibold text-black hover:bg-[#e8e09c] disabled:cursor-not-allowed disabled:opacity-50 transition-colors inline-flex items-center gap-2"
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <circle cx="10" cy="10" r="6.5" fill="black" />
-            </svg>
+            <img src="/images/admin/distribution/check_icon.svg" alt="" className="w-5 h-5 shrink-0" />
             {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
           </button>
         </div>
