@@ -6,10 +6,12 @@ import ReviewCoverageCard from './components/ReviewCoverageCard'
 import AdminPerformanceTable from './components/AdminPerformanceTable'
 import { useAdminPerformanceData } from './hooks/useAdminPerformanceData'
 import { useAdminReviewsUrlState } from './hooks/useAdminReviewsUrlState'
+import { useReviewCoverageData } from './hooks/useReviewCoverageData'
 
 export default function AdminReviewsScreen() {
   const [mode, setMode] = useState<1 | 2>(1)
   const { dateRange, page, setDateRange, setPage } = useAdminReviewsUrlState()
+  const reviewCoverage = useReviewCoverageData({ dateRange })
   const adminPerformance = useAdminPerformanceData({ dateRange, page })
 
   const handleToggleMode = () => {
@@ -77,7 +79,12 @@ export default function AdminReviewsScreen() {
 
       {/* Stack of Components */}
       <div className="flex flex-col gap-6">
-        <ReviewCoverageCard mode={mode} />
+        <ReviewCoverageCard
+          mode={mode}
+          metrics={reviewCoverage.items}
+          timelineSlots={reviewCoverage.timelineSlots}
+          isLoading={reviewCoverage.isLoading}
+        />
         <AdminPerformanceTable
           rows={adminPerformance.rows}
           pagination={tablePagination}

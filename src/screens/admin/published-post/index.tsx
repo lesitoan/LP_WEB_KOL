@@ -1,48 +1,40 @@
 "use client";
 
 import React, { useState } from 'react'
-import { cn } from '@/lib/utils'
-import { INITIAL_PUBLISHED_POSTS, type PublishedPost } from './constants'
+import { type PublishedPost } from './constants'
 import PublishedPostTable from './components/PublishedPostTable'
 import PublishedPostDetailModal from './components/PublishedPostDetailModal'
 import PublishedPostRequestModal from './components/PublishedPostRequestModal'
+import { usePublishedPostActions } from './hooks/usePublishedPostActions'
+import { usePublishedPostData } from './hooks/usePublishedPostData'
 
 export default function AdminPublishedPostScreen() {
-  const [posts, setPosts] = useState<PublishedPost[]>(INITIAL_PUBLISHED_POSTS)
   const [selectedPost, setSelectedPost] = useState<PublishedPost | null>(null)
-  
-  // States for Gửi yêu cầu xử lý modal
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false)
   const [reasoningPost, setReasoningPost] = useState<PublishedPost | null>(null)
-
   const [currentPage, setCurrentPage] = useState(1)
+  const publishedPostData = usePublishedPostData(currentPage)
+  const publishedPostActions = usePublishedPostActions({
+    onSubmitted: publishedPostData.refetch,
+  })
 
-  // Triggered when row click or action button is clicked
   const handleActionClick = (e: React.MouseEvent, postId: string) => {
     e.stopPropagation()
-    const targetPost = posts.find((p) => p.id === postId)
+    const targetPost = publishedPostData.posts.find((post) => post.id === postId)
     if (targetPost) {
       setReasoningPost(targetPost)
       setIsRequestModalOpen(true)
     }
   }
 
-  // Triggered when "Yêu cầu xử lý" is clicked inside the detail modal
   const handleDetailRequestProcess = (targetPost: PublishedPost) => {
-    setSelectedPost(null) // close detail modal
+    setSelectedPost(null)
     setReasoningPost(targetPost)
     setIsRequestModalOpen(true)
   }
 
-  // Triggered when submitting request reasoning modal
-  const handleReasonSubmit = (postId: string, reason: string) => {
-    setPosts((prev) =>
-      prev.map((post) =>
-        post.id === postId
-          ? { ...post, actionType: 'sent', actionStatusText: 'Chờ admin duyệt' }
-          : post,
-      ),
-    )
+  const handleReasonSubmit = async (postId: string, reason: string) => {
+    return publishedPostActions.submitActionRequest(postId, reason)
   }
 
   const getCategoryBadgeClass = (colorType: string) => {
@@ -77,7 +69,6 @@ export default function AdminPublishedPostScreen() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col justify-end items-start gap-6">
           <div className="flex flex-col items-start justify-start">
@@ -91,25 +82,23 @@ export default function AdminPublishedPostScreen() {
         </div>
       </div>
 
-      {/* Main Table Container */}
       <div className="bg-[#171717] rounded-2xl p-6 border border-[#282828] space-y-6 flex flex-col justify-between min-h-[600px]">
         <div className="space-y-4">
           <h2 className="text-lg font-medium text-white leading-7">Danh sách tin đã đăng</h2>
 
-          {/* Render Table */}
           <PublishedPostTable
-            posts={posts}
+            posts={publishedPostData.posts}
             onRowClick={(post) => setSelectedPost(post)}
             onActionClick={handleActionClick}
             getCategoryBadgeClass={getCategoryBadgeClass}
             getCategoryDotClass={getCategoryDotClass}
-            currentPage={currentPage}
+            pagination={publishedPostData.pagination}
             onPageChange={setCurrentPage}
+            isLoading={publishedPostData.isLoading}
           />
         </div>
       </div>
 
-      {/* Render Detail Modal */}
       <PublishedPostDetailModal
         post={selectedPost}
         onClose={() => setSelectedPost(null)}
@@ -118,7 +107,6 @@ export default function AdminPublishedPostScreen() {
         getCategoryDotClass={getCategoryDotClass}
       />
 
-      {/* Render Yêu cầu xử lý Reasoning Modal */}
       <PublishedPostRequestModal
         post={reasoningPost}
         isOpen={isRequestModalOpen}
@@ -127,6 +115,7 @@ export default function AdminPublishedPostScreen() {
           setReasoningPost(null)
         }}
         onSubmit={handleReasonSubmit}
+        isSubmitting={publishedPostActions.isSubmittingActionRequest}
       />
     </div>
   )

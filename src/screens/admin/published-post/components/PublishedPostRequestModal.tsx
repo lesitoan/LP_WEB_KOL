@@ -9,7 +9,8 @@ interface PublishedPostRequestModalProps {
   post: PublishedPost | null
   isOpen: boolean
   onClose: () => void
-  onSubmit: (postId: string, reason: string) => void
+  onSubmit: (postId: string, reason: string) => Promise<boolean>
+  isSubmitting?: boolean
 }
 
 export default function PublishedPostRequestModal({
@@ -17,6 +18,7 @@ export default function PublishedPostRequestModal({
   isOpen,
   onClose,
   onSubmit,
+  isSubmitting = false,
 }: PublishedPostRequestModalProps) {
   const [reason, setReason] = useState('')
 
@@ -26,10 +28,12 @@ export default function PublishedPostRequestModal({
     }
   }, [isOpen])
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!post || !reason.trim()) return
-    onSubmit(post.id, reason)
-    onClose()
+    const isSuccess = await onSubmit(post.id, reason)
+    if (isSuccess) {
+      onClose()
+    }
   }
 
   return (
@@ -106,12 +110,12 @@ export default function PublishedPostRequestModal({
           </DialogClose>
           <button
             type="button"
-            disabled={!reason.trim()}
+            disabled={!reason.trim() || isSubmitting}
             onClick={handleSend}
             className="h-9 px-5 rounded-lg bg-[#F7F0A1] text-sm font-semibold text-black hover:bg-[#F7F0A1]/80 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 active:scale-95 duration-100"
           >
             <Send className="h-4 w-4 fill-black text-black" />
-            Gửi yêu cầu
+            {isSubmitting ? 'Đang gửi...' : 'Gửi yêu cầu'}
           </button>
         </div>
       </DialogContent>

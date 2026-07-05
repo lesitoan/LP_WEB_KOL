@@ -14,6 +14,12 @@ export interface AdminDashboardOverviewStatsQuery {
   endDate?: string
 }
 
+export interface AdminDashboardCommissionQuery {
+  lpexUid?: string
+  startDate?: number | string
+  endDate?: number | string
+}
+
 export interface AdminDashboardMetricTrend {
   current: number
   previous: number
@@ -117,4 +123,24 @@ export interface AdminDashboardKolCommissions {
     itemsPerPage: number
     totalPages: number
   }
+}
+
+export interface AdminDashboardCommissionSide {
+  volume: number
+  commission: number
+  commissionRate: number
+  growthRate: number
+}
+
+export interface AdminDashboardCommission {
+  spot: AdminDashboardCommissionSide
+  future: AdminDashboardCommissionSide
+  total: {
+    volume: number
+    commission: number
+    growthRate: number
+  }
+  startDate: number | null
+  endDate: number | null
+  computedAt: string
 }

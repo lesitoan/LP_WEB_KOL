@@ -97,6 +97,27 @@ export interface AdminInsight {
   updatedAt: string
 }
 
+export type ContentActionRequestStatus = 'OPEN' | 'RESOLVED' | 'DISMISSED'
+
+export interface AdminContentActionRequest {
+  id: string
+  contentItemId: string
+  requestedByUserId: string
+  reason: string
+  status: ContentActionRequestStatus
+  resolvedByUserId: string | null
+  resolvedAt: string | null
+  createdAt: string
+  updatedAt: string
+  contentItem?: {
+    id: string
+    title: string
+    contentType: ContentTypeCode
+    status: ContentItemStatus
+    scheduledAt?: string | null
+  }
+}
+
 export interface AdminInsightDistributionPlan {
   id: string
   contentItemId: string
@@ -166,4 +187,19 @@ export interface ListAdminInsightsQuery {
   fromDate?: string
   toDate?: string
   search?: string
+}
+
+export interface ListAdminContentActionRequestsQuery {
+  page?: number
+  limit?: number
+  status?: ContentActionRequestStatus
+  contentItemId?: string
+  contentType?: ContentTypeCode
+  requestedByUserId?: string
+  fromDate?: string
+  toDate?: string
+}
+
+export interface CreateAdminContentActionRequestBody {
+  reason: string
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react'
-import Image from 'next/image'
-import { Flag, Check } from 'lucide-react'
+import { Check, Flag } from 'lucide-react'
 import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
 import { cn } from '@/lib/utils'
+import type { PaginationMeta } from '@/types/api/adminInsight'
 import { type PublishedPost } from '../constants'
 
 interface PublishedPostTableProps {
@@ -13,8 +13,9 @@ interface PublishedPostTableProps {
   onActionClick: (e: React.MouseEvent, id: string) => void
   getCategoryBadgeClass: (colorType: string) => string
   getCategoryDotClass: (colorType: string) => string
-  currentPage: number
+  pagination: PaginationMeta
   onPageChange: (page: number) => void
+  isLoading?: boolean
 }
 
 export default function PublishedPostTable({
@@ -23,8 +24,9 @@ export default function PublishedPostTable({
   onActionClick,
   getCategoryBadgeClass,
   getCategoryDotClass,
-  currentPage,
+  pagination,
   onPageChange,
+  isLoading = false,
 }: PublishedPostTableProps) {
   const columns: DataTableColumn<PublishedPost>[] = [
     {
@@ -37,29 +39,10 @@ export default function PublishedPostTable({
           <span className="text-sm font-normal text-white group-hover:text-[#F7F0A1] transition-colors line-clamp-2 leading-relaxed">
             {row.title}
           </span>
-          <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal w-fit", getCategoryBadgeClass(row.categoryColor))}>
-            <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", getCategoryDotClass(row.categoryColor))} />
+          <div className={cn('inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal w-fit', getCategoryBadgeClass(row.categoryColor))}>
+            <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', getCategoryDotClass(row.categoryColor))} />
             {row.categoryLabel}
           </div>
-        </div>
-      ),
-    },
-    {
-      id: 'adminName',
-      header: 'Admin duyệt',
-      headerClassName: '!text-xs !font-normal !text-[#A8A8A9]',
-      cellClassName: '!py-3',
-      cell: (row) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 shrink-0 rounded-full bg-[#9B692C] flex items-center justify-center overflow-hidden relative">
-            <Image
-              src="/images/avatar_default.png"
-              alt={row.adminName}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <span className="text-sm font-normal text-white">{row.adminName}</span>
         </div>
       ),
     },
@@ -123,13 +106,16 @@ export default function PublishedPostTable({
     },
   ]
 
-  const pagination = {
-    page: currentPage,
-    totalPages: 13,
-    totalItems: 742,
-    limit: 8,
-    onPageChange: onPageChange,
-    summaryText: `Hiển thị ${(currentPage - 1) * 8 + 1}-${Math.min(currentPage * 8, 742)} / 742`,
+  const tablePagination = {
+    page: pagination.page,
+    totalPages: pagination.totalPages,
+    totalItems: pagination.totalItems,
+    limit: pagination.limit,
+    isDisabled: isLoading,
+    onPageChange,
+    summaryText: `Hiển thị ${
+      pagination.totalItems === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1
+    }-${Math.min(pagination.page * pagination.limit, pagination.totalItems)} / ${pagination.totalItems}`,
   }
 
   return (
@@ -137,7 +123,9 @@ export default function PublishedPostTable({
       columns={columns}
       data={posts}
       rowKey={(row) => row.id}
-      pagination={pagination}
+      isLoading={isLoading}
+      emptyContent="Không có tin đã đăng"
+      pagination={tablePagination}
       className="bg-transparent border-none p-0"
     />
   )

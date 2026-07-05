@@ -2,6 +2,8 @@ import { apiV1Path } from '@/services/api/apiPath'
 import { adminApi, pickApiMessage } from '@/services/api/baseApi'
 import type { ApiResponse } from '@/types/api'
 import type {
+  AdminDashboardCommission,
+  AdminDashboardCommissionQuery,
   AdminDashboardGrowthChart,
   AdminDashboardGrowthChartQuery,
   AdminDashboardKolCommissions,
@@ -15,6 +17,7 @@ type AdminDashboardGrowthChartEnvelope = ApiResponse<AdminDashboardGrowthChart>
 type AdminDashboardKolTierDistributionEnvelope = ApiResponse<AdminDashboardKolTierDistribution>
 type AdminDashboardKolCommissionsEnvelope = ApiResponse<AdminDashboardKolCommissions>
 type AdminDashboardOverviewStatsEnvelope = ApiResponse<AdminDashboardOverviewStats>
+type AdminDashboardCommissionEnvelope = ApiResponse<AdminDashboardCommission>
 
 function ensureData<T>(payload: ApiResponse<T>, fallback: string): T {
   if (!payload || payload.status !== 'success' || !payload.data) {
@@ -114,10 +117,38 @@ export const adminDashboardApi = adminApi.injectEndpoints({
         ensureData(payload, 'Khong the tai danh sach commission KOL'),
       providesTags: ['Dashboard'],
     }),
+
+    getAdminDashboardCommission: builder.query<AdminDashboardCommission, AdminDashboardCommissionQuery | void>({
+      query: (queryArg) => {
+        const query = queryArg ?? {}
+        const params = new URLSearchParams()
+
+        appendIfPresent(params, 'lpexUid', query.lpexUid)
+
+        if (typeof query.startDate === 'number' || typeof query.startDate === 'string') {
+          params.set('startDate', String(query.startDate))
+        }
+
+        if (typeof query.endDate === 'number' || typeof query.endDate === 'string') {
+          params.set('endDate', String(query.endDate))
+        }
+
+        const queryString = params.toString()
+
+        return {
+          url: apiV1Path(`/admin/dashboard/commission${queryString ? `?${queryString}` : ''}`),
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: AdminDashboardCommissionEnvelope) =>
+        ensureData(payload, 'Khong the tai tong commission'),
+      providesTags: ['Dashboard'],
+    }),
   }),
 })
 
 export const {
+  useGetAdminDashboardCommissionQuery,
   useGetAdminDashboardOverviewStatsQuery,
   useGetAdminDashboardGrowthChartQuery,
   useGetAdminDashboardKolCommissionsQuery,

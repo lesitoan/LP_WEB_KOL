@@ -48,11 +48,11 @@ export default function KolOverviewMetrics({ dateRange }: KolOverviewMetricsProp
               <h4 className="text-2xl font-bold text-white leading-9 md:text-[32px] md:leading-[48px] tracking-tight">
                 {metric.value}
               </h4>
-              <div className={`flex items-center gap-1 text-sm ${metric.isPositive ? 'text-[#12B76A]' : 'text-red-400'}`}>
+              <div className={`flex items-center gap-1 text-sm ${metric.isPositive ? 'text-[#12B76A]' : 'text-red-400'} ${metric.change ? '' : 'invisible'}`}>
                 <svg className={`w-3.5 h-3.5 shrink-0 ${metric.isPositive ? 'fill-[#12B76A]' : 'fill-red-400 rotate-180'}`} viewBox="0 0 24 24">
                   <path d="M12 6l9 12H3l9-12z" />
                 </svg>
-                <span className="font-normal">{metric.change}</span>
+                <span className="font-normal">{metric.change || 'placeholder'}</span>
               </div>
             </div>
           </div>

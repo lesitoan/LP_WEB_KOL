@@ -2,12 +2,15 @@ import { apiV1Path } from '@/services/api/apiPath'
 import { adminApi, pickApiMessage } from '@/services/api/baseApi'
 import type { ApiResponse } from '@/types/api'
 import type {
+  AdminContentActionRequest,
   AdminInsight,
   AdminInsightDetail,
   AdminInsightDistributionPreview,
   AdminInsightDistributionPreviewBody,
+  CreateAdminContentActionRequestBody,
   CreateAdminInsightBody,
   GetAdminInsightDistributionPreviewQuery,
+  ListAdminContentActionRequestsQuery,
   ListAdminInsightsQuery,
   PaginatedData,
   UpdateAdminInsightBody,
@@ -17,6 +20,8 @@ type AdminInsightsEnvelope = ApiResponse<PaginatedData<AdminInsight>>
 type AdminInsightEnvelope = ApiResponse<AdminInsight>
 type AdminInsightDetailEnvelope = ApiResponse<AdminInsightDetail>
 type AdminInsightDistributionPreviewEnvelope = ApiResponse<AdminInsightDistributionPreview>
+type AdminContentActionRequestsEnvelope = ApiResponse<PaginatedData<AdminContentActionRequest>>
+type AdminContentActionRequestEnvelope = ApiResponse<AdminContentActionRequest>
 
 function ensureData<T>(payload: ApiResponse<T>, fallback: string): T {
   if (!payload || payload.status !== 'success' || !payload.data) {
@@ -128,6 +133,44 @@ export const adminInsightsApi = adminApi.injectEndpoints({
       transformResponse: (payload: AdminInsightDetailEnvelope) => ensureData(payload, 'Không thể thu hồi insight'),
       invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
     }),
+
+    listAdminContentActionRequests: builder.query<PaginatedData<AdminContentActionRequest>, ListAdminContentActionRequestsQuery | void>({
+      query: (queryArg) => {
+        const query = queryArg ?? {}
+        const params = new URLSearchParams()
+
+        appendIfPresent(params, 'page', query.page ?? 1)
+        appendIfPresent(params, 'limit', query.limit ?? 100)
+        appendIfPresent(params, 'status', query.status)
+        appendIfPresent(params, 'contentItemId', query.contentItemId)
+        appendIfPresent(params, 'contentType', query.contentType)
+        appendIfPresent(params, 'requestedByUserId', query.requestedByUserId)
+        appendIfPresent(params, 'fromDate', query.fromDate)
+        appendIfPresent(params, 'toDate', query.toDate)
+
+        return {
+          url: apiV1Path(`/admin/content-action-requests?${params.toString()}`),
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: AdminContentActionRequestsEnvelope) =>
+        ensureData(payload, 'Khong the tai danh sach yeu cau xu ly'),
+      providesTags: ['Insights'],
+    }),
+
+    createAdminInsightActionRequest: builder.mutation<
+      AdminContentActionRequest,
+      { insightId: string; body: CreateAdminContentActionRequestBody }
+    >({
+      query: ({ insightId, body }) => ({
+        url: apiV1Path(`/admin/insights/${insightId}/action-requests`),
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (payload: AdminContentActionRequestEnvelope) =>
+        ensureData(payload, 'Khong the tao yeu cau xu ly'),
+      invalidatesTags: ['Insights'],
+    }),
   }),
 })
 
@@ -140,4 +183,6 @@ export const {
   useUpdateAdminInsightMutation,
   usePublishAdminInsightMutation,
   useRecallAdminInsightMutation,
+  useListAdminContentActionRequestsQuery,
+  useCreateAdminInsightActionRequestMutation,
 } = adminInsightsApi

@@ -11,6 +11,7 @@ export interface PublishedPost {
   status: string
   actionType: 'sent' | 'request'
   actionStatusText?: string
+  requestId?: string
   mainContent?: string
   sources?: string
 }

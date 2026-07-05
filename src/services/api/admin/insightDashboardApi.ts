@@ -7,10 +7,15 @@ import type {
   AdminInsightDashboardDateRangeQuery,
   AdminInsightDashboardForwardByContentType,
   AdminInsightDashboardForwardByContentTypeQuery,
+  AdminInsightDashboardShiftCoverage,
+  AdminInsightDashboardShiftCoverageQuery,
+  AdminInsightDashboardSlaSummary,
   AdminInsightDashboardSummary,
 } from '@/types/api/adminInsightDashboard'
 
 type AdminInsightDashboardSummaryEnvelope = ApiResponse<AdminInsightDashboardSummary>
+type AdminInsightDashboardSlaSummaryEnvelope = ApiResponse<AdminInsightDashboardSlaSummary>
+type AdminInsightDashboardShiftCoverageEnvelope = ApiResponse<AdminInsightDashboardShiftCoverage>
 type AdminInsightDashboardForwardByContentTypeEnvelope = ApiResponse<AdminInsightDashboardForwardByContentType>
 type AdminInsightDashboardAdminPerformanceEnvelope = ApiResponse<AdminInsightDashboardAdminPerformance>
 
@@ -56,6 +61,50 @@ export const adminInsightDashboardApi = adminApi.injectEndpoints({
       },
       transformResponse: (payload: AdminInsightDashboardSummaryEnvelope) =>
         ensureData(payload, 'Khong the tai chi so tong quan insight'),
+      providesTags: ['Insights'],
+    }),
+    getAdminInsightDashboardSlaSummary: builder.query<
+      AdminInsightDashboardSlaSummary,
+      AdminInsightDashboardDateRangeQuery | void
+    >({
+      query: (queryArg) => {
+        const query = queryArg ?? {}
+        const params = new URLSearchParams()
+
+        appendIfPresent(params, 'startDate', query.startDate)
+        appendIfPresent(params, 'endDate', query.endDate)
+
+        const queryString = params.toString()
+
+        return {
+          url: apiV1Path(`/admin/insight-dashboard/sla-summary${queryString ? `?${queryString}` : ''}`),
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: AdminInsightDashboardSlaSummaryEnvelope) =>
+        ensureData(payload, 'Khong the tai thong ke SLA insight'),
+      providesTags: ['Insights'],
+    }),
+    getAdminInsightDashboardShiftCoverage: builder.query<
+      AdminInsightDashboardShiftCoverage,
+      AdminInsightDashboardShiftCoverageQuery | void
+    >({
+      query: (queryArg) => {
+        const query = queryArg ?? {}
+        const params = new URLSearchParams()
+
+        appendIfPresent(params, 'date', query.date)
+        appendNumberIfPresent(params, 'slotMinutes', query.slotMinutes)
+
+        const queryString = params.toString()
+
+        return {
+          url: apiV1Path(`/admin/insight-dashboard/shift-coverage${queryString ? `?${queryString}` : ''}`),
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: AdminInsightDashboardShiftCoverageEnvelope) =>
+        ensureData(payload, 'Khong the tai timeline ca truc admin'),
       providesTags: ['Insights'],
     }),
     getAdminInsightDashboardForwardByContentType: builder.query<
@@ -111,5 +160,7 @@ export const adminInsightDashboardApi = adminApi.injectEndpoints({
 export const {
   useGetAdminInsightDashboardAdminPerformanceQuery,
   useGetAdminInsightDashboardForwardByContentTypeQuery,
+  useGetAdminInsightDashboardShiftCoverageQuery,
+  useGetAdminInsightDashboardSlaSummaryQuery,
   useGetAdminInsightDashboardSummaryQuery,
 } = adminInsightDashboardApi
