@@ -27,11 +27,16 @@ export const CONTENT_STATUS_VALUES: ContentItemStatus[] = [
   'REJECTED',
 ]
 
-export const PUBLISHABLE_INSIGHT_STATUSES = ['DRAFT', 'SCHEDULED', 'PUBLISHING'] as const
+export const PUBLISHABLE_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHING'] as const
+export const APPROVABLE_INSIGHT_STATUSES = ['DRAFT'] as const
 export const RECALLABLE_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHING', 'PUBLISHED'] as const
 
 export function isPublishableInsightStatus(status: ContentItemStatus): boolean {
   return PUBLISHABLE_INSIGHT_STATUSES.includes(status as (typeof PUBLISHABLE_INSIGHT_STATUSES)[number])
+}
+
+export function isApprovableInsightStatus(status: ContentItemStatus): boolean {
+  return APPROVABLE_INSIGHT_STATUSES.includes(status as (typeof APPROVABLE_INSIGHT_STATUSES)[number])
 }
 
 export function isRecallableInsightStatus(status: ContentItemStatus): boolean {

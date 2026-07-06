@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from 'react'
 import { toast } from '@/hooks/useToast'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import {
+  useApproveAdminInsightMutation,
   useCreateAdminInsightMutation,
   usePreviewAdminInsightDistributionMutation,
   usePublishAdminInsightMutation,
@@ -11,6 +12,7 @@ import {
 import type { CreateAdminInsightBody, ContentTypeCode } from '@/types/api/adminInsight'
 import {
   buildUpdateAdminInsightBody,
+  isApprovableInsightStatus,
   isPublishableInsightStatus,
   isRecallableInsightStatus,
   type PostReviewTab,
@@ -43,11 +45,13 @@ export function usePostReviewActions({
   const [updateAdminInsight, updateAdminInsightState] = useUpdateAdminInsightMutation()
   const [previewAdminInsightDistribution, previewAdminInsightDistributionState] = usePreviewAdminInsightDistributionMutation()
   const [publishAdminInsight, publishAdminInsightState] = usePublishAdminInsightMutation()
+  const [approveAdminInsight, approveAdminInsightState] = useApproveAdminInsightMutation()
   const [recallAdminInsight, recallAdminInsightState] = useRecallAdminInsightMutation()
 
   const isSaving = createAdminInsightState.isLoading || updateAdminInsightState.isLoading
   const isCreatingDraft = previewAdminInsightDistributionState.isLoading
   const isPublishing = publishAdminInsightState.isLoading
+  const isApproving = approveAdminInsightState.isLoading
   const isRecalling = recallAdminInsightState.isLoading
 
   const handleCreateNewPost = async (payload: { contentType: ContentTypeCode; title: string; scheduledAt: string }) => {
@@ -146,6 +150,81 @@ export function usePostReviewActions({
         description: extractApiErrorMessage(error, 'Không thể lưu bản nháp. Vui lòng thử lại.'),
         variant: 'destructive',
       })
+    }
+  }
+
+  const handleApprove = async (updatedPost: ReviewPost) => {
+    if (updatedPost.isLocalDraft) {
+      toast({
+        title: 'Chưa thể duyệt tin',
+        description: 'Vui lòng lưu nháp trước khi chuyển sang chờ duyệt.',
+        variant: 'destructive',
+      })
+      throw new Error('Local draft must be saved before approving')
+    }
+
+    if (!isApprovableInsightStatus(updatedPost.status)) {
+      toast({
+        title: 'Không thể duyệt tin',
+        description: 'Trạng thái hiện tại không cho phép chuyển sang chờ duyệt.',
+        variant: 'destructive',
+      })
+      throw new Error('Insight status is not approvable')
+    }
+
+    if (!selectedPost || selectedPost.isLocalDraft) {
+      toast({
+        title: 'Không thể duyệt tin',
+        description: 'Không tìm thấy dữ liệu bài viết hiện tại.',
+        variant: 'destructive',
+      })
+      throw new Error('Selected post is missing')
+    }
+
+    const updateBody = buildUpdateAdminInsightBody(selectedPost, updatedPost)
+
+    if (updateBody) {
+      try {
+        await updateAdminInsight({
+          insightId: updatedPost.id,
+          body: updateBody,
+        }).unwrap()
+      } catch (error) {
+        toast({
+          title: 'Cập nhật thất bại',
+          description: extractApiErrorMessage(error, 'Không thể cập nhật bài viết trước khi duyệt. Vui lòng thử lại.'),
+          variant: 'destructive',
+        })
+
+        refetchAll()
+        refetchActive()
+        refetchDetail()
+        throw error
+      }
+    }
+
+    try {
+      const approvedInsight = await approveAdminInsight({ insightId: updatedPost.id }).unwrap()
+
+      toast({
+        title: 'Duyệt tin thành công',
+        description: 'Bài viết đã được chuyển sang chờ duyệt.',
+      })
+
+      setManyParams({ status: 'PENDING_REVIEW', postId: approvedInsight.id })
+      refetchAll()
+      refetchActive()
+    } catch (error) {
+      toast({
+        title: 'Duyệt tin thất bại',
+        description: extractApiErrorMessage(error, 'Không thể chuyển bài viết sang chờ duyệt. Vui lòng thử lại.'),
+        variant: 'destructive',
+      })
+
+      refetchAll()
+      refetchActive()
+      refetchDetail()
+      throw error
     }
   }
 
@@ -280,9 +359,11 @@ export function usePostReviewActions({
     isSaving,
     isCreatingDraft,
     isPublishing,
+    isApproving,
     isRecalling,
     handleCreateNewPost,
     handleSaveDraft,
+    handleApprove,
     handlePublish,
     handleDiscard,
     handleRevoke,

@@ -125,6 +125,15 @@ export const adminInsightsApi = adminApi.injectEndpoints({
       invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
     }),
 
+    approveAdminInsight: builder.mutation<AdminInsightDetail, { insightId: string }>({
+      query: ({ insightId }) => ({
+        url: apiV1Path(`/admin/insights/${insightId}/approve`),
+        method: 'POST',
+      }),
+      transformResponse: (payload: AdminInsightDetailEnvelope) => ensureData(payload, 'Không thể duyệt insight'),
+      invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
+    }),
+
     recallAdminInsight: builder.mutation<AdminInsightDetail, { insightId: string }>({
       query: ({ insightId }) => ({
         url: apiV1Path(`/admin/insights/${insightId}/recall`),
@@ -182,6 +191,7 @@ export const {
   useCreateAdminInsightMutation,
   useUpdateAdminInsightMutation,
   usePublishAdminInsightMutation,
+  useApproveAdminInsightMutation,
   useRecallAdminInsightMutation,
   useListAdminContentActionRequestsQuery,
   useCreateAdminInsightActionRequestMutation,

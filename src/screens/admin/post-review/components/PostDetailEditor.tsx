@@ -6,7 +6,7 @@ import { CircleCheck, CircleX, RotateCcw } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { CATEGORIES, STATUS_CONFIGS, isPublishableInsightStatus, isRecallableInsightStatus, type ReviewPost } from '../constants'
+import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, type ReviewPost } from '../constants'
 import PublishPostModal from './PublishPostModal'
 import RevokePostModal from './RevokePostModal'
 import { cn } from '@/lib/utils'
@@ -49,10 +49,12 @@ interface PostDetailEditorProps {
   post: ReviewPost
   distributionPreview?: AdminInsightDistributionPreview
   onSaveDraft: (updatedPost: ReviewPost) => void
+  onApprove: (updatedPost: ReviewPost) => Promise<void> | void
   onPublish: (updatedPost: ReviewPost) => Promise<void> | void
   onDiscard: (postId: string) => void
   onRevoke: (postId: string) => Promise<void> | void
   isSaving?: boolean
+  isApproving?: boolean
   isPublishing?: boolean
   isRecalling?: boolean
 }
@@ -97,10 +99,12 @@ export default function PostDetailEditor({
   post,
   distributionPreview,
   onSaveDraft,
+  onApprove,
   onPublish,
   onDiscard,
   onRevoke,
   isSaving = false,
+  isApproving = false,
   isPublishing = false,
   isRecalling = false,
 }: PostDetailEditorProps) {
@@ -139,6 +143,7 @@ export default function PostDetailEditor({
   const submitLabel = canUpdate ? 'Cập nhật' : 'Lưu nháp'
   const submittingLabel = canUpdate ? 'Đang cập nhật...' : 'Đang lưu...'
   const canDiscard = canEdit && isLocalDraft
+  const canApprove = !isLocalDraft && isApprovableInsightStatus(editedPost.status)
   const canPublish = !isLocalDraft && isPublishableInsightStatus(editedPost.status)
   const persistedPlans = editedPost.distributionPlans ?? []
   const displayDistributionPreview =
@@ -185,6 +190,11 @@ export default function PostDetailEditor({
     if (!canPublish || isSaving || isPublishing) return
     setPendingPublishPost(buildUpdatedPost(values))
     setPublishDialogOpen(true)
+  })
+
+  const handleApproveSubmit = handleSubmit(async (values) => {
+    if (!canApprove || isSaving || isApproving) return
+    await onApprove(buildUpdatedPost(values))
   })
 
   const confirmPublish = async () => {
@@ -451,16 +461,31 @@ export default function PostDetailEditor({
               <button
                 type="button"
                 onClick={() => setRevokeDialogOpen(true)}
-                disabled={isSaving || isPublishing || isRecalling}
+                disabled={isSaving || isApproving || isPublishing || isRecalling}
                 className={cn(
                   "h-9 w-full px-6 bg-[#FDFDFD] hover:bg-white/80 rounded-lg text-sm font-semibold text-black transition-colors inline-flex items-center justify-center gap-2 lg:w-auto",
-                  (isSaving || isPublishing || isRecalling) && "cursor-not-allowed opacity-60 hover:bg-[#FDFDFD]"
+                  (isSaving || isApproving || isPublishing || isRecalling) && "cursor-not-allowed opacity-60 hover:bg-[#FDFDFD]"
                 )}
               >
                 <RotateCcw className="h-4 w-4" />
                 Thu hồi tin
               </button>
             ) : null}
+
+            {canApprove && (
+              <button
+                type="button"
+                onClick={handleApproveSubmit}
+                disabled={isSaving || isApproving}
+                className={cn(
+                  "h-9 w-full px-6 bg-[#F7F0A1] hover:bg-[#F7F0A1]/90 rounded-lg text-sm font-semibold text-black transition-colors inline-flex items-center justify-center gap-2 lg:w-auto",
+                  (isSaving || isApproving) && "cursor-not-allowed opacity-60 hover:bg-[#F7F0A1]"
+                )}
+              >
+                <CircleCheck className="h-5 w-5 fill-black text-[#F7F0A1]" />
+                {isApproving ? 'Đang duyệt...' : 'Chấp nhận'}
+              </button>
+            )}
 
             {canPublish && (
               <button
@@ -473,7 +498,7 @@ export default function PostDetailEditor({
                 )}
               >
                 <CircleCheck className="h-5 w-5 fill-black text-[#F7F0A1]" />
-                Đăng tin
+                Chấp nhận
               </button>
             )}
 

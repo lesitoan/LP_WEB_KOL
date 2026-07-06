@@ -9,10 +9,12 @@ interface PostReviewDetailPanelProps {
   isLoading: boolean
   showEmpty: boolean
   onSaveDraft: (post: ReviewPost) => void
+  onApprove: (post: ReviewPost) => Promise<void> | void
   onPublish: (post: ReviewPost) => Promise<void> | void
   onDiscard: (postId: string) => void
   onRevoke: (postId: string) => Promise<void> | void
   isSaving: boolean
+  isApproving: boolean
   isPublishing: boolean
   isRecalling: boolean
 }
@@ -23,10 +25,12 @@ export default function PostReviewDetailPanel({
   isLoading,
   showEmpty,
   onSaveDraft,
+  onApprove,
   onPublish,
   onDiscard,
   onRevoke,
   isSaving,
+  isApproving,
   isPublishing,
   isRecalling,
 }: PostReviewDetailPanelProps) {
@@ -44,10 +48,12 @@ export default function PostReviewDetailPanel({
           post={post}
           distributionPreview={distributionPreview}
           onSaveDraft={onSaveDraft}
+          onApprove={onApprove}
           onPublish={onPublish}
           onDiscard={onDiscard}
           onRevoke={onRevoke}
           isSaving={isSaving}
+          isApproving={isApproving}
           isPublishing={isPublishing}
           isRecalling={isRecalling}
         />
