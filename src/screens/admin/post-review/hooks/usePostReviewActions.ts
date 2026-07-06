@@ -6,16 +6,20 @@ import {
   usePreviewAdminInsightDistributionMutation,
   usePublishAdminInsightMutation,
   useRecallAdminInsightMutation,
+  useScheduleAdminInsightMutation,
   useUpdateAdminInsightMutation,
 } from '@/services/api/admin/insightsApi'
 import type { CreateAdminInsightBody, ContentTypeCode } from '@/types/api/adminInsight'
 import {
   buildUpdateAdminInsightBody,
+  isApprovableInsightStatus,
   isPublishableInsightStatus,
   isRecallableInsightStatus,
+  isSchedulableInsightStatus,
   type PostReviewTab,
   type ReviewPost,
 } from '../constants'
+import type { ApprovePostPayload } from '../components/ApprovePostModal'
 import { buildLocalDraft } from '../utils'
 
 interface UsePostReviewActionsParams {
@@ -41,14 +45,33 @@ export function usePostReviewActions({
 }: UsePostReviewActionsParams) {
   const [createAdminInsight, createAdminInsightState] = useCreateAdminInsightMutation()
   const [updateAdminInsight, updateAdminInsightState] = useUpdateAdminInsightMutation()
+  const [updateAdminInsightStatus, updateAdminInsightStatusState] = useUpdateAdminInsightMutation()
   const [previewAdminInsightDistribution, previewAdminInsightDistributionState] = usePreviewAdminInsightDistributionMutation()
   const [publishAdminInsight, publishAdminInsightState] = usePublishAdminInsightMutation()
+  const [scheduleAdminInsight, scheduleAdminInsightState] = useScheduleAdminInsightMutation()
   const [recallAdminInsight, recallAdminInsightState] = useRecallAdminInsightMutation()
 
   const isSaving = createAdminInsightState.isLoading || updateAdminInsightState.isLoading
   const isCreatingDraft = previewAdminInsightDistributionState.isLoading
   const isPublishing = publishAdminInsightState.isLoading
+  const isScheduling = scheduleAdminInsightState.isLoading
+  const isApproving = updateAdminInsightStatusState.isLoading || createAdminInsightState.isLoading
   const isRecalling = recallAdminInsightState.isLoading
+
+  const buildCreateBody = (post: ReviewPost, status: CreateAdminInsightBody['status']): CreateAdminInsightBody => ({
+    sourceType: 'manual',
+    contentType: post.contentType,
+    title: post.title.trim(),
+    body: post.mainContent.trim(),
+    status,
+    historicalComparison: post.historyComparison.trim() || undefined,
+    insightForKol: post.kolInsight.trim() || undefined,
+    insightForInvestor: post.investorInsight.trim() || undefined,
+    insightForTrader: post.traderInsight.trim() || undefined,
+    sources: post.sources.trim() || undefined,
+    authorTask: post.authorTask.trim() || undefined,
+    kolToolPosted: post.kolToolPosted.trim() || undefined,
+  })
 
   const handleCreateNewPost = async (payload: { contentType: ContentTypeCode; title: string; scheduledAt: string }) => {
     try {
@@ -113,23 +136,8 @@ export function usePostReviewActions({
       return
     }
 
-    const createBody: CreateAdminInsightBody = {
-      sourceType: 'manual',
-      contentType: updatedPost.contentType,
-      title: updatedPost.title.trim(),
-      body: updatedPost.mainContent.trim(),
-      status: 'DRAFT',
-      historicalComparison: updatedPost.historyComparison.trim() || undefined,
-      insightForKol: updatedPost.kolInsight.trim() || undefined,
-      insightForInvestor: updatedPost.investorInsight.trim() || undefined,
-      insightForTrader: updatedPost.traderInsight.trim() || undefined,
-      sources: updatedPost.sources.trim() || undefined,
-      authorTask: updatedPost.authorTask.trim() || undefined,
-      kolToolPosted: updatedPost.kolToolPosted.trim() || undefined,
-    }
-
     try {
-      const createdInsight = await createAdminInsight(createBody).unwrap()
+      const createdInsight = await createAdminInsight(buildCreateBody(updatedPost, 'DRAFT')).unwrap()
 
       toast({
         title: 'Lưu nháp thành công',
@@ -146,6 +154,100 @@ export function usePostReviewActions({
         description: extractApiErrorMessage(error, 'Không thể lưu bản nháp. Vui lòng thử lại.'),
         variant: 'destructive',
       })
+    }
+  }
+
+  const handleApprove = async (updatedPost: ReviewPost) => {
+    if (updatedPost.isLocalDraft) {
+      try {
+        const createdInsight = await createAdminInsight(buildCreateBody(updatedPost, 'PENDING_REVIEW')).unwrap()
+
+        toast({
+          title: 'Gửi preview thành công',
+          description: 'Bài viết đã được chuyển sang chờ duyệt.',
+        })
+
+        setLocalDraft(undefined)
+        setManyParams({ status: 'PENDING_REVIEW', postId: createdInsight.id })
+        refetchAll()
+        refetchActive()
+      } catch (error) {
+        toast({
+          title: 'Gửi preview thất bại',
+          description: extractApiErrorMessage(error, 'Không thể chuyển bài viết sang chờ duyệt. Vui lòng thử lại.'),
+          variant: 'destructive',
+        })
+        throw error
+      }
+
+      return
+    }
+
+    if (!isApprovableInsightStatus(updatedPost.status)) {
+      toast({
+        title: 'Không thể duyệt tin',
+        description: 'Trạng thái hiện tại không cho phép chuyển sang chờ duyệt.',
+        variant: 'destructive',
+      })
+      throw new Error('Insight status is not approvable')
+    }
+
+    if (!selectedPost || selectedPost.isLocalDraft) {
+      toast({
+        title: 'Không thể duyệt tin',
+        description: 'Không tìm thấy dữ liệu bài viết hiện tại.',
+        variant: 'destructive',
+      })
+      throw new Error('Selected post is missing')
+    }
+
+    const updateBody = buildUpdateAdminInsightBody(selectedPost, updatedPost)
+
+    if (updateBody) {
+      try {
+        await updateAdminInsight({
+          insightId: updatedPost.id,
+          body: updateBody,
+        }).unwrap()
+      } catch (error) {
+        toast({
+          title: 'Cập nhật thất bại',
+          description: extractApiErrorMessage(error, 'Không thể cập nhật bài viết trước khi duyệt. Vui lòng thử lại.'),
+          variant: 'destructive',
+        })
+
+        refetchAll()
+        refetchActive()
+        refetchDetail()
+        throw error
+      }
+    }
+
+    try {
+      const approvedInsight = await updateAdminInsightStatus({
+        insightId: updatedPost.id,
+        body: { status: 'PENDING_REVIEW' },
+      }).unwrap()
+
+      toast({
+        title: 'Gửi preview thành công',
+        description: 'Bài viết đã được chuyển sang chờ duyệt.',
+      })
+
+      setManyParams({ status: 'PENDING_REVIEW', postId: approvedInsight.id })
+      refetchAll()
+      refetchActive()
+    } catch (error) {
+      toast({
+        title: 'Gửi preview thất bại',
+        description: extractApiErrorMessage(error, 'Không thể chuyển bài viết sang chờ duyệt. Vui lòng thử lại.'),
+        variant: 'destructive',
+      })
+
+      refetchAll()
+      refetchActive()
+      refetchDetail()
+      throw error
     }
   }
 
@@ -224,6 +326,86 @@ export function usePostReviewActions({
     }
   }
 
+  const handleScheduleApprove = async (updatedPost: ReviewPost, payload: ApprovePostPayload) => {
+    if (updatedPost.isLocalDraft) {
+      toast({
+        title: 'Chưa thể duyệt tin',
+        description: 'Vui lòng lưu nháp trước khi duyệt tin.',
+        variant: 'destructive',
+      })
+      throw new Error('Local draft must be saved before scheduling')
+    }
+
+    if (!isSchedulableInsightStatus(updatedPost.status)) {
+      toast({
+        title: 'Không thể duyệt tin',
+        description: 'Trạng thái hiện tại không cho phép duyệt tin.',
+        variant: 'destructive',
+      })
+      throw new Error('Insight status is not schedulable')
+    }
+
+    if (!selectedPost || selectedPost.isLocalDraft) {
+      toast({
+        title: 'Không thể duyệt tin',
+        description: 'Không tìm thấy dữ liệu bài viết hiện tại.',
+        variant: 'destructive',
+      })
+      throw new Error('Selected post is missing')
+    }
+
+    const updateBody = buildUpdateAdminInsightBody(selectedPost, updatedPost)
+
+    if (updateBody) {
+      try {
+        await updateAdminInsight({
+          insightId: updatedPost.id,
+          body: updateBody,
+        }).unwrap()
+      } catch (error) {
+        toast({
+          title: 'Cập nhật thất bại',
+          description: extractApiErrorMessage(error, 'Không thể cập nhật bài viết trước khi duyệt. Vui lòng thử lại.'),
+          variant: 'destructive',
+        })
+
+        refetchAll()
+        refetchActive()
+        refetchDetail()
+        throw error
+      }
+    }
+
+    try {
+      const scheduledInsight = await scheduleAdminInsight({
+        insightId: updatedPost.id,
+        body: payload.publishNow
+          ? { pushlishNow: true }
+          : { scheduledAt: payload.scheduledAt, pushlishNow: false },
+      }).unwrap()
+
+      toast({
+        title: payload.publishNow ? 'Duyệt và đăng tin thành công' : 'Duyệt và hẹn giờ thành công',
+        description: payload.publishNow ? 'Bài viết đã được đăng.' : 'Bài viết đã được lên lịch đăng.',
+      })
+
+      setManyParams({ status: scheduledInsight.status, postId: scheduledInsight.id })
+      refetchAll()
+      refetchActive()
+    } catch (error) {
+      toast({
+        title: 'Duyệt tin thất bại',
+        description: extractApiErrorMessage(error, 'Không thể duyệt bài viết. Vui lòng thử lại.'),
+        variant: 'destructive',
+      })
+
+      refetchAll()
+      refetchActive()
+      refetchDetail()
+      throw error
+    }
+  }
+
   const handleDiscard = (postId: string) => {
     setLocalDraft((currentDraft) => {
       if (currentDraft?.id !== postId) return currentDraft
@@ -280,9 +462,13 @@ export function usePostReviewActions({
     isSaving,
     isCreatingDraft,
     isPublishing,
+    isScheduling,
+    isApproving,
     isRecalling,
     handleCreateNewPost,
     handleSaveDraft,
+    handleApprove,
+    handleScheduleApprove,
     handlePublish,
     handleDiscard,
     handleRevoke,

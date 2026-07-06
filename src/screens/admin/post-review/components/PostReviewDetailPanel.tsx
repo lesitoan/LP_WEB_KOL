@@ -1,4 +1,5 @@
 import PostDetailEditor from './PostDetailEditor'
+import type { ApprovePostPayload } from './ApprovePostModal'
 import type { ReviewPost } from '../constants'
 import type { AdminInsightDistributionPreview } from '@/types/api/adminInsight'
 import { PostReviewDetailSkeleton } from '@/components/skeletons/post-review/PostReviewDetailSkeleton'
@@ -9,10 +10,14 @@ interface PostReviewDetailPanelProps {
   isLoading: boolean
   showEmpty: boolean
   onSaveDraft: (post: ReviewPost) => void
+  onApprove: (post: ReviewPost) => Promise<void> | void
+  onScheduleApprove: (post: ReviewPost, payload: ApprovePostPayload) => Promise<void> | void
   onPublish: (post: ReviewPost) => Promise<void> | void
   onDiscard: (postId: string) => void
   onRevoke: (postId: string) => Promise<void> | void
   isSaving: boolean
+  isApproving: boolean
+  isScheduling: boolean
   isPublishing: boolean
   isRecalling: boolean
 }
@@ -23,10 +28,14 @@ export default function PostReviewDetailPanel({
   isLoading,
   showEmpty,
   onSaveDraft,
+  onApprove,
+  onScheduleApprove,
   onPublish,
   onDiscard,
   onRevoke,
   isSaving,
+  isApproving,
+  isScheduling,
   isPublishing,
   isRecalling,
 }: PostReviewDetailPanelProps) {
@@ -44,10 +53,14 @@ export default function PostReviewDetailPanel({
           post={post}
           distributionPreview={distributionPreview}
           onSaveDraft={onSaveDraft}
+          onApprove={onApprove}
+          onScheduleApprove={onScheduleApprove}
           onPublish={onPublish}
           onDiscard={onDiscard}
           onRevoke={onRevoke}
           isSaving={isSaving}
+          isApproving={isApproving}
+          isScheduling={isScheduling}
           isPublishing={isPublishing}
           isRecalling={isRecalling}
         />

@@ -57,6 +57,11 @@ export interface GetAdminInsightDistributionPreviewQuery {
   scheduledAt?: string
 }
 
+export interface ScheduleAdminInsightBody {
+  scheduledAt?: string
+  pushlishNow?: boolean
+}
+
 export interface PaginationMeta {
   page: number
   limit: number

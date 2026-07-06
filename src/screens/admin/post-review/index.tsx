@@ -88,10 +88,14 @@ export default function AdminPostReviewScreen() {
             isLoading={detail.detailIsLoading}
             showEmpty={detail.showDetailEmpty}
             onSaveDraft={actions.handleSaveDraft}
+            onApprove={actions.handleApprove}
+            onScheduleApprove={actions.handleScheduleApprove}
             onPublish={actions.handlePublish}
             onDiscard={actions.handleDiscard}
             onRevoke={actions.handleRevoke}
             isSaving={actions.isSaving}
+            isApproving={actions.isApproving}
+            isScheduling={actions.isScheduling}
             isPublishing={actions.isPublishing}
             isRecalling={actions.isRecalling}
           />
