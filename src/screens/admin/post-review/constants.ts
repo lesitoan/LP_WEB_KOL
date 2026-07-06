@@ -27,8 +27,9 @@ export const CONTENT_STATUS_VALUES: ContentItemStatus[] = [
   'REJECTED',
 ]
 
-export const PUBLISHABLE_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHING'] as const
+export const PUBLISHABLE_INSIGHT_STATUSES = ['PUBLISHING'] as const
 export const APPROVABLE_INSIGHT_STATUSES = ['DRAFT'] as const
+export const SCHEDULABLE_INSIGHT_STATUSES = ['PENDING_REVIEW'] as const
 export const RECALLABLE_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHING', 'PUBLISHED'] as const
 
 export function isPublishableInsightStatus(status: ContentItemStatus): boolean {
@@ -39,6 +40,10 @@ export function isApprovableInsightStatus(status: ContentItemStatus): boolean {
   return APPROVABLE_INSIGHT_STATUSES.includes(status as (typeof APPROVABLE_INSIGHT_STATUSES)[number])
 }
 
+export function isSchedulableInsightStatus(status: ContentItemStatus): boolean {
+  return SCHEDULABLE_INSIGHT_STATUSES.includes(status as (typeof SCHEDULABLE_INSIGHT_STATUSES)[number])
+}
+
 export function isRecallableInsightStatus(status: ContentItemStatus): boolean {
   return RECALLABLE_INSIGHT_STATUSES.includes(status as (typeof RECALLABLE_INSIGHT_STATUSES)[number])
 }
@@ -47,14 +52,14 @@ export type PostReviewTab = 'ALL' | ContentItemStatus
 
 export const POST_REVIEW_TABS: { id: PostReviewTab; label: string }[] = [
   { id: 'ALL', label: 'Tất cả' },
-  { id: 'PENDING_REVIEW', label: 'Chờ duyệt' },
   { id: 'DRAFT', label: 'Bản nháp' },
+  { id: 'PENDING_REVIEW', label: 'Chờ duyệt' },
   { id: 'SCHEDULED', label: 'Đã lên lịch' },
-  { id: 'PUBLISHING', label: 'Đang đăng' },
+  // { id: 'PUBLISHING', label: 'Đang đăng' },
   { id: 'PUBLISHED', label: 'Đã đăng' },
-  { id: 'FLAGGED', label: 'Cần xử lý' },
+  // { id: 'FLAGGED', label: 'Cần xử lý' },
   { id: 'RECALLED', label: 'Đã thu hồi' },
-  { id: 'SKIPPED', label: 'Đã bỏ qua' },
+  // { id: 'SKIPPED', label: 'Đã bỏ qua' },
   { id: 'REJECTED', label: 'Từ chối' },
 ]
 

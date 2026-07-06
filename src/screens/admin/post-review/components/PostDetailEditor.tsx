@@ -6,7 +6,8 @@ import { CircleCheck, CircleX, RotateCcw } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, type ReviewPost } from '../constants'
+import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, isSchedulableInsightStatus, type ReviewPost } from '../constants'
+import ApprovePostModal, { type ApprovePostPayload } from './ApprovePostModal'
 import PublishPostModal from './PublishPostModal'
 import RevokePostModal from './RevokePostModal'
 import { cn } from '@/lib/utils'
@@ -50,11 +51,13 @@ interface PostDetailEditorProps {
   distributionPreview?: AdminInsightDistributionPreview
   onSaveDraft: (updatedPost: ReviewPost) => void
   onApprove: (updatedPost: ReviewPost) => Promise<void> | void
+  onScheduleApprove: (updatedPost: ReviewPost, payload: ApprovePostPayload) => Promise<void> | void
   onPublish: (updatedPost: ReviewPost) => Promise<void> | void
   onDiscard: (postId: string) => void
   onRevoke: (postId: string) => Promise<void> | void
   isSaving?: boolean
   isApproving?: boolean
+  isScheduling?: boolean
   isPublishing?: boolean
   isRecalling?: boolean
 }
@@ -100,17 +103,21 @@ export default function PostDetailEditor({
   distributionPreview,
   onSaveDraft,
   onApprove,
+  onScheduleApprove,
   onPublish,
   onDiscard,
   onRevoke,
   isSaving = false,
   isApproving = false,
+  isScheduling = false,
   isPublishing = false,
   isRecalling = false,
 }: PostDetailEditorProps) {
   const [editedPost, setEditedPost] = useState<ReviewPost>({ ...post })
   const [revokeDialogOpen, setRevokeDialogOpen] = useState(false)
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false)
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
+  const [pendingApprovePost, setPendingApprovePost] = useState<ReviewPost | null>(null)
   const [pendingPublishPost, setPendingPublishPost] = useState<ReviewPost | null>(null)
   const form = useForm<PostDetailFormValues>({
     mode: 'onSubmit',
@@ -143,7 +150,8 @@ export default function PostDetailEditor({
   const submitLabel = canUpdate ? 'Cập nhật' : 'Lưu nháp'
   const submittingLabel = canUpdate ? 'Đang cập nhật...' : 'Đang lưu...'
   const canDiscard = canEdit && isLocalDraft
-  const canApprove = !isLocalDraft && isApprovableInsightStatus(editedPost.status)
+  const canApprove = canEdit && (isLocalDraft || isApprovableInsightStatus(editedPost.status))
+  const canScheduleApprove = !isLocalDraft && isSchedulableInsightStatus(editedPost.status)
   const canPublish = !isLocalDraft && isPublishableInsightStatus(editedPost.status)
   const persistedPlans = editedPost.distributionPlans ?? []
   const displayDistributionPreview =
@@ -197,11 +205,24 @@ export default function PostDetailEditor({
     await onApprove(buildUpdatedPost(values))
   })
 
+  const handleScheduleApproveSubmit = handleSubmit((values) => {
+    if (!canScheduleApprove || isSaving || isScheduling) return
+    setPendingApprovePost(buildUpdatedPost(values))
+    setApproveDialogOpen(true)
+  })
+
   const confirmPublish = async () => {
     const postToPublish = pendingPublishPost ?? buildUpdatedPost(getValues())
     await onPublish(postToPublish)
     setPublishDialogOpen(false)
     setPendingPublishPost(null)
+  }
+
+  const confirmScheduleApprove = async (payload: ApprovePostPayload) => {
+    const postToApprove = pendingApprovePost ?? buildUpdatedPost(getValues())
+    await onScheduleApprove(postToApprove, payload)
+    setApproveDialogOpen(false)
+    setPendingApprovePost(null)
   }
 
   const confirmRevoke = async () => {
@@ -416,45 +437,20 @@ export default function PostDetailEditor({
                 {isLocalDraft ? 'Bản nháp tự động lưu.' : 'Chỉ cập nhật các trường đã chỉnh sửa.'}
               </div>
             ) : null}
-            {canSubmit && (
-              <button
-                type="submit"
-                disabled={isSaving}
-                className={cn(
-                  "h-9 shrink-0 rounded-lg border border-[#545454] px-5 text-sm font-semibold text-white transition-colors hover:border-white md:hidden",
-                  isSaving && "cursor-not-allowed opacity-60 hover:border-[#545454]"
-                )}
-              >
-                {isSaving ? submittingLabel : submitLabel}
-              </button>
-            )}
           </div>
 
           <div className="grid w-full grid-cols-2 gap-3 md:grid-cols-3 lg:flex lg:w-auto lg:shrink-0 lg:items-center lg:justify-end lg:gap-4">
-            {canSubmit && (
-              <button
-                type="submit"
-                disabled={isSaving}
-                className={cn(
-                  "hidden h-9 w-full rounded-lg border border-[#545454] px-6 text-sm font-semibold text-white transition-colors hover:border-white md:inline-flex md:items-center md:justify-center lg:w-auto",
-                  isSaving && "cursor-not-allowed opacity-60 hover:border-[#545454]"
-                )}
-              >
-                {isSaving ? submittingLabel : submitLabel}
-              </button>
-            )}
-
             {canDiscard ? (
               <button
                 type="button"
                 onClick={() => onDiscard(editedPost.id)}
                 disabled={isSaving}
                 className={cn(
-                  "h-9 w-full px-6 bg-[#FDFDFD] hover:bg-white/80 rounded-lg text-sm font-semibold text-black transition-colors inline-flex items-center justify-center gap-2 lg:w-auto",
-                  isSaving && "cursor-not-allowed opacity-60 hover:bg-[#FDFDFD]"
+                  "inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-[#AF6606]/70 bg-[#4D2C03]/35 px-6 text-sm font-semibold text-[#FAB55A] transition-colors hover:border-[#FAB55A] hover:bg-[#4D2C03]/60 lg:w-auto",
+                  isSaving && "cursor-not-allowed opacity-60 hover:border-[#AF6606]/70 hover:bg-[#4D2C03]/35"
                 )}
               >
-                <CircleX className="h-5 w-5 fill-black text-white" />
+                <CircleX className="h-5 w-5" />
                 Bỏ qua
               </button>
             ) : canRecall ? (
@@ -472,6 +468,19 @@ export default function PostDetailEditor({
               </button>
             ) : null}
 
+            {canSubmit && (
+              <button
+                type="submit"
+                disabled={isSaving}
+                className={cn(
+                  "inline-flex h-9 w-full items-center justify-center rounded-lg border border-[#F7F0A1] bg-[#F7F0A1] px-6 text-sm font-semibold text-black shadow-[0_0_0_1px_rgba(247,240,161,0.12)] transition-colors hover:border-[#FFF6B8] hover:bg-[#e8e09c] lg:w-auto",
+                  isSaving && "cursor-not-allowed opacity-60 hover:border-[#F7F0A1] hover:bg-[#F7F0A1]"
+                )}
+              >
+                {isSaving ? submittingLabel : submitLabel}
+              </button>
+            )}
+
             {canApprove && (
               <button
                 type="button"
@@ -483,7 +492,7 @@ export default function PostDetailEditor({
                 )}
               >
                 <CircleCheck className="h-5 w-5 fill-black text-[#F7F0A1]" />
-                {isApproving ? 'Đang duyệt...' : 'Chấp nhận'}
+                {isApproving ? 'Đang gửi...' : 'Gửi Preview'}
               </button>
             )}
 
@@ -502,6 +511,21 @@ export default function PostDetailEditor({
               </button>
             )}
 
+            {canScheduleApprove && (
+              <button
+                type="button"
+                onClick={handleScheduleApproveSubmit}
+                disabled={isSaving || isScheduling}
+                className={cn(
+                  "h-9 w-full px-6 bg-[#F7F0A1] hover:bg-[#F7F0A1]/90 rounded-lg text-sm font-semibold text-black transition-colors inline-flex items-center justify-center gap-2 lg:w-auto",
+                  (isSaving || isScheduling) && "cursor-not-allowed opacity-60 hover:bg-[#F7F0A1]"
+                )}
+              >
+                <CircleCheck className="h-5 w-5 fill-black text-[#F7F0A1]" />
+                {isScheduling ? 'Đang duyệt...' : 'Duyệt tin'}
+              </button>
+            )}
+
           </div>
         </div>
       </form>
@@ -517,6 +541,15 @@ export default function PostDetailEditor({
         }))}
         onConfirm={confirmPublish}
         isLoading={isPublishing}
+      />
+
+      <ApprovePostModal
+        open={approveDialogOpen}
+        onOpenChange={setApproveDialogOpen}
+        postTitle={pendingApprovePost?.title ?? editedPost.title}
+        contentType={pendingApprovePost?.contentType ?? editedPost.contentType}
+        onConfirm={confirmScheduleApprove}
+        isLoading={isScheduling}
       />
 
       <RevokePostModal
