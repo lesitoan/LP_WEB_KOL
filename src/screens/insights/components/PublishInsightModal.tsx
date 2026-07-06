@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { Check, ChevronDown, Loader2, X } from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { Check, Loader2, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -40,46 +40,49 @@ export default function PublishInsightModal({
   onOpenChange,
   onPublish,
 }: PublishInsightModalProps) {
-  const [selectedGroupId, setSelectedGroupId] = useState('')
-  const [groupSelectOpen, setGroupSelectOpen] = useState(false)
+  const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set())
   const groupsQuery = useGetGroupsQuery({ page: 1, limit: 100, status: 'ACTIVE' }, { skip: !open })
 
   const groups = groupsQuery.data?.items ?? []
   const publishableGroups = groups.filter(isGroupPublishable)
-  const selectedGroup = useMemo(
-    () => publishableGroups.find((group) => group.id === selectedGroupId) ?? null,
-    [publishableGroups, selectedGroupId],
-  )
 
-  const isGroupSelectDisabled = groupsQuery.isLoading || groupsQuery.isFetching || !publishableGroups.length
-  const groupSelectPlaceholder =
-    groupsQuery.isLoading || groupsQuery.isFetching
-      ? 'Đang tải danh sách nhóm'
-      : publishableGroups.length
-        ? 'Chọn nhóm'
-        : 'Không có dữ liệu'
+  const allSelected = publishableGroups.length > 0 && selectedGroupIds.size === publishableGroups.length
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      setSelectedGroupId('')
-      setGroupSelectOpen(false)
+      setSelectedGroupIds(new Set())
     }
     onOpenChange(nextOpen)
   }
 
-  const handleSelectGroup = (groupId: string) => {
-    setSelectedGroupId(groupId)
-    setGroupSelectOpen(false)
-  }
+  const handleToggleGroup = useCallback((groupId: string) => {
+    setSelectedGroupIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(groupId)) {
+        next.delete(groupId)
+      } else {
+        next.add(groupId)
+      }
+      return next
+    })
+  }, [])
+
+  const handleToggleAll = useCallback(() => {
+    if (allSelected) {
+      setSelectedGroupIds(new Set())
+    } else {
+      setSelectedGroupIds(new Set(publishableGroups.map((g) => g.id)))
+    }
+  }, [allSelected, publishableGroups])
 
   const handlePublish = async () => {
-    if (!insight || !selectedGroupId) return
+    if (!insight || selectedGroupIds.size === 0) return
 
-    const published = await onPublish(insight.id, [
-      {
-        targetTelegramGroupId: selectedGroupId,
-      },
-    ])
+    const targets: PublishKolInsightTarget[] = Array.from(selectedGroupIds).map((id) => ({
+      targetTelegramGroupId: id,
+    }))
+
+    const published = await onPublish(insight.id, targets)
 
     if (published) {
       handleOpenChange(false)
@@ -113,47 +116,70 @@ export default function PublishInsightModal({
         </DialogHeader>
 
         <div className="px-4 py-5 sm:px-6">
-          <div className="relative min-w-0 space-y-2">
-            <span className="block text-sm font-semibold leading-5 text-white">Chọn nhóm publish</span>
-            <button
-              type="button"
-              disabled={isGroupSelectDisabled}
-              onClick={() => setGroupSelectOpen((current) => !current)}
-              className={cn(
-                'flex h-11 w-full min-w-0 items-center justify-between gap-3 rounded-lg border border-[#545454] bg-[#222222] px-3 text-left text-[13px] md:text-sm text-white outline-none transition-colors hover:border-[#777777] focus:border-[#F7F0A1]/70 disabled:cursor-not-allowed disabled:opacity-50',
-                groupSelectOpen && 'border-[#F7F0A1]/70',
-              )}
-            >
-              <span className={cn('min-w-0 flex-1 truncate', !selectedGroup && 'text-[#A8A8A9]')}>
-                {selectedGroup ? truncateLabel(selectedGroup.title, 42) : groupSelectPlaceholder}
-              </span>
-              <ChevronDown
-                className={cn('h-4 w-4 shrink-0 text-[#A8A8A9] transition-transform', groupSelectOpen && 'rotate-180')}
-              />
-            </button>
+          <div className="min-w-0 space-y-3">
+            {/* Label row with select-all toggle */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <span className="block text-sm font-semibold leading-5 text-white">Chọn nhóm publish</span>
+                <span className="block text-xs leading-4 text-[#A8A8A9] mt-0.5">Có thể chọn nhiều nhóm</span>
+              </div>
+              <button
+                type="button"
+                disabled={groupsQuery.isLoading || groupsQuery.isFetching || !publishableGroups.length}
+                onClick={handleToggleAll}
+                className="shrink-0 rounded-lg border border-[#545454] bg-transparent px-3 py-1.5 text-xs font-medium text-white transition-colors hover:border-[#777777] hover:bg-[#282828] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {allSelected ? 'Bỏ chọn' : 'Chọn tất cả'}
+              </button>
+            </div>
 
-            {groupSelectOpen ? (
-              <div className="scrollbar-thin-brand absolute left-0 right-0 top-[calc(100%+6px)] z-[70] max-h-[220px] overflow-y-auto rounded-lg border border-[#545454] bg-[#222222] p-1 shadow-2xl">
-                {publishableGroups.map((group) => {
-                  const isSelected = selectedGroupId === group.id
+            {/* Checkbox list */}
+            <div className="scrollbar-thin-brand max-h-[240px] overflow-y-auto rounded-lg border border-[#545454] bg-[#222222]">
+              {groupsQuery.isLoading || groupsQuery.isFetching ? (
+                <div className="flex items-center justify-center py-8 text-[#A8A8A9]">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="ml-2 text-sm">Đang tải danh sách nhóm...</span>
+                </div>
+              ) : publishableGroups.length === 0 ? (
+                <div className="flex items-center justify-center py-8 text-[#A8A8A9]">
+                  <span className="text-sm">Không có dữ liệu</span>
+                </div>
+              ) : (
+                publishableGroups.map((group) => {
+                  const isSelected = selectedGroupIds.has(group.id)
 
                   return (
                     <button
                       key={group.id}
                       type="button"
-                      onClick={() => handleSelectGroup(group.id)}
-                      className={cn(
-                        'flex h-9 w-full min-w-0 items-center justify-between gap-3 rounded-md px-3 text-left text-[13px] md:text-sm text-white transition-colors hover:bg-[#303030]',
-                        isSelected && 'bg-[#34341F] text-[#F7F0A1]',
-                      )}
+                      onClick={() => handleToggleGroup(group.id)}
+                      className="flex w-full min-w-0 items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[#303030]"
                     >
-                      <span className="min-w-0 flex-1 truncate">{truncateLabel(group.title, 42)}</span>
-                      {isSelected ? <Check className="h-4 w-4 shrink-0" /> : null}
+                      {/* Checkbox */}
+                      <span
+                        className={cn(
+                          'flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors',
+                          isSelected
+                            ? 'border-[#F7F0A1] bg-[#F7F0A1]'
+                            : 'border-[#545454] bg-transparent',
+                        )}
+                      >
+                        {isSelected ? <Check className="h-3.5 w-3.5 text-black" strokeWidth={3} /> : null}
+                      </span>
+                      {/* Label */}
+                      <span
+                        className={cn(
+                          'min-w-0 flex-1 truncate text-[13px] md:text-sm',
+                          isSelected ? 'text-white' : 'text-[#D4D4D4]',
+                        )}
+                      >
+                        {truncateLabel(group.title, 50)}
+                      </span>
                     </button>
                   )
-                })}
-              </div>
-            ) : null}
+                })
+              )}
+            </div>
           </div>
         </div>
 
@@ -163,16 +189,16 @@ export default function PublishInsightModal({
             onClick={() => handleOpenChange(false)}
             className="h-9 w-full min-w-0 max-w-full overflow-hidden rounded-lg bg-[#FDFDFD] px-3 text-[13px] md:text-sm font-semibold text-black hover:bg-zinc-200"
           >
-            <span className="truncate">Trở lại</span>
+            <span className="truncate">Hủy</span>
           </Button>
           <Button
             type="button"
             onClick={handlePublish}
-            disabled={isPublishing || !selectedGroupId}
+            disabled={isPublishing || selectedGroupIds.size === 0}
             className="h-9 w-full min-w-0 max-w-full overflow-hidden rounded-lg bg-[#F7F0A1] px-3 text-[13px] md:text-sm font-semibold text-black hover:bg-[#FFF7B8]"
           >
-            {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <img src="/images/insights/publish-icon.svg" alt="" className="h-4 w-4" />}
-            <span className="truncate">Đăng tin</span>
+            {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            <span className="truncate">Xác nhận</span>
           </Button>
         </div>
       </DialogContent>
