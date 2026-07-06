@@ -5,6 +5,7 @@ import { CalendarClock, Check, CircleCheck, X } from 'lucide-react'
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { usePreviewAdminInsightDistributionMutation } from '@/services/api/admin/insightsApi'
 import { cn } from '@/lib/utils'
+import { formatApiDateTimeForPostReview } from '../utils'
 import type {
   AdminInsightDistributionPreview,
   ContentTypeCode,
@@ -24,22 +25,6 @@ interface ApprovePostModalProps {
   contentType: ContentTypeCode
   onConfirm: (payload: ApprovePostPayload) => Promise<void> | void
   isLoading?: boolean
-}
-
-function formatScheduleDate(value: string | null | undefined): string {
-  if (!value) return '—'
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return '—'
-
-  return date.toLocaleString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
 }
 
 function getScheduledAtForApi(distributionPreview: AdminInsightDistributionPreview | undefined): string | undefined {
@@ -100,9 +85,10 @@ export default function ApprovePostModal({
     }}>
       <DialogContent
         showCloseButton={false}
-        className="w-[calc(100vw-2rem)] max-w-[577px] gap-0 rounded-2xl border border-[#282828] bg-[#171717] p-0 text-white shadow-2xl"
+        className="w-[calc(100vw-2rem)] max-w-[577px] gap-0 overflow-hidden rounded-2xl border border-[#282828] bg-[#171717] p-0 text-white shadow-2xl"
       >
-        <div className="flex items-center justify-between gap-4 px-6 py-5">
+        <div className="flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden">
+        <div className="flex shrink-0 items-center justify-between gap-4 px-6 py-5">
           <DialogTitle className="flex items-center gap-2 text-lg font-medium leading-[30px] text-white">
             <CalendarClock className="h-6 w-6 shrink-0 text-[#F7F0A1]" />
             Duyệt tin
@@ -119,8 +105,9 @@ export default function ApprovePostModal({
           </DialogClose>
         </div>
 
-        <div className="h-px bg-[#282828]" />
+        <div className="h-px shrink-0 bg-[#282828]" />
 
+        <div className="scrollbar-thin-brand min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-col gap-4 px-6 py-5">
           <div className="rounded-lg bg-[#282828]/50 p-4">
             <div className="text-xs font-normal leading-[18px] text-[#A8A8A9]">Tiêu đề tin</div>
@@ -169,7 +156,7 @@ export default function ApprovePostModal({
                 <div className="flex flex-col gap-3">
                   <div>
                     <div className="text-xs font-normal leading-[18px] text-[#A8A8A9]">Bắt đầu đăng</div>
-                    <div className="mt-1 text-sm font-semibold text-white">{formatScheduleDate(scheduledAtForApi)}</div>
+                    <div className="mt-1 text-sm font-semibold text-white">{formatApiDateTimeForPostReview(scheduledAtForApi) ?? '—'}</div>
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -184,7 +171,7 @@ export default function ApprovePostModal({
                           </div>
                         </div>
                         <div className="text-sm font-semibold leading-5 text-white sm:text-right">
-                          {formatScheduleDate(plan.scheduledAt)}
+                          {formatApiDateTimeForPostReview(plan.scheduledAt) ?? '—'}
                         </div>
                         <div className="text-sm font-normal leading-5 text-[#A8A8A9] sm:text-right">
                           {plan.recipientCount} KOL
@@ -199,9 +186,10 @@ export default function ApprovePostModal({
             </div>
           ) : null}
         </div>
+        </div>
 
         <label className={cn(
-          "flex cursor-pointer items-center gap-2 px-6 pb-5 text-sm font-normal leading-[21px] text-[#A8A8A9]",
+          "flex shrink-0 cursor-pointer items-center gap-2 px-6 py-4 text-sm font-normal leading-[21px] text-[#A8A8A9]",
           isLoading && "cursor-not-allowed opacity-60"
         )}>
           <button
@@ -219,9 +207,9 @@ export default function ApprovePostModal({
           Tôi đã đọc và kiểm tra nội dung này
         </label>
 
-        <div className="h-px bg-[#282828]" />
+        <div className="h-px shrink-0 bg-[#282828]" />
 
-        <div className="flex justify-end gap-4 px-6 py-5 max-sm:flex-col">
+        <div className="flex shrink-0 justify-end gap-4 px-6 py-5 max-sm:flex-col">
           <DialogClose asChild>
             <button
               type="button"
@@ -240,6 +228,7 @@ export default function ApprovePostModal({
             <CircleCheck className="h-5 w-5 fill-black text-[#F7F0A1]" />
             {isLoading ? 'Đang duyệt...' : 'Xác nhận duyệt'}
           </button>
+        </div>
         </div>
       </DialogContent>
     </Dialog>

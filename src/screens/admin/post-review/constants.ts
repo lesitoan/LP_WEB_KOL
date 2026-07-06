@@ -6,6 +6,7 @@ import type {
   ContentTypeCode,
   UpdateAdminInsightBody,
 } from '@/types/api/adminInsight'
+import { formatApiTimeForPostReview } from './utils'
 
 export interface CategoryConfig {
   id: ContentTypeCode
@@ -242,19 +243,6 @@ export interface ReviewPost {
   isLocalDraft?: boolean
 }
 
-function formatDisplayTime(value: string | null): string | undefined {
-  if (!value) return undefined
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return undefined
-
-  return date.toLocaleTimeString('vi-VN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
-}
-
 function formatSources(value: unknown): string {
   if (value === null || value === undefined) return ''
   if (typeof value === 'string') return value
@@ -322,7 +310,7 @@ export function mapInsightToReviewPost(insight: AdminInsight | AdminInsightDetai
   return {
     id: insight.id,
     contentType: insight.contentType,
-    time: formatDisplayTime(insight.scheduledAt),
+    time: formatApiTimeForPostReview(insight.scheduledAt),
     title: insight.title,
     mainContent: insight.body,
     historyComparison: insight.historicalComparison ?? '',

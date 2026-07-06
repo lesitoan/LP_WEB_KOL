@@ -44,7 +44,11 @@ export default function ContentOverviewMetrics({ dateRange }: ContentOverviewMet
             </div>
 
             <div className="flex flex-col gap-4">
-              <h4 className="truncate text-2xl font-bold text-white leading-9 md:text-[32px] md:leading-[48px] tracking-tight">
+              <h4 className={
+                index === metrics.length - 1
+                  ? "text-lg font-bold text-white leading-7 md:text-xl md:leading-8 tracking-tight line-clamp-2 break-words"
+                  : "truncate text-2xl font-bold text-white leading-9 md:text-[32px] md:leading-[48px] tracking-tight"
+              }>
                 {metric.value}
               </h4>
               <div className="flex items-center gap-1 text-xs md:text-sm">

@@ -122,7 +122,7 @@ function mapPublishedPost(insight: AdminInsight, openRequestByContentId: Map<str
 
 export function usePublishedPostData(page: number) {
   const insightsQuery = useListAdminInsightsQuery({
-    status: 'PUBLISHED',
+    status: 'SCHEDULED',
     page,
     limit: PUBLISHED_POST_LIMIT,
   })

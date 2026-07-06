@@ -14,8 +14,10 @@ const MANUAL_NEWS_TYPES = [
   { id: 'event-alert', label: 'Cảnh báo trước sự kiện', schedule: 'Trước 60 - 120′', contentType: 'PRE_EVENT' as const },
   { id: 'weekly-calendar', label: 'Lịch tuần', schedule: 'Thứ 2, 08:00', contentType: 'WEEKLY_CALENDAR' as const, time: { hour: 8, minute: 0 } },
   { id: 'whale-analysis', label: 'Phân tích whales', schedule: 'Hàng ngày - 10:00', contentType: 'WHALES_DAILY' as const, time: { hour: 10, minute: 0 } },
+  { id: 'whale-alert', label: 'Cảnh báo whales', schedule: 'Realtime', contentType: 'WHALES_ALERT' as const },
   { id: 'market-structure', label: 'Cấu trúc thị trường', schedule: '08:00', contentType: 'MARKET_STRUCTURE' as const, time: { hour: 8, minute: 0 } },
   { id: 'sector-narrative', label: 'Sector & Narrative', schedule: '12:00', contentType: 'SECTOR_DAILY' as const, time: { hour: 12, minute: 0 } },
+  { id: 'market-sentiment', label: 'Tâm lý thị trường', schedule: '15:00', contentType: 'SENTIMENT' as const, time: { hour: 15, minute: 0 } },
   { id: 'research-report', label: 'Research Report', schedule: 'Khi phát sinh', contentType: 'DEEP_DIVE' as const },
   { id: 'vietnam-legal', label: 'Pháp lý Việt Nam', schedule: 'Khi có văn bản', contentType: 'LEGAL_VN' as const },
 ]

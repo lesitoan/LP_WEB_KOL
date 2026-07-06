@@ -7,6 +7,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, isSchedulableInsightStatus, type ReviewPost } from '../constants'
+import { formatApiTimeForPostReview } from '../utils'
 import ApprovePostModal, { type ApprovePostPayload } from './ApprovePostModal'
 import PublishPostModal from './PublishPostModal'
 import RevokePostModal from './RevokePostModal'
@@ -404,7 +405,7 @@ export default function PostDetailEditor({
                 {displayPlans.map((plan) => (
                   <div key={plan.key} className="px-2 py-1 bg-[#282828] rounded text-xs font-medium">
                     <span className="text-[#DDB96E]">
-                      {plan.tierCode} {new Date(plan.scheduledAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                      {plan.tierCode} {formatApiTimeForPostReview(plan.scheduledAt) ?? '--:--'}
                     </span>{' '}
                     <span className="text-white">({plan.recipientCount} KOL)</span>
                   </div>
