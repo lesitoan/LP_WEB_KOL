@@ -44,6 +44,7 @@ export interface InsightDetailView {
   insightForInvestor: string
   insightForTrader: string
   sourcesText: string
+  imageUrls: string[]
   createdAtLabel: string
   publishedAtLabel: string
   deliveryStatusLabel: string

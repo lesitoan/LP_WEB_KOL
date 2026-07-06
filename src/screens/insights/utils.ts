@@ -135,6 +135,11 @@ export function buildInsightDetailView(insight: KolInsight): InsightDetailView {
   const effectiveContent = insight.effectiveContent
   const sources = effectiveContent.sources ?? insight.sources
 
+
+  let imageUrls = Array.isArray(insight.imageUrls)
+    ? insight.imageUrls.filter((url): url is string => typeof url === 'string' && Boolean(url.trim()))
+    : []
+
   return {
     id: insight.id,
     contentTypeLabel: contentTypeLabels[insight.contentType],
@@ -147,6 +152,7 @@ export function buildInsightDetailView(insight: KolInsight): InsightDetailView {
     insightForInvestor: insight.insightForInvestor || fallbackText,
     insightForTrader: insight.insightForTrader || fallbackText,
     sourcesText: normalizeSourcesText(sources),
+    imageUrls,
     createdAtLabel: formatInsightDateOnly(insight.createdAt),
     publishedAtLabel: formatInsightDate(insight.publishedAt),
     deliveryStatusLabel: formatDeliveryStatus(insight.delivery?.status),

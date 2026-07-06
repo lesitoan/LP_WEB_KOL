@@ -64,6 +64,7 @@ export interface KolInsightEffectiveContent {
 export interface KolInsight {
   id: string
   contentType: ContentTypeCode
+  imageUrls?: string[] | null
   title: string
   subtext: string | null
   summary: string | null

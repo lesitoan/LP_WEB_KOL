@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Flame, Loader2, Save, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Flame, Loader2, Save, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import type { KolInsightCustomizationBody } from '@/types/api/kolInsight'
 import type { InsightDetailView, InsightModalMode } from '@/types/insights'
 import { normalizeSourcesText } from '../utils'
@@ -49,11 +50,33 @@ const editableFields: FieldConfig[] = [
   { key: 'customizedSources', label: 'Nguồn', minRows: 2 },
 ]
 
+function linkifyText(text: string) {
+  const parts = text.split(/(https?:\/\/\S+)/g)
+
+  return parts.map((part, index) => {
+    if (/^https?:\/\//.test(part)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#3388F7] underline"
+        >
+          {part}
+        </a>
+      )
+    }
+
+    return <span key={index}>{part}</span>
+  })
+}
+
 function ContentBlock({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-lg bg-[#282828]/50 p-4">
+    <section className="flex min-w-0 flex-col gap-1 rounded-lg bg-[#282828]/50 p-4">
       <h3 className="text-xs font-normal leading-[18px] text-[#A8A8A9]">{label}</h3>
-      <div className="mt-1 whitespace-pre-line break-words text-[13px] md:text-sm font-normal leading-6 text-white">
+      <div className="min-w-0 whitespace-pre-line break-words text-base font-normal leading-6 text-white">
         {children}
       </div>
     </section>
@@ -70,6 +93,91 @@ function FieldCounter({ value, maxLength }: { value: string; maxLength?: number 
   )
 }
 
+function InsightImageGallery({
+  imageUrls,
+  title,
+  className,
+}: {
+  imageUrls: string[]
+  title: string
+  className?: string
+}) {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const hasMultipleImages = imageUrls.length > 1
+
+  useEffect(() => {
+    setActiveIndex(0)
+  }, [imageUrls])
+
+  if (!imageUrls.length) return null
+
+  const goToPreviousImage = () => {
+    setActiveIndex((current) => (current - 1 + imageUrls.length) % imageUrls.length)
+  }
+
+  const goToNextImage = () => {
+    setActiveIndex((current) => (current + 1) % imageUrls.length)
+  }
+
+  return (
+    <section
+      className={cn(
+        'mx-auto flex w-full min-w-0 max-w-[630px] flex-col justify-between gap-4 overflow-hidden md:mx-0 md:h-full md:max-w-none',
+        className,
+      )}
+    >
+      <div className="flex h-[min(458px,42dvh)] w-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0D0D0D] sm:h-[458px] md:h-full md:min-h-0 md:flex-1">
+        <img
+          src={imageUrls[activeIndex]}
+          alt={`${title} - ảnh ${activeIndex + 1}`}
+          className="block h-auto max-h-full w-full object-contain md:h-full md:w-auto md:max-w-full"
+        />
+      </div>
+
+      {hasMultipleImages ? (
+        <div className="flex shrink-0 items-center justify-center gap-4">
+          <button
+            type="button"
+            onClick={goToPreviousImage}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#545454] text-white transition-colors hover:bg-[#282828]"
+            aria-label="Ảnh trước"
+          >
+            <ChevronLeft className="h-5 w-5" strokeWidth={2.4} />
+          </button>
+
+          <div className="flex flex-col items-center justify-center text-base font-normal leading-6 text-white">
+            <span>
+              {activeIndex + 1}/{imageUrls.length}
+            </span>
+            <div className="mt-1 flex items-center gap-0.5">
+              {imageUrls.map((url, index) => (
+                <button
+                  key={`${url}-${index}`}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  className={`h-2 w-2 rounded-full transition-colors ${
+                    activeIndex === index ? 'bg-[#F7F0A1]' : 'bg-[#828283] hover:bg-[#A8A8A9]'
+                  }`}
+                  aria-label={`Xem ảnh ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={goToNextImage}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#545454] text-white transition-colors hover:bg-[#282828]"
+            aria-label="Ảnh tiếp theo"
+          >
+            <ChevronRight className="h-5 w-5" strokeWidth={2.4} />
+          </button>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 export default function InsightEditModal({
   detail,
   mode,
@@ -81,6 +189,8 @@ export default function InsightEditModal({
 }: InsightEditModalProps) {
   const [draft, setDraft] = useState<KolInsightCustomizationBody>({})
   const isEditMode = mode === 'edit'
+  const imageUrls = detail?.imageUrls ?? []
+  const shouldShowGallery = !isEditMode && imageUrls.length > 0
 
   useEffect(() => {
     if (detail && open) {
@@ -103,18 +213,92 @@ export default function InsightEditModal({
     }
   }
 
+  const renderDetailContent = () => {
+    if (!detail) return null
+
+    return (
+      <>
+        <h2 className="break-words text-base font-bold leading-6 text-white">{detail.title}</h2>
+
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="shrink-0 text-sm font-normal leading-[21px] text-[#A8A8A9]">PHÂN LOẠI</span>
+          <span className="inline-flex h-6 min-w-0 items-center gap-1 rounded-full bg-[#5C120C] py-0.5 pl-1.5 pr-2 text-xs font-normal leading-[18px] text-[#F5827A]">
+            <Flame className="h-3 w-3 shrink-0 fill-[#F5827A]/20 text-[#F5827A]" strokeWidth={1.8} />
+            <span className="truncate">{detail.contentTypeLabel}</span>
+          </span>
+        </div>
+
+        {isEditMode ? (
+          <div className="space-y-3">
+            {editableFields.map((field) => {
+              const rawValue = draft[field.key]
+              let value = ''
+              if (field.key === 'customizedSources') {
+                if (typeof rawValue === 'string') {
+                  value = rawValue
+                } else if (rawValue) {
+                  const normalized = normalizeSourcesText(rawValue)
+                  value = normalized === '-' ? '' : normalized
+                }
+              } else {
+                value = String(rawValue ?? '')
+              }
+
+              return (
+                <label key={field.key} className="block space-y-1.5">
+                  <span className="flex items-center justify-between gap-3 text-xs font-normal leading-[18px] text-[#A8A8A9]">
+                    {field.label}
+                    <FieldCounter value={value} maxLength={field.maxLength} />
+                  </span>
+                  <Textarea
+                    value={value}
+                    rows={field.minRows}
+                    maxLength={field.maxLength}
+                    onChange={(event) => handleFieldChange(field.key, event.target.value, field.maxLength)}
+                    className="resize-y rounded-lg border-[#545454] bg-[#222222] text-sm leading-6 text-white placeholder:text-[#707070] focus-visible:ring-[#F7F0A1]/30"
+                  />
+                </label>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="flex min-w-0 flex-col gap-2">
+            <h3 className="text-sm font-normal leading-[21px] text-[#A8A8A9]">NỘI DUNG INSIGHT</h3>
+            <div className="flex min-w-0 flex-col gap-2">
+              <ContentBlock label="Nội dung chính">{detail.body}</ContentBlock>
+              <ContentBlock label="So sánh lịch sử">{detail.historicalComparison}</ContentBlock>
+              <ContentBlock label="Insight cho KOL">{detail.insightForKol}</ContentBlock>
+              <ContentBlock label="Insight cho nhà đầu tư">{detail.insightForInvestor}</ContentBlock>
+              <ContentBlock label="Nguồn">{linkifyText(detail.sourcesText)}</ContentBlock>
+              {/* API KOL insight chưa trả authorTask nên tạm comment UI này.
+              <ContentBlock label="Nhiệm vụ của tác giả">-</ContentBlock>
+              */}
+              <ContentBlock label="Insight cho trader">{detail.insightForTrader}</ContentBlock>
+              {/* API KOL insight chưa trả kolToolPosted nên tạm comment UI này.
+              <ContentBlock label="KOL Tool Posted">-</ContentBlock>
+              */}
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-h-[calc(100dvh-24px)] w-[calc(100vw-16px)] max-w-[846px] gap-0 overflow-hidden rounded-2xl border-[#282828] bg-[#171717] p-0 shadow-2xl sm:w-[calc(100vw-48px)]"
+        className={cn(
+          '!flex max-h-[calc(100dvh-48px)] w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] flex-col gap-6 overflow-hidden rounded-2xl border border-[#282828] bg-[#171717] p-6 shadow-2xl',
+          shouldShowGallery ? 'sm:max-w-[1323px]' : 'sm:max-w-[846px]',
+        )}
       >
-        <DialogHeader className="flex-row items-center justify-between gap-4 border-b border-[#282828] px-4 py-4 text-left sm:px-6">
-          <DialogTitle className="flex min-w-0 items-center gap-2 text-base md:text-lg font-medium leading-[30px] text-white">
+        <DialogHeader className="flex shrink-0 flex-row items-center justify-between gap-4 p-0 text-left">
+          <DialogTitle className="flex min-w-0 flex-1 items-center gap-2 text-lg font-medium leading-[30px] text-white">
             <img src="/images/insights/detail-icon.svg" alt="" className="h-6 w-6 shrink-0" />
             <span className="shrink-0">{isEditMode ? 'Chỉnh sửa insight' : 'Chi tiết insight'}</span>
             <span className="hidden h-1.5 w-1.5 shrink-0 rounded-full bg-[#A8A8A9] sm:block" />
-            <span className="hidden truncate text-sm md:text-base font-normal text-[#A8A8A9] sm:block">
+            <span className="hidden truncate text-base font-normal leading-6 text-[#A8A8A9] sm:block">
               Ngày tạo: {detail?.createdAtLabel ?? '-'}
             </span>
           </DialogTitle>
@@ -129,80 +313,45 @@ export default function InsightEditModal({
           </button>
         </DialogHeader>
 
-        <div className="scrollbar-thin-brand max-h-[calc(100dvh-156px)] overflow-y-auto px-4 py-5 sm:px-6">
+        <div className="h-px shrink-0 bg-[#282828]" />
+
+        <div
+          className={cn(
+            'scrollbar-thin-brand min-h-0 flex-1 overflow-y-auto',
+            shouldShowGallery && 'md:overflow-hidden',
+          )}
+        >
           {isLoading ? (
-            <div className="grid min-h-[420px] place-items-center text-sm font-medium text-[#A8A8A9]">
+            <div className="grid min-h-[320px] place-items-center text-sm font-medium text-[#A8A8A9]">
               <span className="inline-flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Đang tải dữ liệu
               </span>
             </div>
           ) : detail ? (
-            <div className="space-y-5">
-              <h2 className="break-words text-sm md:text-base font-bold leading-6 text-white">
-                {detail.title}
-              </h2>
-
-              <div className="grid gap-x-12 gap-y-3 md:grid-cols-[max-content_1fr] lg:grid-cols-[196px_1fr]">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs md:text-sm font-normal uppercase leading-[21px] text-[#A8A8A9]">PHÂN LOẠI</span>
-                  <span className="inline-flex h-6 items-center gap-1 rounded-full bg-[#5C120C] px-2 text-xs font-normal text-[#F5827A]">
-                    <Flame className="h-3 w-3 fill-[#F5827A]/20 text-[#F5827A]" strokeWidth={1.8} />
-                    {detail.contentTypeLabel}
-                  </span>
-                </div>
-              </div>
-
-              {isEditMode ? (
-                <div className="space-y-3">
-                  {editableFields.map((field) => {
-                    const rawValue = draft[field.key]
-                    let value = ''
-                    if (field.key === 'customizedSources') {
-                      if (typeof rawValue === 'string') {
-                        value = rawValue
-                      } else if (rawValue) {
-                        const normalized = normalizeSourcesText(rawValue)
-                        value = normalized === '-' ? '' : normalized
-                      }
-                    } else {
-                      value = String(rawValue ?? '')
-                    }
-
-                    return (
-                      <label key={field.key} className="block space-y-1.5">
-                        <span className="flex items-center justify-between gap-3 text-xs font-normal leading-[18px] text-[#A8A8A9]">
-                          {field.label}
-                          <FieldCounter value={value} maxLength={field.maxLength} />
-                        </span>
-                        <Textarea
-                          value={value}
-                          rows={field.minRows}
-                          maxLength={field.maxLength}
-                          onChange={(event) => handleFieldChange(field.key, event.target.value, field.maxLength)}
-                          className="resize-y rounded-lg border-[#545454] bg-[#222222] text-[13px] md:text-sm leading-6 text-white placeholder:text-[#707070] focus-visible:ring-[#F7F0A1]/30"
-                        />
-                      </label>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <h3 className="text-xs md:text-sm font-normal uppercase leading-[21px] text-[#A8A8A9]">NỘI DUNG INSIGHT</h3>
-                  <ContentBlock label="Nội dung chính">{detail.body}</ContentBlock>
-                  <ContentBlock label="So sánh lịch sử">{detail.historicalComparison}</ContentBlock>
-                  <ContentBlock label="Insight cho KOL">{detail.insightForKol}</ContentBlock>
-                  <ContentBlock label="Insight cho nhà đầu tư">{detail.insightForInvestor}</ContentBlock>
-                  <ContentBlock label="Nguồn">{detail.sourcesText}</ContentBlock>
-                  {/* API KOL insight chưa trả authorTask nên tạm comment UI này.
-                  <ContentBlock label="Nhiệm vụ của tác giả">-</ContentBlock>
-                  */}
-                  <ContentBlock label="Insight cho trader">{detail.insightForTrader}</ContentBlock>
-                  {/* API KOL insight chưa trả kolToolPosted nên tạm comment UI này.
-                  <ContentBlock label="KOL Tool Posted">-</ContentBlock>
-                  */}
-                </div>
+            <div
+              className={cn(
+                'min-w-0',
+                shouldShowGallery && 'grid grid-cols-1 gap-6 md:h-[518px] md:grid-cols-2 md:items-stretch',
               )}
+            >
+              {shouldShowGallery ? (
+                <InsightImageGallery
+                  imageUrls={imageUrls}
+                  title={detail.title}
+                  className="min-w-0 overflow-hidden"
+                />
+              ) : null}
+
+              <div
+                className={cn(
+                  'min-w-0 w-full',
+                  shouldShowGallery &&
+                    'scrollbar-thin-brand md:h-full md:min-h-0 md:overflow-y-auto md:pr-1',
+                )}
+              >
+                <div className="flex min-w-0 flex-col gap-2.5">{renderDetailContent()}</div>
+              </div>
             </div>
           ) : (
             <div className="grid min-h-[320px] place-items-center text-sm font-medium text-[#A8A8A9]">
@@ -211,11 +360,13 @@ export default function InsightEditModal({
           )}
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-[#282828] px-4 py-4 sm:flex-row sm:justify-end sm:px-6">
+        <div className="h-px shrink-0 bg-[#282828]" />
+
+        <div className="flex shrink-0 flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="h-9 w-full rounded-lg bg-[#FDFDFD] px-5 text-[13px] md:text-sm font-semibold text-black hover:bg-zinc-200 sm:w-[154px]"
+            className="h-9 w-full rounded-lg bg-[#FDFDFD] px-4 text-sm font-semibold text-black hover:bg-zinc-200 sm:w-[154px]"
           >
             Trở lại
           </Button>
@@ -224,7 +375,7 @@ export default function InsightEditModal({
               type="button"
               onClick={handleSave}
               disabled={isSaving || isLoading || !detail}
-              className="h-9 w-full rounded-lg bg-[#F7F0A1] px-5 text-[13px] md:text-sm font-semibold text-black hover:bg-[#FFF7B8] sm:w-[154px]"
+              className="h-9 w-full rounded-lg bg-[#F7F0A1] px-4 text-sm font-semibold text-black hover:bg-[#FFF7B8] sm:w-[154px]"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Lưu
