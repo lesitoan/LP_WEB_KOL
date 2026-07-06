@@ -7,6 +7,8 @@ import type {
   AdminInsightDetail,
   AdminInsightDistributionPreview,
   AdminInsightDistributionPreviewBody,
+  AdminInsightDistributionResult,
+  AdminInsightRecallResult,
   CreateAdminContentActionRequestBody,
   CreateAdminInsightBody,
   GetAdminInsightDistributionPreviewQuery,
@@ -20,6 +22,8 @@ import type {
 type AdminInsightsEnvelope = ApiResponse<PaginatedData<AdminInsight>>
 type AdminInsightEnvelope = ApiResponse<AdminInsight>
 type AdminInsightDetailEnvelope = ApiResponse<AdminInsightDetail>
+type AdminInsightDistributionResultEnvelope = ApiResponse<AdminInsightDistributionResult>
+type AdminInsightRecallResultEnvelope = ApiResponse<AdminInsightRecallResult>
 type AdminInsightDistributionPreviewEnvelope = ApiResponse<AdminInsightDistributionPreview>
 type AdminContentActionRequestsEnvelope = ApiResponse<PaginatedData<AdminContentActionRequest>>
 type AdminContentActionRequestEnvelope = ApiResponse<AdminContentActionRequest>
@@ -121,8 +125,10 @@ export const adminInsightsApi = adminApi.injectEndpoints({
       query: ({ insightId }) => ({
         url: apiV1Path(`/admin/insights/${insightId}/publish`),
         method: 'POST',
+        body: { pushlishNow: true },
       }),
-      transformResponse: (payload: AdminInsightDetailEnvelope) => ensureData(payload, 'Không thể đăng insight'),
+      transformResponse: (payload: AdminInsightDistributionResultEnvelope) =>
+        ensureData(payload, 'Không thể đăng insight').insight,
       invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
     }),
 
@@ -131,26 +137,29 @@ export const adminInsightsApi = adminApi.injectEndpoints({
         url: apiV1Path(`/admin/insights/${insightId}/approve`),
         method: 'POST',
       }),
-      transformResponse: (payload: AdminInsightDetailEnvelope) => ensureData(payload, 'Không thể duyệt insight'),
+      transformResponse: (payload: AdminInsightDistributionResultEnvelope) =>
+        ensureData(payload, 'Không thể duyệt insight').insight,
       invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
     }),
 
     scheduleAdminInsight: builder.mutation<AdminInsightDetail, { insightId: string; body: ScheduleAdminInsightBody }>({
       query: ({ insightId, body }) => ({
-        url: apiV1Path(`/admin/insights/${insightId}/schedule`),
+        url: apiV1Path(`/admin/insights/${insightId}/publish`),
         method: 'POST',
         body,
       }),
-      transformResponse: (payload: AdminInsightDetailEnvelope) => ensureData(payload, 'Không thể duyệt insight'),
+      transformResponse: (payload: AdminInsightDistributionResultEnvelope) =>
+        ensureData(payload, 'Không thể duyệt insight').insight,
       invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
     }),
 
     recallAdminInsight: builder.mutation<AdminInsightDetail, { insightId: string }>({
       query: ({ insightId }) => ({
-        url: apiV1Path(`/admin/insights/${insightId}/recall`),
+        url: apiV1Path(`/admin/insights/${insightId}/revoke`),
         method: 'POST',
       }),
-      transformResponse: (payload: AdminInsightDetailEnvelope) => ensureData(payload, 'Không thể thu hồi insight'),
+      transformResponse: (payload: AdminInsightRecallResultEnvelope) =>
+        ensureData(payload, 'Không thể thu hồi insight').insight,
       invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
     }),
 

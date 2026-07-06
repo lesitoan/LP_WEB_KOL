@@ -62,6 +62,16 @@ export interface ScheduleAdminInsightBody {
   pushlishNow?: boolean
 }
 
+export interface AdminInsightDistributionResult {
+  insight: AdminInsightDetail
+  distributionPreview: AdminInsightDistributionPreview
+}
+
+export interface AdminInsightRecallResult {
+  insight: AdminInsightDetail
+  telegramRevokeSummary: unknown
+}
+
 export interface PaginationMeta {
   page: number
   limit: number
