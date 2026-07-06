@@ -55,33 +55,15 @@ export interface AdminInsightDashboardSummary {
 }
 
 export interface AdminInsightDashboardSlaSummary {
-  comparisonPeriod: {
-    current: {
-      startDate: string | null
-      endDate: string
-    }
-    previous: {
-      startDate: string | null
-      endDate: string
-    }
+  period: {
+    startDate: string | null
+    endDate: string
   }
   metrics: {
-    apiReceived: AdminInsightDashboardMetricTrend
-    handledUnder15Rate: AdminInsightDashboardMetricTrend
-    handledUnder15Count: AdminInsightDashboardMetricTrend
-    missedOver30: AdminInsightDashboardMetricTrend
-    pendingOver30: AdminInsightDashboardMetricTrend
-    handledLateOver30: AdminInsightDashboardMetricTrend
-    handled: AdminInsightDashboardMetricTrend
-    pending: AdminInsightDashboardMetricTrend
-    activeHandlers: AdminInsightDashboardMetricTrend
-    shiftCheckIns: AdminInsightDashboardMetricTrend
-    scheduledShifts: AdminInsightDashboardMetricTrend
-    missedShifts: AdminInsightDashboardMetricTrend
-    lateCheckIns: AdminInsightDashboardMetricTrend
-    earlyCheckouts: AdminInsightDashboardMetricTrend
-    activeHours: AdminInsightDashboardMetricTrend
-    currentlyWorkingAdmins: number
+    apiReceived: number
+    handledUnder15Rate: number
+    pendingOver30: number
+    shiftCheckIns: number
   }
 }
 
@@ -146,6 +128,22 @@ export interface AdminInsightDashboardForwardByContentType {
     }
   }
   items: AdminInsightDashboardForwardByContentTypeItem[]
+}
+
+export interface AdminInsightDashboardReceivedForwardRateByContentTypeItem {
+  contentType: string
+  label: string
+  receivedCount: number
+  forwardedCount: number
+  forwardRate: number
+}
+
+export interface AdminInsightDashboardReceivedForwardRateByContentType {
+  period: {
+    startDate: string | null
+    endDate: string
+  }
+  items: AdminInsightDashboardReceivedForwardRateByContentTypeItem[]
 }
 
 export interface AdminInsightDashboardAdminPerformanceItem {

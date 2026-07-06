@@ -64,22 +64,22 @@ export function useReviewCoverageData(input: UseReviewCoverageDataInput) {
       {
         key: 'apiReceived',
         label: 'TIN API VỀ',
-        value: metrics ? metrics.apiReceived.current : '--',
+        value: metrics ? metrics?.apiReceived : '--',
       },
       {
         key: 'handledUnder15Rate',
         label: 'XỬ LÝ <15’',
-        value: metrics ? `${roundMetric(metrics.handledUnder15Rate.current)}%` : '--',
+        value: metrics ? `${roundMetric(metrics?.handledUnder15Rate)}%` : '--',
       },
       {
         key: 'missedOver30',
         label: 'LỖ HỔNG (>30’ KHÔNG AI XỬ LÝ)',
-        value: metrics ? metrics.missedOver30.current : '--',
+        value: metrics ? metrics?.pendingOver30 : '--',
       },
       {
         key: 'shiftCheckIns',
         label: 'CA TRỰC GHI NHẬN',
-        value: metrics ? metrics.shiftCheckIns.current : '--',
+        value: metrics ? metrics?.shiftCheckIns : '--',
       },
     ]
   }, [metrics])

@@ -39,7 +39,7 @@ export default function AdminContentAnalyticsScreen() {
           <ForwardsByContent dateRange={dateRange} />
         </div>
         <div className="h-full">
-          <ForwardRateByContent />
+          <ForwardRateByContent dateRange={dateRange} />
         </div>
       </div>
 

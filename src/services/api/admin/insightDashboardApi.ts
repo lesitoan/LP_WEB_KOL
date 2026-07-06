@@ -7,6 +7,7 @@ import type {
   AdminInsightDashboardDateRangeQuery,
   AdminInsightDashboardForwardByContentType,
   AdminInsightDashboardForwardByContentTypeQuery,
+  AdminInsightDashboardReceivedForwardRateByContentType,
   AdminInsightDashboardShiftCoverage,
   AdminInsightDashboardShiftCoverageQuery,
   AdminInsightDashboardSlaSummary,
@@ -17,6 +18,7 @@ type AdminInsightDashboardSummaryEnvelope = ApiResponse<AdminInsightDashboardSum
 type AdminInsightDashboardSlaSummaryEnvelope = ApiResponse<AdminInsightDashboardSlaSummary>
 type AdminInsightDashboardShiftCoverageEnvelope = ApiResponse<AdminInsightDashboardShiftCoverage>
 type AdminInsightDashboardForwardByContentTypeEnvelope = ApiResponse<AdminInsightDashboardForwardByContentType>
+type AdminInsightDashboardReceivedForwardRateByContentTypeEnvelope = ApiResponse<AdminInsightDashboardReceivedForwardRateByContentType>
 type AdminInsightDashboardAdminPerformanceEnvelope = ApiResponse<AdminInsightDashboardAdminPerformance>
 
 function ensureData<T>(payload: ApiResponse<T>, fallback: string): T {
@@ -130,6 +132,29 @@ export const adminInsightDashboardApi = adminApi.injectEndpoints({
         ensureData(payload, 'Khong the tai luot forward theo loai noi dung'),
       providesTags: ['Insights'],
     }),
+    getAdminInsightDashboardReceivedForwardRateByContentType: builder.query<
+      AdminInsightDashboardReceivedForwardRateByContentType,
+      AdminInsightDashboardForwardByContentTypeQuery | void
+    >({
+      query: (queryArg) => {
+        const query = queryArg ?? {}
+        const params = new URLSearchParams()
+
+        appendIfPresent(params, 'startDate', query.startDate)
+        appendIfPresent(params, 'endDate', query.endDate)
+        appendNumberIfPresent(params, 'limit', query.limit)
+
+        const queryString = params.toString()
+
+        return {
+          url: apiV1Path(`/admin/insight-dashboard/received-forward-rate-by-content-type${queryString ? `?${queryString}` : ''}`),
+          method: 'GET',
+        }
+      },
+      transformResponse: (payload: AdminInsightDashboardReceivedForwardRateByContentTypeEnvelope) =>
+        ensureData(payload, 'Khong the tai ty le forward tren luot nhan theo loai noi dung'),
+      providesTags: ['Insights'],
+    }),
     getAdminInsightDashboardAdminPerformance: builder.query<
       AdminInsightDashboardAdminPerformance,
       AdminInsightDashboardAdminPerformanceQuery | void
@@ -160,6 +185,7 @@ export const adminInsightDashboardApi = adminApi.injectEndpoints({
 export const {
   useGetAdminInsightDashboardAdminPerformanceQuery,
   useGetAdminInsightDashboardForwardByContentTypeQuery,
+  useGetAdminInsightDashboardReceivedForwardRateByContentTypeQuery,
   useGetAdminInsightDashboardShiftCoverageQuery,
   useGetAdminInsightDashboardSlaSummaryQuery,
   useGetAdminInsightDashboardSummaryQuery,

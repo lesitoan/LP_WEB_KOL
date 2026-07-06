@@ -83,9 +83,9 @@ const GROUP_LABELS: Record<string, string> = {
 }
 
 const CONTENT_TYPE_ALIAS: Partial<Record<ContentTypeCode, string>> = {
-  BAN_TIN_0630: 'ban_tin_0630',
-  BAN_TIN_1300: 'ban_tin_1300',
-  BAN_TIN_1900: 'ban_tin_1900',
+  BAN_TIN_0630: 'pulse_0630',
+  BAN_TIN_1300: 'pulse_1300',
+  BAN_TIN_1900: 'pulse_1900',
 }
 
 function formatHourMinute(hour: number | null, minute: number | null) {
