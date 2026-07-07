@@ -122,15 +122,15 @@ function InsightImageGallery({
   return (
     <section
       className={cn(
-        'mx-auto flex w-full min-w-0 max-w-[630px] flex-col justify-between gap-4 overflow-hidden md:mx-0 md:h-full md:max-w-none',
+        'mx-auto flex w-full min-w-0 max-w-[630px] flex-col justify-between gap-4 overflow-hidden md:mx-0 md:h-full md:min-h-0 md:max-w-none',
         className,
       )}
     >
-      <div className="flex h-[min(458px,42dvh)] w-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0D0D0D] sm:h-[458px] md:h-full md:min-h-0 md:flex-1">
+      <div className="flex h-[min(458px,42dvh)] w-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0D0D0D] sm:h-[458px] md:min-h-0 md:flex-1">
         <img
           src={imageUrls[activeIndex]}
           alt={`${title} - ảnh ${activeIndex + 1}`}
-          className="block h-auto max-h-full w-full object-contain md:h-full md:w-auto md:max-w-full"
+          className="block max-h-full max-w-full object-contain"
         />
       </div>
 
@@ -318,7 +318,7 @@ export default function InsightEditModal({
         <div
           className={cn(
             'scrollbar-thin-brand min-h-0 flex-1 overflow-y-auto',
-            shouldShowGallery && 'md:overflow-hidden',
+            shouldShowGallery && 'md:flex md:flex-col md:overflow-hidden',
           )}
         >
           {isLoading ? (
@@ -332,7 +332,7 @@ export default function InsightEditModal({
             <div
               className={cn(
                 'min-w-0',
-                shouldShowGallery && 'grid grid-cols-1 gap-6 md:h-[518px] md:grid-cols-2 md:items-stretch',
+                shouldShowGallery && 'grid grid-cols-1 gap-6 md:max-h-[518px] md:min-h-0 md:flex-1 md:grid-cols-2 md:items-stretch',
               )}
             >
               {shouldShowGallery ? (

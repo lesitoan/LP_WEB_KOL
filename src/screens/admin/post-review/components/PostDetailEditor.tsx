@@ -2,13 +2,14 @@
 
 import * as React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { CircleCheck, CircleX, RotateCcw } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CircleCheck, CircleX, RotateCcw, X } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, isSchedulableInsightStatus, type ReviewPost } from '../constants'
 import { formatApiTimeForPostReview } from '../utils'
 import ApprovePostModal, { type ApprovePostPayload } from './ApprovePostModal'
+import ImagePreviewModal from './ImagePreviewModal'
 import PublishPostModal from './PublishPostModal'
 import RevokePostModal from './RevokePostModal'
 import { cn } from '@/lib/utils'
@@ -64,6 +65,7 @@ interface PostDetailEditorProps {
 }
 
 const editableStatuses = new Set(['PENDING_REVIEW', 'DRAFT', 'FLAGGED'])
+const MAX_CONTENT_IMAGES = 10
 
 type PostDetailFormValues = Pick<
   ReviewPost,
@@ -83,6 +85,12 @@ interface DistributionDisplayPlan {
   tierCode: string
   scheduledAt: string
   recipientCount: number
+}
+
+interface ImagePreviewState {
+  images: string[]
+  initialIndex: number
+  title: string
 }
 
 function getPostFormValues(post: ReviewPost): PostDetailFormValues {
@@ -120,6 +128,15 @@ export default function PostDetailEditor({
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
   const [pendingApprovePost, setPendingApprovePost] = useState<ReviewPost | null>(null)
   const [pendingPublishPost, setPendingPublishPost] = useState<ReviewPost | null>(null)
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
+  const [activeAddImageSlot, setActiveAddImageSlot] = useState<number | null>(null)
+  const [contentImagesOverflow, setContentImagesOverflow] = useState(false)
+  const [imagePreview, setImagePreview] = useState<ImagePreviewState | null>(null)
+  const coverInputRef = useRef<HTMLInputElement>(null)
+  const contentImageInputRef = useRef<HTMLInputElement>(null)
+  const contentImageScrollRef = useRef<HTMLDivElement>(null)
+  const replaceImageIndexRef = useRef<number | null>(null)
+  const objectUrlsRef = useRef<string[]>([])
   const form = useForm<PostDetailFormValues>({
     mode: 'onSubmit',
     reValidateMode: 'onChange',
@@ -134,10 +151,25 @@ export default function PostDetailEditor({
     setValue,
   } = form
 
+  const revokeObjectUrls = () => {
+    objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
+    objectUrlsRef.current = []
+  }
+
+  const createLocalImageUrl = (file: File) => {
+    const url = URL.createObjectURL(file)
+    objectUrlsRef.current.push(url)
+    return url
+  }
+
   useEffect(() => {
+    revokeObjectUrls()
+    setCoverImageUrl(null)
     setEditedPost({ ...post })
     reset(getPostFormValues(post))
   }, [post, reset])
+
+  useEffect(() => () => revokeObjectUrls(), [])
 
   const catConfig = CATEGORIES[editedPost.contentType]
   const statusConfig = STATUS_CONFIGS[editedPost.status]
@@ -154,6 +186,7 @@ export default function PostDetailEditor({
   const canApprove = canEdit && (isLocalDraft || isApprovableInsightStatus(editedPost.status))
   const canScheduleApprove = !isLocalDraft && isSchedulableInsightStatus(editedPost.status)
   const canPublish = !isLocalDraft && isPublishableInsightStatus(editedPost.status)
+  const canAddContentImage = canEdit && editedPost.imageUrls.length < MAX_CONTENT_IMAGES
   const persistedPlans = editedPost.distributionPlans ?? []
   const displayDistributionPreview =
     distributionPreview &&
@@ -184,6 +217,84 @@ export default function PostDetailEditor({
       setValue(key as keyof PostDetailFormValues, value, { shouldDirty: true })
     }
   }
+
+  const handleCoverImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canEdit) return
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setCoverImageUrl(createLocalImageUrl(file))
+    event.target.value = ''
+  }
+
+  const handleContentImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canEdit) return
+
+    const replaceIndex = replaceImageIndexRef.current
+    const files = Array.from(event.target.files ?? [])
+    const allowedFiles = replaceIndex !== null
+      ? files.slice(0, 1)
+      : files.slice(0, Math.max(0, MAX_CONTENT_IMAGES - editedPost.imageUrls.length))
+
+    if (allowedFiles.length === 0) return
+
+    const nextUrls = allowedFiles.map(createLocalImageUrl)
+
+    setEditedPost((prev) => {
+      if (replaceIndex !== null) {
+        return {
+          ...prev,
+          imageUrls: prev.imageUrls.map((url, index) => (index === replaceIndex ? nextUrls[0] : url)),
+        }
+      }
+
+      return {
+        ...prev,
+        imageUrls: [...prev.imageUrls, ...nextUrls],
+      }
+    })
+
+    replaceImageIndexRef.current = null
+    event.target.value = ''
+  }
+
+  const playAddImageAnimation = (slotIndex: number) => {
+    setActiveAddImageSlot(slotIndex)
+    window.setTimeout(() => setActiveAddImageSlot(null), 220)
+  }
+
+  const openContentImagePicker = (replaceIndex: number | null = null, slotIndex?: number) => {
+    if (!canEdit) return
+    if (slotIndex !== undefined) playAddImageAnimation(slotIndex)
+    replaceImageIndexRef.current = replaceIndex
+    contentImageInputRef.current?.click()
+  }
+
+  const scrollContentImages = (direction: 'left' | 'right') => {
+    const container = contentImageScrollRef.current
+    if (!container) return
+
+    container.scrollBy({
+      left: direction === 'left' ? -container.clientWidth : container.clientWidth,
+      behavior: 'smooth',
+    })
+  }
+
+  const updateContentImagesOverflow = () => {
+    const container = contentImageScrollRef.current
+    if (!container) return
+
+    setContentImagesOverflow(container.scrollWidth > container.clientWidth + 1)
+  }
+
+  useEffect(() => {
+    updateContentImagesOverflow()
+    window.addEventListener('resize', updateContentImagesOverflow)
+
+    return () => {
+      window.removeEventListener('resize', updateContentImagesOverflow)
+    }
+  }, [editedPost.imageUrls.length, canAddContentImage])
 
   const buildUpdatedPost = (values: PostDetailFormValues): ReviewPost => ({
     ...editedPost,
@@ -235,7 +346,7 @@ export default function PostDetailEditor({
     <>
       <form
         onSubmit={handleSubmit(handleSaveDraftSubmit)}
-        className="flex max-h-[calc(100dvh-132px)] flex-col bg-[#171717] rounded-2xl w-full overflow-hidden"
+        className="flex max-h-[calc(100dvh-132px)] flex-col bg-[#171717] border border-[#282828] rounded-2xl w-full overflow-hidden"
       >
         <div className="flex flex-wrap items-center gap-6 px-6 py-4 border-b border-[#282828] shrink-0">
           <div className="flex items-center gap-2">
@@ -263,7 +374,211 @@ export default function PostDetailEditor({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 pt-5 pb-5 space-y-4 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/40 hover:[&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/80">
+        <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6 flex flex-col gap-5 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/40 hover:[&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/80">
+          {/* Ảnh bìa - placeholder UI, chưa có API/data */}
+          <div className="flex flex-col gap-1 pl-1">
+            <span className="text-sm font-medium text-white">Ảnh bìa</span>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={!canEdit}
+              onChange={handleCoverImageChange}
+            />
+            <div
+              role={canEdit ? 'button' : undefined}
+              tabIndex={canEdit ? 0 : undefined}
+              onClick={() => {
+                if (!coverImageUrl) coverInputRef.current?.click()
+              }}
+              onKeyDown={(event) => {
+                if (!canEdit || coverImageUrl) return
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  coverInputRef.current?.click()
+                }
+              }}
+              className={cn(
+                'relative flex min-h-[96px] flex-col items-center justify-center gap-3 overflow-hidden rounded-lg border border-dashed border-[#828283] bg-[#282828] px-6 py-4 transition-[border-color,transform,box-shadow] duration-200',
+                canEdit ? 'cursor-pointer hover:border-[#D4A74A]/60' : 'cursor-default opacity-60'
+              )}
+            >
+              {coverImageUrl ? (
+                <>
+                  <img
+                    src={coverImageUrl}
+                    alt="Ảnh bìa"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setImagePreview({
+                        images: [coverImageUrl],
+                        initialIndex: 0,
+                        title: 'Ảnh bìa',
+                      })
+                    }}
+                    className="block h-auto w-full max-w-full cursor-zoom-in"
+                  />
+                  {canEdit && (
+                    <div className="absolute right-2 top-2 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          coverInputRef.current?.click()
+                        }}
+                        className="grid h-8 w-8 place-items-center rounded-lg bg-[#282828]/90 transition-[background-color,transform] duration-150 hover:bg-[#3a3a3a] active:scale-90"
+                        aria-label="Thay ảnh bìa"
+                      >
+                        <img src="/images/admin/add-imgae-icon.png" alt="" className="h-5 w-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          setCoverImageUrl(null)
+                        }}
+                        className="grid h-8 w-8 place-items-center rounded-lg bg-[#282828]/90 text-white transition-colors hover:bg-[#3a3a3a]"
+                        aria-label="Xóa ảnh bìa"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <img
+                    src="/images/admin/add-imgae-icon.png"
+                    alt=""
+                    className="h-10 w-10"
+                  />
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="text-sm">
+                      <span className="font-semibold text-white">Click to upload</span>{' '}
+                      <span className="font-normal text-[#D7D8D9]">or drag and drop</span>
+                    </p>
+                    <p className="text-xs font-normal text-[#D7D8D9]">
+                      SVG, PNG, JPG or GIF (max. 800×400px)
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Ảnh nội dung - map từ imageUrls */}
+          <div className="flex flex-col gap-1 pl-1">
+            <span className="text-sm font-medium text-white">Ảnh nội dung</span>
+            <input
+              ref={contentImageInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              disabled={!canEdit}
+              onChange={handleContentImageChange}
+            />
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => scrollContentImages('left')}
+                className={cn(
+                  "absolute left-1 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full border border-[#828283]/40 bg-[#171717]/90 text-white shadow-lg transition-[background-color,transform,opacity] duration-150 hover:bg-[#282828] active:scale-90",
+                  !contentImagesOverflow && "pointer-events-none opacity-0"
+                )}
+                aria-label="Cuộn ảnh sang trái"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollContentImages('right')}
+                className={cn(
+                  "absolute right-1 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full border border-[#828283]/40 bg-[#171717]/90 text-white shadow-lg transition-[background-color,transform,opacity] duration-150 hover:bg-[#282828] active:scale-90",
+                  !contentImagesOverflow && "pointer-events-none opacity-0"
+                )}
+                aria-label="Cuộn ảnh sang phải"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+              <div
+                ref={contentImageScrollRef}
+                className="flex snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+              {editedPost.imageUrls.map((url, index) => (
+                <div
+                  key={`${url}-${index}`}
+                  className="relative flex h-[100px] shrink-0 basis-[calc((100%_-_0.5rem)/2)] snap-start items-center justify-center overflow-hidden rounded-lg border border-[#828283] bg-[#282828] animate-in fade-in-0 zoom-in-95 duration-200 sm:basis-[calc((100%_-_1.5rem)/4)]"
+                >
+                  <img
+                    src={url}
+                    alt={`Ảnh nội dung ${index + 1}`}
+                    onClick={() => {
+                      setImagePreview({
+                        images: editedPost.imageUrls,
+                        initialIndex: index,
+                        title: 'Ảnh nội dung',
+                      })
+                    }}
+                    className="block h-auto max-h-full w-auto max-w-full cursor-zoom-in object-contain"
+                  />
+                  {canEdit && (
+                    <div className="absolute right-1.5 top-1.5 flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => openContentImagePicker(index)}
+                        className="grid h-6 w-6 place-items-center rounded-lg bg-[#282828]/90 transition-[background-color,transform] duration-150 hover:bg-[#3a3a3a] active:scale-90"
+                        aria-label={`Thay ảnh ${index + 1}`}
+                      >
+                        <img src="/images/admin/add-imgae-icon.png" alt="" className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditedPost((prev) => ({
+                            ...prev,
+                            imageUrls: prev.imageUrls.filter((_, i) => i !== index),
+                          }))
+                        }}
+                        className="grid h-6 w-6 place-items-center rounded-lg bg-[#282828]/90 text-white transition-[background-color,transform] duration-150 hover:bg-[#3a3a3a] active:scale-90"
+                        aria-label={`Xóa ảnh ${index + 1}`}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {canAddContentImage && (
+                <div
+                  key="add-content-image"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openContentImagePicker(null, -1)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      openContentImagePicker(null, -1)
+                    }
+                  }}
+                  className={cn(
+                    'flex h-[100px] shrink-0 basis-[calc((100%_-_0.5rem)/2)] snap-start items-center justify-center rounded-lg border border-dashed border-[#828283] bg-[#282828] transition-[border-color,transform,box-shadow] duration-200 sm:basis-[calc((100%_-_1.5rem)/4)]',
+                    'cursor-pointer hover:border-[#D4A74A]/60 hover:shadow-[0_0_0_1px_rgba(212,167,74,0.2)] active:scale-[0.97]',
+                    activeAddImageSlot === -1 && 'scale-[0.97] border-[#D4A74A]/80 shadow-[0_0_0_3px_rgba(212,167,74,0.18)]'
+                  )}
+                >
+                  <img
+                    src="/images/admin/add-imgae-icon.png"
+                    alt=""
+                    className="h-10 w-10"
+                  />
+                </div>
+              )}
+              </div>
+            </div>
+          </div>
+
           <Field>
             <FieldLabel className="text-sm font-medium text-white">
               Tiêu đề <span className="text-[#EB4E40]">*</span>
@@ -530,6 +845,15 @@ export default function PostDetailEditor({
           </div>
         </div>
       </form>
+
+      {imagePreview ? (
+        <ImagePreviewModal
+          images={imagePreview.images}
+          initialIndex={imagePreview.initialIndex}
+          title={imagePreview.title}
+          onClose={() => setImagePreview(null)}
+        />
+      ) : null}
 
       <PublishPostModal
         open={publishDialogOpen}

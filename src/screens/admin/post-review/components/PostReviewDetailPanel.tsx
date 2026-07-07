@@ -40,7 +40,7 @@ export default function PostReviewDetailPanel({
   isRecalling,
 }: PostReviewDetailPanelProps) {
   return (
-    <div className="flex-1 w-full min-h-0">
+    <div className="flex-1 min-w-0 w-full xl:w-0 min-h-0">
       {isLoading ? (
         <PostReviewDetailSkeleton />
       ) : showEmpty ? (
@@ -48,22 +48,24 @@ export default function PostReviewDetailPanel({
           Chưa có dữ liệu
         </div>
       ) : post ? (
-        <PostDetailEditor
-          key={post.id}
-          post={post}
-          distributionPreview={distributionPreview}
-          onSaveDraft={onSaveDraft}
-          onApprove={onApprove}
-          onScheduleApprove={onScheduleApprove}
-          onPublish={onPublish}
-          onDiscard={onDiscard}
-          onRevoke={onRevoke}
-          isSaving={isSaving}
-          isApproving={isApproving}
-          isScheduling={isScheduling}
-          isPublishing={isPublishing}
-          isRecalling={isRecalling}
-        />
+        <div className="p-[1px] w-full h-full flex flex-col min-h-0">
+          <PostDetailEditor
+            key={post.id}
+            post={post}
+            distributionPreview={distributionPreview}
+            onSaveDraft={onSaveDraft}
+            onApprove={onApprove}
+            onScheduleApprove={onScheduleApprove}
+            onPublish={onPublish}
+            onDiscard={onDiscard}
+            onRevoke={onRevoke}
+            isSaving={isSaving}
+            isApproving={isApproving}
+            isScheduling={isScheduling}
+            isPublishing={isPublishing}
+            isRecalling={isRecalling}
+          />
+        </div>
       ) : null}
     </div>
   )

@@ -110,6 +110,8 @@ export interface AdminInsight {
   recalledAt: string | null
   createdAt: string
   updatedAt: string
+  imageUrl?: string | null
+  imageUrls?: string[] | null
 }
 
 export type ContentActionRequestStatus = 'OPEN' | 'RESOLVED' | 'DISMISSED'

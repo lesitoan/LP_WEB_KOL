@@ -58,7 +58,7 @@ export const POST_REVIEW_TABS: { id: PostReviewTab; label: string }[] = [
   { id: 'SCHEDULED', label: 'Đã lên lịch' },
   // { id: 'PUBLISHING', label: 'Đang đăng' },
   { id: 'PUBLISHED', label: 'Đã đăng' },
-  // { id: 'FLAGGED', label: 'Cần xử lý' },
+  { id: 'FLAGGED', label: 'Cần xử lý' },
   { id: 'RECALLED', label: 'Đã thu hồi' },
   // { id: 'SKIPPED', label: 'Đã bỏ qua' },
   { id: 'REJECTED', label: 'Từ chối' },
@@ -241,6 +241,7 @@ export interface ReviewPost {
   reviewedByUserId?: string | null
   publishedByUserId?: string | null
   isLocalDraft?: boolean
+  imageUrls: string[]
 }
 
 function formatSources(value: unknown): string {
@@ -273,6 +274,14 @@ function parseSources(value: string): unknown | null {
   } catch {
     return nextValue
   }
+}
+
+function getInsightImageUrls(insight: AdminInsight | AdminInsightDetail): string[] {
+  if (insight.imageUrls && insight.imageUrls.length > 0) {
+    return insight.imageUrls
+  }
+
+  return insight.imageUrl ? [insight.imageUrl] : []
 }
 
 function areApiValuesEqual(left: unknown, right: unknown): boolean {
@@ -326,5 +335,6 @@ export function mapInsightToReviewPost(insight: AdminInsight | AdminInsightDetai
     createdByUserId: insight.createdByUserId,
     reviewedByUserId: insight.reviewedByUserId,
     publishedByUserId: insight.publishedByUserId,
+    imageUrls: getInsightImageUrls(insight),
   }
 }
