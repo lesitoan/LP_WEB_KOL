@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CreatePostModal from './components/CreatePostModal'
 import PostReviewDetailPanel from './components/PostReviewDetailPanel'
 import PostReviewHeader from './components/PostReviewHeader'
@@ -18,8 +18,10 @@ export default function AdminPostReviewScreen() {
 
   const {
     activeTab,
+    page,
     selectedPostIdParam,
     setActiveTab,
+    setPage,
     setSelectedPostIdParam,
     setManyParams,
     clearSelectedPostId,
@@ -27,6 +29,7 @@ export default function AdminPostReviewScreen() {
 
   const data = usePostReviewData({
     activeTab,
+    page,
     localDraft,
   })
 
@@ -52,7 +55,7 @@ export default function AdminPostReviewScreen() {
     setCreateDialogOpen,
     setManyParams,
     clearSelection: selection.clearSelection,
-    refetchAll: data.allInsightsQuery.refetch,
+    refetchAll: data.activeInsightsQuery.refetch,
     refetchActive: data.activeInsightsQuery.refetch,
     refetchDetail: detail.detailQuery.refetch,
   })
@@ -62,6 +65,19 @@ export default function AdminPostReviewScreen() {
     if (tab !== 'ALL' && count === 0) return
     setActiveTab(tab)
   }
+
+  useEffect(() => {
+    if (data.listIsLoading) return
+
+    if (activeTab !== 'ALL') {
+      const activeItems = data.activeItems
+      const hasMatchingStatus = activeItems.some((item) => item.status === activeTab)
+
+      if (activeItems.length > 0 && !hasMatchingStatus) {
+        setManyParams({ status: 'ALL', page })
+      }
+    }
+  }, [activeTab, page, data.activeItems, data.listIsLoading, setManyParams])
 
   return (
     <>
@@ -79,6 +95,8 @@ export default function AdminPostReviewScreen() {
             selectedPostId={selection.selectedPostId}
             isLoading={data.listIsLoading}
             showEmpty={data.showListEmpty}
+            pagination={data.activePagination}
+            onPageChange={setPage}
             onSelectPost={selection.selectPost}
           />
 
