@@ -80,5 +80,6 @@ export function buildLocalDraft(payload: {
     distributionPreview: payload.distributionPreview,
     isLocalDraft: true,
     imageUrls: [],
+    contentImages: [],
   }
 }

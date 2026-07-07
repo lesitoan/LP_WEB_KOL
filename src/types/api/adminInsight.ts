@@ -162,6 +162,7 @@ export interface CreateAdminInsightBody {
   contentType: ContentTypeCode
   title: string
   subtext?: string | null
+  imageUrls?: string[] | null
   summary?: string | null
   body: string
   historicalComparison?: string | null
@@ -182,6 +183,7 @@ export interface UpdateAdminInsightBody {
   contentType?: ContentTypeCode
   title?: string
   subtext?: string | null
+  imageUrls?: string[] | null
   summary?: string | null
   body?: string
   historicalComparison?: string | null

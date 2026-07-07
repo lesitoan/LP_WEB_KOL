@@ -27,6 +27,7 @@ type AdminInsightRecallResultEnvelope = ApiResponse<AdminInsightRecallResult>
 type AdminInsightDistributionPreviewEnvelope = ApiResponse<AdminInsightDistributionPreview>
 type AdminContentActionRequestsEnvelope = ApiResponse<PaginatedData<AdminContentActionRequest>>
 type AdminContentActionRequestEnvelope = ApiResponse<AdminContentActionRequest>
+type AdminInsightImageUploadEnvelope = ApiResponse<{ imageUrl: string }>
 
 function ensureData<T>(payload: ApiResponse<T>, fallback: string): T {
   if (!payload || payload.status !== 'success' || !payload.data) {
@@ -109,6 +110,23 @@ export const adminInsightsApi = adminApi.injectEndpoints({
       }),
       transformResponse: (payload: AdminInsightEnvelope) => ensureData(payload, 'Không thể tạo insight'),
       invalidatesTags: ['Insights'],
+    }),
+
+    uploadAdminInsightImage: builder.mutation<{ imageUrl: string }, File>({
+      query: (file) => {
+        const formData = new FormData()
+        formData.append('image', file)
+
+        return {
+          url: apiV1Path('/admin/insights/images'),
+          method: 'POST',
+          body: formData,
+          headers: {
+            'x-skip-json-content-type': 'true',
+          },
+        }
+      },
+      transformResponse: (payload: AdminInsightImageUploadEnvelope) => ensureData(payload, 'Khong the upload anh insight'),
     }),
 
     updateAdminInsight: builder.mutation<AdminInsight, { insightId: string; body: UpdateAdminInsightBody }>({
@@ -209,6 +227,7 @@ export const {
   useGetAdminInsightDistributionPreviewQuery,
   usePreviewAdminInsightDistributionMutation,
   useCreateAdminInsightMutation,
+  useUploadAdminInsightImageMutation,
   useUpdateAdminInsightMutation,
   usePublishAdminInsightMutation,
   useApproveAdminInsightMutation,

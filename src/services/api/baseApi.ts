@@ -23,7 +23,11 @@ export const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE,
   prepareHeaders: (headers) => {
     const token = getCookie('accessToken')
-    headers.set('Content-Type', 'application/json')
+    const skipJsonContentType = headers.get('x-skip-json-content-type') === 'true'
+    headers.delete('x-skip-json-content-type')
+    if (!skipJsonContentType) {
+      headers.set('Content-Type', 'application/json')
+    }
     if (token) {
       headers.set('Authorization', `Bearer ${token}`)
     }
@@ -106,7 +110,11 @@ const adminBaseQuery = fetchBaseQuery({
   baseUrl: API_BASE,
   prepareHeaders: (headers) => {
     const token = getCookie('adminAccessToken')
-    headers.set('Content-Type', 'application/json')
+    const skipJsonContentType = headers.get('x-skip-json-content-type') === 'true'
+    headers.delete('x-skip-json-content-type')
+    if (!skipJsonContentType) {
+      headers.set('Content-Type', 'application/json')
+    }
     if (token) {
       headers.set('Authorization', `Bearer ${token}`)
     }

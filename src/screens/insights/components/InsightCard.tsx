@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { InsightBadge, InsightListItem } from '@/types/insights'
 
-const DEFAULT_THUMBNAIL = '/images/insights/default-thumnail-insight-card.png'
 const ACTION_BUTTON_CLASS =
   'h-[clamp(1.75rem,2.6vw,2.25rem)] shrink-0 gap-[clamp(0.25rem,0.55vw,0.5rem)] rounded-lg px-[clamp(0.5rem,1vw,1rem)] text-[clamp(0.625rem,0.9vw,0.875rem)] font-semibold whitespace-nowrap'
 const ACTION_ICON_CLASS = 'h-[clamp(0.75rem,1.4vw,1.25rem)] w-[clamp(0.75rem,1.4vw,1.25rem)] shrink-0'
@@ -26,10 +25,10 @@ function BadgeIcon({ badge }: { badge: InsightBadge }) {
 
 function getInsightThumbnail(insight: InsightListItem) {
   const imageUrls = insight.source.imageUrls
-  if (!Array.isArray(imageUrls)) return DEFAULT_THUMBNAIL
+  if (!Array.isArray(imageUrls)) return null
 
   const firstUrl = imageUrls.find((url): url is string => typeof url === 'string' && Boolean(url.trim()))
-  return firstUrl ?? DEFAULT_THUMBNAIL
+  return firstUrl ?? null
 }
 
 export default function InsightCard({ insight, onView, onEdit, onPublish }: InsightCardProps) {
@@ -41,14 +40,21 @@ export default function InsightCard({ insight, onView, onEdit, onPublish }: Insi
       <div className="relative overflow-hidden rounded-[15px] bg-[#171717] p-6">
         <div className="absolute left-0 top-6 h-[30px] w-[3px] rounded-r-[10px] bg-[#F7F0A1]" />
 
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:items-stretch">
-          <div className="relative aspect-video min-w-0 overflow-hidden rounded-2xl bg-[#0D0D0D] lg:aspect-auto lg:min-h-full">
-            <img
-              src={thumbnailUrl}
-              alt=""
-              className="h-full w-full rounded-2xl object-cover"
-            />
-          </div>
+        <div
+          className={cn(
+            'grid grid-cols-1 items-start gap-6 lg:items-stretch',
+            thumbnailUrl && 'lg:grid-cols-2'
+          )}
+        >
+          {thumbnailUrl ? (
+            <div className="relative aspect-video min-w-0 overflow-hidden rounded-2xl bg-[#0D0D0D] lg:aspect-auto lg:min-h-full">
+              <img
+                src={thumbnailUrl}
+                alt=""
+                className="h-full w-full rounded-2xl object-cover"
+              />
+            </div>
+          ) : null}
 
           <div className="flex min-w-0 flex-col items-end gap-4 self-stretch">
             <div className="flex w-full flex-col gap-2">

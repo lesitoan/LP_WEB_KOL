@@ -9,10 +9,10 @@ interface PostReviewDetailPanelProps {
   distributionPreview?: AdminInsightDistributionPreview
   isLoading: boolean
   showEmpty: boolean
-  onSaveDraft: (post: ReviewPost) => void
-  onApprove: (post: ReviewPost) => Promise<void> | void
-  onScheduleApprove: (post: ReviewPost, payload: ApprovePostPayload) => Promise<void> | void
-  onPublish: (post: ReviewPost) => Promise<void> | void
+  onSaveDraft: (post: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
+  onApprove: (post: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
+  onScheduleApprove: (post: ReviewPost, payload: ApprovePostPayload) => Promise<ReviewPost | void> | ReviewPost | void
+  onPublish: (post: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
   onDiscard: (postId: string) => void
   onRevoke: (postId: string) => Promise<void> | void
   isSaving: boolean

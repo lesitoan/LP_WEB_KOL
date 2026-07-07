@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 import { toast } from '@/hooks/useToast'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import {
@@ -8,6 +8,7 @@ import {
   useRecallAdminInsightMutation,
   useScheduleAdminInsightMutation,
   useUpdateAdminInsightMutation,
+  useUploadAdminInsightImageMutation,
 } from '@/services/api/admin/insightsApi'
 import type { CreateAdminInsightBody, ContentTypeCode } from '@/types/api/adminInsight'
 import {
@@ -18,9 +19,16 @@ import {
   isSchedulableInsightStatus,
   type PostReviewTab,
   type ReviewPost,
+  type ReviewPostImage,
 } from '../constants'
 import type { ApprovePostPayload } from '../components/ApprovePostModal'
 import { buildLocalDraft } from '../utils'
+
+const IMAGE_UPLOAD_DELAY_MS = 1000
+
+function wait(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms))
+}
 
 interface UsePostReviewActionsParams {
   selectedPost: ReviewPost | undefined
@@ -50,12 +58,14 @@ export function usePostReviewActions({
   const [publishAdminInsight, publishAdminInsightState] = usePublishAdminInsightMutation()
   const [scheduleAdminInsight, scheduleAdminInsightState] = useScheduleAdminInsightMutation()
   const [recallAdminInsight, recallAdminInsightState] = useRecallAdminInsightMutation()
+  const [uploadAdminInsightImage] = useUploadAdminInsightImageMutation()
+  const [isUploadingImages, setIsUploadingImages] = useState(false)
 
-  const isSaving = createAdminInsightState.isLoading || updateAdminInsightState.isLoading
+  const isSaving = createAdminInsightState.isLoading || updateAdminInsightState.isLoading || isUploadingImages
   const isCreatingDraft = previewAdminInsightDistributionState.isLoading
-  const isPublishing = publishAdminInsightState.isLoading
-  const isScheduling = scheduleAdminInsightState.isLoading
-  const isApproving = updateAdminInsightStatusState.isLoading || createAdminInsightState.isLoading
+  const isPublishing = publishAdminInsightState.isLoading || isUploadingImages
+  const isScheduling = scheduleAdminInsightState.isLoading || isUploadingImages
+  const isApproving = updateAdminInsightStatusState.isLoading || createAdminInsightState.isLoading || isUploadingImages
   const isRecalling = recallAdminInsightState.isLoading
 
   const buildCreateBody = (post: ReviewPost, status: CreateAdminInsightBody['status']): CreateAdminInsightBody => ({
@@ -71,7 +81,69 @@ export function usePostReviewActions({
     sources: post.sources.trim() || undefined,
     authorTask: post.authorTask.trim() || undefined,
     kolToolPosted: post.kolToolPosted.trim() || undefined,
+    imageUrls: post.imageUrls,
   })
+
+  const preparePostImagesForPersist = async (post: ReviewPost): Promise<ReviewPost> => {
+    const hasLocalImage = post.contentImages.some((image) => image.file)
+
+    if (!hasLocalImage) {
+      return {
+        ...post,
+        imageUrls: post.contentImages
+          .map((image) => image.remoteUrl ?? image.previewUrl)
+          .filter(Boolean),
+      }
+    }
+
+    const nextImages: ReviewPostImage[] = []
+    let failedCount = 0
+    let localUploadIndex = 0
+
+    setIsUploadingImages(true)
+
+    try {
+      for (const image of post.contentImages) {
+        if (!image.file) {
+          nextImages.push(image)
+          continue
+        }
+
+        if (localUploadIndex > 0) {
+          await wait(IMAGE_UPLOAD_DELAY_MS)
+        }
+        localUploadIndex += 1
+
+        try {
+          const uploadedImage = await uploadAdminInsightImage(image.file).unwrap()
+          nextImages.push({
+            id: uploadedImage.imageUrl,
+            previewUrl: uploadedImage.imageUrl,
+            remoteUrl: uploadedImage.imageUrl,
+          })
+        } catch {
+          failedCount += 1
+        }
+      }
+    } finally {
+      setIsUploadingImages(false)
+    }
+
+    if (failedCount > 0) {
+      toast({
+        title: `${failedCount} ảnh chưa được lưu thành công, bạn hãy thử lại`,
+        variant: 'destructive',
+      })
+    }
+
+    return {
+      ...post,
+      contentImages: nextImages,
+      imageUrls: nextImages
+        .map((image) => image.remoteUrl ?? image.previewUrl)
+        .filter(Boolean),
+    }
+  }
 
   const handleCreateNewPost = async (payload: { contentType: ContentTypeCode; title: string; scheduledAt: string }) => {
     try {
@@ -96,22 +168,29 @@ export function usePostReviewActions({
   }
 
   const handleSaveDraft = async (updatedPost: ReviewPost) => {
-    if (!updatedPost.isLocalDraft) {
-      if (!selectedPost || selectedPost.isLocalDraft) return
+    const originalPost = selectedPost
 
-      const updateBody = buildUpdateAdminInsightBody(selectedPost, updatedPost)
+    if (!updatedPost.isLocalDraft && (!originalPost || originalPost.isLocalDraft)) return
+
+    const hadLocalImages = updatedPost.contentImages.some((image) => image.file)
+    const preparedPost = await preparePostImagesForPersist(updatedPost)
+
+    if (!preparedPost.isLocalDraft) {
+      if (!originalPost || originalPost.isLocalDraft) return
+
+      const updateBody = buildUpdateAdminInsightBody(originalPost, preparedPost)
 
       if (!updateBody) {
         toast({
           title: 'Không có thay đổi để cập nhật',
           description: 'Vui lòng chỉnh sửa nội dung trước khi cập nhật.',
         })
-        return
+        return hadLocalImages ? preparedPost : undefined
       }
 
       try {
         const updatedInsight = await updateAdminInsight({
-          insightId: updatedPost.id,
+          insightId: preparedPost.id,
           body: updateBody,
         }).unwrap()
 
@@ -121,6 +200,7 @@ export function usePostReviewActions({
         })
 
         setManyParams({ postId: updatedInsight.id })
+        return preparedPost
       } catch (error) {
         toast({
           title: 'Cập nhật thất bại',
@@ -137,7 +217,7 @@ export function usePostReviewActions({
     }
 
     try {
-      const createdInsight = await createAdminInsight(buildCreateBody(updatedPost, 'DRAFT')).unwrap()
+      const createdInsight = await createAdminInsight(buildCreateBody(preparedPost, 'DRAFT')).unwrap()
 
       toast({
         title: 'Lưu nháp thành công',
@@ -158,9 +238,31 @@ export function usePostReviewActions({
   }
 
   const handleApprove = async (updatedPost: ReviewPost) => {
-    if (updatedPost.isLocalDraft) {
+    if (!updatedPost.isLocalDraft) {
+      if (!isApprovableInsightStatus(updatedPost.status)) {
+        toast({
+          title: 'Không tìm thấy bài viết',
+          description: 'Trạng thái hiện tại không cho phép chuyển sang chờ duyệt.',
+          variant: 'destructive',
+        })
+        throw new Error('Insight status is not approvable')
+      }
+
+      if (!selectedPost || selectedPost.isLocalDraft) {
+        toast({
+          title: 'Không tìm thấy bài viết',
+          description: 'Không tìm thấy dữ liệu bài viết hiện tại.',
+          variant: 'destructive',
+        })
+        throw new Error('Selected post is missing')
+      }
+    }
+
+    const preparedPost = await preparePostImagesForPersist(updatedPost)
+
+    if (preparedPost.isLocalDraft) {
       try {
-        const createdInsight = await createAdminInsight(buildCreateBody(updatedPost, 'PENDING_REVIEW')).unwrap()
+        const createdInsight = await createAdminInsight(buildCreateBody(preparedPost, 'PENDING_REVIEW')).unwrap()
 
         toast({
           title: 'Gửi preview thành công',
@@ -183,7 +285,7 @@ export function usePostReviewActions({
       return
     }
 
-    if (!isApprovableInsightStatus(updatedPost.status)) {
+    if (!isApprovableInsightStatus(preparedPost.status)) {
       toast({
         title: 'Không thể duyệt tin',
         description: 'Trạng thái hiện tại không cho phép chuyển sang chờ duyệt.',
@@ -201,12 +303,12 @@ export function usePostReviewActions({
       throw new Error('Selected post is missing')
     }
 
-    const updateBody = buildUpdateAdminInsightBody(selectedPost, updatedPost)
+    const updateBody = buildUpdateAdminInsightBody(selectedPost, preparedPost)
 
     if (updateBody) {
       try {
         await updateAdminInsight({
-          insightId: updatedPost.id,
+          insightId: preparedPost.id,
           body: updateBody,
         }).unwrap()
       } catch (error) {
@@ -225,7 +327,7 @@ export function usePostReviewActions({
 
     try {
       const approvedInsight = await updateAdminInsightStatus({
-        insightId: updatedPost.id,
+        insightId: preparedPost.id,
         body: { status: 'PENDING_REVIEW' },
       }).unwrap()
 
@@ -237,6 +339,7 @@ export function usePostReviewActions({
       setManyParams({ status: 'PENDING_REVIEW', postId: approvedInsight.id })
       refetchAll()
       refetchActive()
+      return preparedPost
     } catch (error) {
       toast({
         title: 'Gửi preview thất bại',
@@ -279,12 +382,14 @@ export function usePostReviewActions({
       throw new Error('Selected post is missing')
     }
 
-    const updateBody = buildUpdateAdminInsightBody(selectedPost, updatedPost)
+    const preparedPost = await preparePostImagesForPersist(updatedPost)
+
+    const updateBody = buildUpdateAdminInsightBody(selectedPost, preparedPost)
 
     if (updateBody) {
       try {
         await updateAdminInsight({
-          insightId: updatedPost.id,
+          insightId: preparedPost.id,
           body: updateBody,
         }).unwrap()
       } catch (error) {
@@ -302,7 +407,7 @@ export function usePostReviewActions({
     }
 
     try {
-      const publishedInsight = await publishAdminInsight({ insightId: updatedPost.id }).unwrap()
+      const publishedInsight = await publishAdminInsight({ insightId: preparedPost.id }).unwrap()
 
       toast({
         title: 'Đăng tin thành công',
@@ -312,6 +417,7 @@ export function usePostReviewActions({
       setManyParams({ status: 'PUBLISHED', postId: publishedInsight.id })
       refetchAll()
       refetchActive()
+      return preparedPost
     } catch (error) {
       toast({
         title: 'Đăng tin thất bại',
@@ -354,12 +460,14 @@ export function usePostReviewActions({
       throw new Error('Selected post is missing')
     }
 
-    const updateBody = buildUpdateAdminInsightBody(selectedPost, updatedPost)
+    const preparedPost = await preparePostImagesForPersist(updatedPost)
+
+    const updateBody = buildUpdateAdminInsightBody(selectedPost, preparedPost)
 
     if (updateBody) {
       try {
         await updateAdminInsight({
-          insightId: updatedPost.id,
+          insightId: preparedPost.id,
           body: updateBody,
         }).unwrap()
       } catch (error) {
@@ -378,7 +486,7 @@ export function usePostReviewActions({
 
     try {
       const scheduledInsight = await scheduleAdminInsight({
-        insightId: updatedPost.id,
+        insightId: preparedPost.id,
         body: payload.publishNow
           ? { pushlishNow: true }
           : { scheduledAt: payload.scheduledAt, pushlishNow: false },
@@ -392,6 +500,7 @@ export function usePostReviewActions({
       setManyParams({ status: scheduledInsight.status, postId: scheduledInsight.id })
       refetchAll()
       refetchActive()
+      return preparedPost
     } catch (error) {
       toast({
         title: 'Duyệt tin thất bại',

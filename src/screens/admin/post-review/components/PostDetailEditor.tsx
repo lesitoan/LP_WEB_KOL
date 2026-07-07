@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, CircleCheck, CircleX, RotateCcw, X } from 'l
 import { Controller, useForm } from 'react-hook-form'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, isSchedulableInsightStatus, type ReviewPost } from '../constants'
+import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, isSchedulableInsightStatus, type ReviewPost, type ReviewPostImage } from '../constants'
 import { formatApiTimeForPostReview } from '../utils'
 import ApprovePostModal, { type ApprovePostPayload } from './ApprovePostModal'
 import ImagePreviewModal from './ImagePreviewModal'
@@ -51,10 +51,10 @@ function AutoResizeTextarea({ value, onChange, className, ...props }: React.Comp
 interface PostDetailEditorProps {
   post: ReviewPost
   distributionPreview?: AdminInsightDistributionPreview
-  onSaveDraft: (updatedPost: ReviewPost) => void
-  onApprove: (updatedPost: ReviewPost) => Promise<void> | void
-  onScheduleApprove: (updatedPost: ReviewPost, payload: ApprovePostPayload) => Promise<void> | void
-  onPublish: (updatedPost: ReviewPost) => Promise<void> | void
+  onSaveDraft: (updatedPost: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
+  onApprove: (updatedPost: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
+  onScheduleApprove: (updatedPost: ReviewPost, payload: ApprovePostPayload) => Promise<ReviewPost | void> | ReviewPost | void
+  onPublish: (updatedPost: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
   onDiscard: (postId: string) => void
   onRevoke: (postId: string) => Promise<void> | void
   isSaving?: boolean
@@ -64,7 +64,7 @@ interface PostDetailEditorProps {
   isRecalling?: boolean
 }
 
-const editableStatuses = new Set(['PENDING_REVIEW', 'DRAFT', 'FLAGGED'])
+const editableStatuses = new Set(['PENDING_REVIEW', 'DRAFT'])
 const MAX_CONTENT_IMAGES = 10
 
 type PostDetailFormValues = Pick<
@@ -186,7 +186,7 @@ export default function PostDetailEditor({
   const canApprove = canEdit && (isLocalDraft || isApprovableInsightStatus(editedPost.status))
   const canScheduleApprove = !isLocalDraft && isSchedulableInsightStatus(editedPost.status)
   const canPublish = !isLocalDraft && isPublishableInsightStatus(editedPost.status)
-  const canAddContentImage = canEdit && editedPost.imageUrls.length < MAX_CONTENT_IMAGES
+  const canAddContentImage = canEdit && editedPost.contentImages.length < MAX_CONTENT_IMAGES
   const persistedPlans = editedPost.distributionPlans ?? []
   const displayDistributionPreview =
     distributionPreview &&
@@ -234,23 +234,30 @@ export default function PostDetailEditor({
     const files = Array.from(event.target.files ?? [])
     const allowedFiles = replaceIndex !== null
       ? files.slice(0, 1)
-      : files.slice(0, Math.max(0, MAX_CONTENT_IMAGES - editedPost.imageUrls.length))
+      : files.slice(0, Math.max(0, MAX_CONTENT_IMAGES - editedPost.contentImages.length))
 
     if (allowedFiles.length === 0) return
 
-    const nextUrls = allowedFiles.map(createLocalImageUrl)
+    const nextImages: ReviewPostImage[] = allowedFiles.map((file) => {
+      const previewUrl = createLocalImageUrl(file)
+      return {
+        id: `${file.name}-${file.lastModified}-${previewUrl}`,
+        previewUrl,
+        file,
+      }
+    })
 
     setEditedPost((prev) => {
       if (replaceIndex !== null) {
         return {
           ...prev,
-          imageUrls: prev.imageUrls.map((url, index) => (index === replaceIndex ? nextUrls[0] : url)),
+          contentImages: prev.contentImages.map((image, index) => (index === replaceIndex ? nextImages[0] : image)),
         }
       }
 
       return {
         ...prev,
-        imageUrls: [...prev.imageUrls, ...nextUrls],
+        contentImages: [...prev.contentImages, ...nextImages],
       }
     })
 
@@ -294,16 +301,25 @@ export default function PostDetailEditor({
     return () => {
       window.removeEventListener('resize', updateContentImagesOverflow)
     }
-  }, [editedPost.imageUrls.length, canAddContentImage])
+  }, [editedPost.contentImages.length, canAddContentImage])
 
   const buildUpdatedPost = (values: PostDetailFormValues): ReviewPost => ({
     ...editedPost,
     ...values,
+    imageUrls: editedPost.contentImages.map((image) => image.remoteUrl ?? image.previewUrl),
   })
 
-  const handleSaveDraftSubmit = (values: PostDetailFormValues) => {
+  const applyActionResult = (nextPost: ReviewPost | void) => {
+    if (nextPost) {
+      setEditedPost(nextPost)
+      reset(getPostFormValues(nextPost))
+    }
+  }
+
+  const handleSaveDraftSubmit = async (values: PostDetailFormValues) => {
     if (!canSubmit || isSaving) return
-    onSaveDraft(buildUpdatedPost(values))
+    const nextPost = await onSaveDraft(buildUpdatedPost(values))
+    applyActionResult(nextPost)
   }
 
   const handlePublishSubmit = handleSubmit((values) => {
@@ -314,7 +330,8 @@ export default function PostDetailEditor({
 
   const handleApproveSubmit = handleSubmit(async (values) => {
     if (!canApprove || isSaving || isApproving) return
-    await onApprove(buildUpdatedPost(values))
+    const nextPost = await onApprove(buildUpdatedPost(values))
+    applyActionResult(nextPost)
   })
 
   const handleScheduleApproveSubmit = handleSubmit((values) => {
@@ -325,14 +342,16 @@ export default function PostDetailEditor({
 
   const confirmPublish = async () => {
     const postToPublish = pendingPublishPost ?? buildUpdatedPost(getValues())
-    await onPublish(postToPublish)
+    const nextPost = await onPublish(postToPublish)
+    applyActionResult(nextPost)
     setPublishDialogOpen(false)
     setPendingPublishPost(null)
   }
 
   const confirmScheduleApprove = async (payload: ApprovePostPayload) => {
     const postToApprove = pendingApprovePost ?? buildUpdatedPost(getValues())
-    await onScheduleApprove(postToApprove, payload)
+    const nextPost = await onScheduleApprove(postToApprove, payload)
+    applyActionResult(nextPost)
     setApproveDialogOpen(false)
     setPendingApprovePost(null)
   }
@@ -506,17 +525,17 @@ export default function PostDetailEditor({
                 ref={contentImageScrollRef}
                 className="flex snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
-              {editedPost.imageUrls.map((url, index) => (
+              {editedPost.contentImages.map((image, index) => (
                 <div
-                  key={`${url}-${index}`}
+                  key={image.id}
                   className="relative flex h-[100px] shrink-0 basis-[calc((100%_-_0.5rem)/2)] snap-start items-center justify-center overflow-hidden rounded-lg border border-[#828283] bg-[#282828] animate-in fade-in-0 zoom-in-95 duration-200 sm:basis-[calc((100%_-_1.5rem)/4)]"
                 >
                   <img
-                    src={url}
+                    src={image.previewUrl}
                     alt={`Ảnh nội dung ${index + 1}`}
                     onClick={() => {
                       setImagePreview({
-                        images: editedPost.imageUrls,
+                        images: editedPost.contentImages.map((contentImage) => contentImage.previewUrl),
                         initialIndex: index,
                         title: 'Ảnh nội dung',
                       })
@@ -538,7 +557,7 @@ export default function PostDetailEditor({
                         onClick={() => {
                           setEditedPost((prev) => ({
                             ...prev,
-                            imageUrls: prev.imageUrls.filter((_, i) => i !== index),
+                            contentImages: prev.contentImages.filter((_, i) => i !== index),
                           }))
                         }}
                         className="grid h-6 w-6 place-items-center rounded-lg bg-[#282828]/90 text-white transition-[background-color,transform] duration-150 hover:bg-[#3a3a3a] active:scale-90"
