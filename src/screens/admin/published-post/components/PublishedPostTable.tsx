@@ -18,6 +18,38 @@ interface PublishedPostTableProps {
   isLoading?: boolean
 }
 
+const STATUS_BADGE_CLASSES: Record<string, { badge: string; dot: string }> = {
+  PENDING_REVIEW: {
+    badge: 'bg-[#4D2C03] text-[#FAB55A]',
+    dot: 'bg-[#FAB55A]',
+  },
+  SCHEDULED: {
+    badge: 'bg-[#002D67] text-[#549BF8]',
+    dot: 'bg-[#549BF8]',
+  },
+  PUBLISHED: {
+    badge: 'bg-[#06301C] text-[#41C588]',
+    dot: 'bg-[#41C588]',
+  },
+  FLAGGED: {
+    badge: 'bg-[#5C120C] text-[#F5827A]',
+    dot: 'bg-[#F5827A]',
+  },
+  RECALLED: {
+    badge: 'bg-[#282828] text-[#D7D8D9]',
+    dot: 'bg-[#D7D8D9]',
+  },
+  REJECTED: {
+    badge: 'bg-[#3A1A1A] text-[#EB4E40]',
+    dot: 'bg-[#EB4E40]',
+  },
+}
+
+const DEFAULT_STATUS_BADGE_CLASSES = {
+  badge: 'bg-[#282828] text-[#D7D8D9]',
+  dot: 'bg-[#D7D8D9]',
+}
+
 export default function PublishedPostTable({
   posts,
   onRowClick,
@@ -65,12 +97,18 @@ export default function PublishedPostTable({
       header: 'Trạng thái',
       headerClassName: '!text-xs !font-normal !text-[#A8A8A9]',
       cellClassName: '!py-3',
-      cell: (row) => (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal bg-[#06301C] text-[#41C588]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#41C588]" />
-          {row.status}
-        </span>
-      ),
+      cell: (row) => {
+        const statusClasses = row.statusCode
+          ? STATUS_BADGE_CLASSES[row.statusCode] ?? DEFAULT_STATUS_BADGE_CLASSES
+          : DEFAULT_STATUS_BADGE_CLASSES
+
+        return (
+          <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal', statusClasses.badge)}>
+            <span className={cn('w-1.5 h-1.5 rounded-full', statusClasses.dot)} />
+            {row.status}
+          </span>
+        )
+      },
     },
     {
       id: 'actions',

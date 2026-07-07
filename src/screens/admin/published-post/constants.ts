@@ -9,9 +9,12 @@ export interface PublishedPost {
   publishTime: string
   tier: string
   status: string
+  statusCode?: string
   actionType: 'sent' | 'request'
   actionStatusText?: string
   requestId?: string
+  imageUrls?: string[]
+  summary?: string
   mainContent?: string
   sources?: string
 }

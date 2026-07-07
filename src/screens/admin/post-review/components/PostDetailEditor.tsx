@@ -187,6 +187,8 @@ export default function PostDetailEditor({
   const canScheduleApprove = !isLocalDraft && isSchedulableInsightStatus(editedPost.status)
   const canPublish = !isLocalDraft && isPublishableInsightStatus(editedPost.status)
   const canAddContentImage = canEdit && editedPost.contentImages.length < MAX_CONTENT_IMAGES
+  const shouldShowCoverImageSection = canEdit || Boolean(coverImageUrl)
+  const shouldShowContentImagesSection = canEdit || editedPost.contentImages.length > 0
   const persistedPlans = editedPost.distributionPlans ?? []
   const displayDistributionPreview =
     distributionPreview &&
@@ -395,6 +397,7 @@ export default function PostDetailEditor({
 
         <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6 flex flex-col gap-5 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/40 hover:[&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/80">
           {/* Ảnh bìa - placeholder UI, chưa có API/data */}
+          {shouldShowCoverImageSection ? (
           <div className="flex flex-col gap-1 pl-1">
             <span className="text-sm font-medium text-white">Ảnh bìa</span>
             <input
@@ -485,8 +488,10 @@ export default function PostDetailEditor({
               )}
             </div>
           </div>
+          ) : null}
 
           {/* Ảnh nội dung - map từ imageUrls */}
+          {shouldShowContentImagesSection ? (
           <div className="flex flex-col gap-1 pl-1">
             <span className="text-sm font-medium text-white">Ảnh nội dung</span>
             <input
@@ -597,6 +602,7 @@ export default function PostDetailEditor({
               </div>
             </div>
           </div>
+          ) : null}
 
           <Field>
             <FieldLabel className="text-sm font-medium text-white">

@@ -3,7 +3,7 @@ import {
   useListAdminContentActionRequestsQuery,
   useListAdminInsightsQuery,
 } from '@/services/api/admin/insightsApi'
-import type { AdminInsight, ContentTypeCode, PaginationMeta } from '@/types/api/adminInsight'
+import type { AdminInsight, ContentItemStatus, ContentTypeCode, PaginationMeta } from '@/types/api/adminInsight'
 import type { PublishedPost } from '../constants'
 
 const PUBLISHED_POST_LIMIT = 8
@@ -25,6 +25,17 @@ const CONTENT_TYPE_LABELS: Partial<Record<ContentTypeCode, string>> = {
 }
 
 const ALL_TIER_CODES = ['STARTER', 'PARTNER', 'ELITE', 'LEGEND']
+
+const STATUS_LABELS: Partial<Record<ContentItemStatus, string>> = {
+  PENDING_REVIEW: 'Chờ duyệt',
+  SCHEDULED: 'Đã lên lịch',
+  PUBLISHED: 'Đã đăng',
+  FLAGGED: 'Cần xử lý',
+  RECALLED: 'Đã thu hồi',
+  REJECTED: 'Từ chối',
+  DRAFT: 'Bản nháp',
+  
+}
 
 function getCategoryColor(contentType: ContentTypeCode): PublishedPost['categoryColor'] {
   if (contentType === 'ALERT' || contentType === 'WHALES_ALERT') return 'error'
@@ -100,6 +111,12 @@ function resolveTierLabel(distributionSnapshot: unknown) {
 function mapPublishedPost(insight: AdminInsight, openRequestByContentId: Map<string, string>): PublishedPost {
   const requestId = openRequestByContentId.get(insight.id)
   const categoryLabel = CONTENT_TYPE_LABELS[insight.contentType] ?? insight.contentType
+  const statusLabel = STATUS_LABELS[insight.status] ?? insight.status
+  const imageUrls = insight.imageUrls && insight.imageUrls.length > 0
+    ? insight.imageUrls
+    : insight.imageUrl
+      ? [insight.imageUrl]
+      : []
 
   return {
     id: insight.id,
@@ -111,10 +128,13 @@ function mapPublishedPost(insight: AdminInsight, openRequestByContentId: Map<str
     adminAvatarColor: '#9B692C',
     publishTime: formatDateTime(insight.publishedAt),
     tier: resolveTierLabel(insight.distributionSnapshot),
-    status: insight.status === 'PUBLISHED' ? 'Đang hiển thị' : insight.status,
+    status: statusLabel,
+    statusCode: insight.status,
     actionType: requestId ? 'sent' : 'request',
     actionStatusText: requestId ? 'Chờ admin duyệt' : undefined,
     requestId,
+    imageUrls,
+    summary: insight.summary ?? undefined,
     mainContent: insight.body,
     sources: formatSources(insight.sources),
   }
@@ -122,7 +142,6 @@ function mapPublishedPost(insight: AdminInsight, openRequestByContentId: Map<str
 
 export function usePublishedPostData(page: number) {
   const insightsQuery = useListAdminInsightsQuery({
-    status: 'SCHEDULED',
     page,
     limit: PUBLISHED_POST_LIMIT,
   })
@@ -139,7 +158,8 @@ export function usePublishedPostData(page: number) {
   }, [actionRequestsQuery.data?.items])
 
   const posts = useMemo(() => {
-    return (insightsQuery.data?.items ?? []).map((insight) => mapPublishedPost(insight, openRequestByContentId))
+    return (insightsQuery.data?.items ?? [])
+      .map((insight) => mapPublishedPost(insight, openRequestByContentId))
   }, [insightsQuery.data?.items, openRequestByContentId])
 
   const pagination: PaginationMeta = insightsQuery.data?.pagination ?? {
