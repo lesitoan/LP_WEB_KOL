@@ -9,6 +9,7 @@ import type {
   AdminInsightDistributionPreviewBody,
   AdminInsightDistributionResult,
   AdminInsightRecallResult,
+  AdminInsightStatusStats,
   CreateAdminContentActionRequestBody,
   CreateAdminInsightBody,
   GetAdminInsightDistributionPreviewQuery,
@@ -25,6 +26,7 @@ type AdminInsightDetailEnvelope = ApiResponse<AdminInsightDetail>
 type AdminInsightDistributionResultEnvelope = ApiResponse<AdminInsightDistributionResult>
 type AdminInsightRecallResultEnvelope = ApiResponse<AdminInsightRecallResult>
 type AdminInsightDistributionPreviewEnvelope = ApiResponse<AdminInsightDistributionPreview>
+type AdminInsightStatusStatsEnvelope = ApiResponse<AdminInsightStatusStats>
 type AdminContentActionRequestsEnvelope = ApiResponse<PaginatedData<AdminContentActionRequest>>
 type AdminContentActionRequestEnvelope = ApiResponse<AdminContentActionRequest>
 type DeleteAdminInsightEnvelope = ApiResponse<null>
@@ -66,6 +68,16 @@ export const adminInsightsApi = adminApi.injectEndpoints({
         }
       },
       transformResponse: (payload: AdminInsightsEnvelope) => ensureData(payload, 'Không thể tải danh sách insight'),
+      providesTags: ['Insights'],
+    }),
+
+    getAdminInsightStatusStats: builder.query<AdminInsightStatusStats, void>({
+      query: () => ({
+        url: apiV1Path('/admin/insights/stats/by-status'),
+        method: 'GET',
+      }),
+      transformResponse: (payload: AdminInsightStatusStatsEnvelope) =>
+        ensureData(payload, 'Không thể tải thống kê trạng thái insight'),
       providesTags: ['Insights'],
     }),
 
@@ -219,6 +231,7 @@ export const adminInsightsApi = adminApi.injectEndpoints({
 
 export const {
   useListAdminInsightsQuery,
+  useGetAdminInsightStatusStatsQuery,
   useGetAdminInsightDetailQuery,
   useGetAdminInsightDistributionPreviewQuery,
   usePreviewAdminInsightDistributionMutation,

@@ -56,7 +56,7 @@ export default function AdminPostReviewScreen() {
     setCreateDialogOpen,
     setManyParams,
     clearSelection: selection.clearSelection,
-    refetchAll: data.allInsightsQuery.refetch,
+    refetchStatusStats: data.statusStatsQuery.refetch,
     refetchActive: data.activeInsightsQuery.refetch,
     refetchDetail: detail.detailQuery.refetch,
   })

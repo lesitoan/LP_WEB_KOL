@@ -29,7 +29,7 @@ interface UsePostReviewActionsParams {
   setCreateDialogOpen: Dispatch<SetStateAction<boolean>>
   setManyParams: (next: { status?: PostReviewTab; postId?: string | undefined }) => void
   clearSelection: () => void
-  refetchAll: () => void
+  refetchStatusStats: () => void
   refetchActive: () => void
   refetchDetail: () => void
 }
@@ -40,7 +40,7 @@ export function usePostReviewActions({
   setCreateDialogOpen,
   setManyParams,
   clearSelection,
-  refetchAll,
+  refetchStatusStats,
   refetchActive,
   refetchDetail,
 }: UsePostReviewActionsParams) {
@@ -131,7 +131,7 @@ export function usePostReviewActions({
           variant: 'destructive',
         })
 
-        refetchAll()
+        refetchStatusStats()
         refetchActive()
         refetchDetail()
       }
@@ -149,7 +149,7 @@ export function usePostReviewActions({
 
       setLocalDraft(undefined)
       setManyParams({ status: 'DRAFT', postId: createdInsight.id })
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
     } catch (error) {
       toast({
@@ -172,7 +172,7 @@ export function usePostReviewActions({
 
         setLocalDraft(undefined)
         setManyParams({ status: 'PENDING_REVIEW', postId: createdInsight.id })
-        refetchAll()
+        refetchStatusStats()
         refetchActive()
       } catch (error) {
         toast({
@@ -219,7 +219,7 @@ export function usePostReviewActions({
           variant: 'destructive',
         })
 
-        refetchAll()
+        refetchStatusStats()
         refetchActive()
         refetchDetail()
         throw error
@@ -238,7 +238,7 @@ export function usePostReviewActions({
       })
 
       setManyParams({ status: 'PENDING_REVIEW', postId: approvedInsight.id })
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
     } catch (error) {
       toast({
@@ -247,7 +247,7 @@ export function usePostReviewActions({
         variant: 'destructive',
       })
 
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
       refetchDetail()
       throw error
@@ -297,7 +297,7 @@ export function usePostReviewActions({
           variant: 'destructive',
         })
 
-        refetchAll()
+        refetchStatusStats()
         refetchActive()
         refetchDetail()
         throw error
@@ -313,7 +313,7 @@ export function usePostReviewActions({
       })
 
       setManyParams({ status: 'PUBLISHED', postId: publishedInsight.id })
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
     } catch (error) {
       toast({
@@ -322,7 +322,7 @@ export function usePostReviewActions({
         variant: 'destructive',
       })
 
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
       refetchDetail()
       throw error
@@ -372,7 +372,7 @@ export function usePostReviewActions({
           variant: 'destructive',
         })
 
-        refetchAll()
+        refetchStatusStats()
         refetchActive()
         refetchDetail()
         throw error
@@ -393,7 +393,7 @@ export function usePostReviewActions({
       })
 
       setManyParams({ status: scheduledInsight.status, postId: scheduledInsight.id })
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
     } catch (error) {
       toast({
@@ -402,7 +402,7 @@ export function usePostReviewActions({
         variant: 'destructive',
       })
 
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
       refetchDetail()
       throw error
@@ -443,7 +443,7 @@ export function usePostReviewActions({
         clearSelection()
       }
 
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
     } catch (error) {
       toast({
@@ -452,7 +452,7 @@ export function usePostReviewActions({
         variant: 'destructive',
       })
 
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
       if (selectedPost?.id === post.id) {
         refetchDetail()
@@ -488,7 +488,7 @@ export function usePostReviewActions({
       })
 
       setManyParams({ status: 'RECALLED', postId: recalledInsight.id })
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
     } catch (error) {
       toast({
@@ -497,7 +497,7 @@ export function usePostReviewActions({
         variant: 'destructive',
       })
 
-      refetchAll()
+      refetchStatusStats()
       refetchActive()
       refetchDetail()
       throw error
