@@ -46,7 +46,7 @@ export default function PostReviewList({
   }
 
   return (
-    <div className="w-full xl:w-[320px] shrink-0 min-w-0">
+    <div className="w-full shrink-0 min-w-0 xl:flex xl:h-full xl:w-[320px] xl:flex-col">
       <div className="mb-3 flex items-center justify-between xl:hidden">
         <div className="inline-flex overflow-hidden rounded-[10px] border border-[#282828] bg-[#171717]">
           <DataTablePaginationBar pagination={paginationConfig} className="py-0 px-2 h-9 flex items-center justify-center" />
@@ -81,7 +81,7 @@ export default function PostReviewList({
       <div
         ref={listScroll.scrollRef}
         onScroll={listScroll.updateArrows}
-        className="flex w-full gap-4 overflow-x-hidden overflow-y-hidden scroll-smooth py-1 pl-1 pr-1 xl:max-h-[calc(100dvh-180px)] xl:flex-col xl:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex w-full min-h-0 gap-4 overflow-x-hidden overflow-y-hidden scroll-smooth py-1 pl-1 pr-1 xl:flex-1 xl:flex-col xl:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {isLoading ? (
           <PostReviewListSkeleton />
@@ -103,7 +103,7 @@ export default function PostReviewList({
         )}
       </div>
 
-      <div className="mt-3 hidden overflow-hidden rounded-[10px] border border-[#282828] bg-[#171717] xl:block">
+      <div className="mt-3 hidden shrink-0 overflow-hidden rounded-[10px] border border-[#282828] bg-[#171717] xl:block">
         <DataTablePaginationBar pagination={paginationConfig} className="py-0 px-2 h-9 flex items-center justify-center" />
       </div>
     </div>

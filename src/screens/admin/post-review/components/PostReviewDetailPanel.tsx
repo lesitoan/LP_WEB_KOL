@@ -42,7 +42,7 @@ export default function PostReviewDetailPanel({
   isRecalling,
 }: PostReviewDetailPanelProps) {
   return (
-    <div className="flex-1 min-w-0 w-full xl:w-0 min-h-0">
+    <div className="flex-1 min-w-0 w-full xl:w-0 min-h-0 xl:h-full">
       {isLoading ? (
         <PostReviewDetailSkeleton />
       ) : showEmpty ? (

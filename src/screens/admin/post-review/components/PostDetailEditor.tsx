@@ -391,7 +391,7 @@ export default function PostDetailEditor({
     <>
       <form
         onSubmit={handleSubmit(handleSaveDraftSubmit)}
-        className="flex max-h-[calc(100dvh-132px)] flex-col bg-[#171717] border border-[#282828] rounded-2xl w-full overflow-hidden"
+        className="flex max-h-[calc(100dvh-132px)] flex-col bg-[#171717] border border-[#282828] rounded-2xl w-full overflow-hidden xl:h-full"
       >
         <div className="flex flex-wrap items-center gap-6 px-6 py-4 border-b border-[#282828] shrink-0">
           <div className="flex items-center gap-2">

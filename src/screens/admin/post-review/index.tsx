@@ -144,7 +144,7 @@ export default function AdminPostReviewScreen() {
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="flex h-full min-h-0 flex-col gap-6">
         <PostReviewHeader
           activeTab={activeTab}
           statusCounts={data.statusCounts}
@@ -152,7 +152,7 @@ export default function AdminPostReviewScreen() {
           onCreateClick={() => setCreateDialogOpen(true)}
         />
 
-        <div className="flex flex-col xl:flex-row items-start gap-6 w-full min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col items-start gap-6 w-full xl:flex-row xl:items-stretch">
           <PostReviewList
             posts={data.activePosts}
             selectedPostId={selection.selectedPostId}
