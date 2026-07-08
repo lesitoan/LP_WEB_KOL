@@ -32,6 +32,7 @@ export const PUBLISHABLE_INSIGHT_STATUSES: ContentItemStatus[] = []
 export const APPROVABLE_INSIGHT_STATUSES = ['DRAFT'] as const
 export const SCHEDULABLE_INSIGHT_STATUSES = ['PENDING_REVIEW'] as const
 export const RECALLABLE_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHING', 'PUBLISHED'] as const
+export const DELETABLE_INSIGHT_STATUSES = ['DRAFT', 'PENDING_REVIEW'] as const
 
 export function isPublishableInsightStatus(status: ContentItemStatus): boolean {
   return PUBLISHABLE_INSIGHT_STATUSES.includes(status)
@@ -47,6 +48,10 @@ export function isSchedulableInsightStatus(status: ContentItemStatus): boolean {
 
 export function isRecallableInsightStatus(status: ContentItemStatus): boolean {
   return RECALLABLE_INSIGHT_STATUSES.includes(status as (typeof RECALLABLE_INSIGHT_STATUSES)[number])
+}
+
+export function isDeletableInsightStatus(status: ContentItemStatus): boolean {
+  return DELETABLE_INSIGHT_STATUSES.includes(status as (typeof DELETABLE_INSIGHT_STATUSES)[number])
 }
 
 export type PostReviewTab = 'ALL' | ContentItemStatus

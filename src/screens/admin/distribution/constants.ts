@@ -123,7 +123,7 @@ export function mapDistributionConfigToDraft(config: AdminDistributionConfig): D
     tierCode: tier.tierCode,
     label: tier.tierCode,
     range: tier.memberRangeLabel.replace(/\s*TV$/i, ''),
-    kolCount: null,
+    kolCount: tier.count ?? null,
     offsetMinutes: tier.offsetMinutes,
     commission: tier.commissionRatePct,
     icon: TIER_CARD_ICONS[tier.tierCode],

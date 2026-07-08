@@ -11,6 +11,7 @@ interface PostReviewDetailPanelProps {
   showEmpty: boolean
   onSaveDraft: (post: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
   onApprove: (post: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
+  onLoadApprovePreview: (post: ReviewPost) => Promise<AdminInsightDistributionPreview>
   onScheduleApprove: (post: ReviewPost, payload: ApprovePostPayload) => Promise<ReviewPost | void> | ReviewPost | void
   onPublish: (post: ReviewPost) => Promise<ReviewPost | void> | ReviewPost | void
   onDiscard: (postId: string) => void
@@ -29,6 +30,7 @@ export default function PostReviewDetailPanel({
   showEmpty,
   onSaveDraft,
   onApprove,
+  onLoadApprovePreview,
   onScheduleApprove,
   onPublish,
   onDiscard,
@@ -40,7 +42,7 @@ export default function PostReviewDetailPanel({
   isRecalling,
 }: PostReviewDetailPanelProps) {
   return (
-    <div className="flex-1 min-w-0 w-full xl:w-0 min-h-0">
+    <div className="flex-1 min-w-0 w-full xl:w-0 min-h-0 xl:h-full">
       {isLoading ? (
         <PostReviewDetailSkeleton />
       ) : showEmpty ? (
@@ -55,6 +57,7 @@ export default function PostReviewDetailPanel({
             distributionPreview={distributionPreview}
             onSaveDraft={onSaveDraft}
             onApprove={onApprove}
+            onLoadApprovePreview={onLoadApprovePreview}
             onScheduleApprove={onScheduleApprove}
             onPublish={onPublish}
             onDiscard={onDiscard}

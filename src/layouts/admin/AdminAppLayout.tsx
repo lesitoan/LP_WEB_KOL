@@ -35,7 +35,7 @@ export default function AdminAppLayout({ children }: AdminAppLayoutProps) {
       <main className="fixed inset-y-0 left-0 right-0 flex min-w-0 flex-col overflow-hidden md:left-[250px]">
         <AdminTopbar onMenuClick={() => setIsSidebarOpen(true)} />
         <div
-          className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-8 max-sm:p-4 bg-surface-0 scrollbar-none"
+          className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-8 max-sm:p-4 bg-surface-0 scrollbar-none"
           style={{
             backgroundImage: "url('/images/bg.png')",
             backgroundSize: 'cover',

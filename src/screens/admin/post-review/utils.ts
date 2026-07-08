@@ -1,5 +1,6 @@
 import type { PostReviewTab, ReviewPost } from './constants'
 import type { AdminInsightDistributionPreview, ContentTypeCode } from '@/types/api/adminInsight'
+import moment from 'moment'
 
 const POST_REVIEW_TAB_VALUES: PostReviewTab[] = [
   'ALL',
@@ -34,17 +35,13 @@ export function formatApiDateForPostReview(value: string | null | undefined): st
 }
 
 export function formatApiTimeForPostReview(value: string | null | undefined): string | undefined {
-  const parts = getApiDateTimeParts(value)
-  if (!parts) return undefined
-
-  return `${parts.hour}:${parts.minute}`
+  return moment(value).format('HH:mm')
 }
 
 export function formatApiDateTimeForPostReview(value: string | null | undefined): string | undefined {
-  const date = formatApiDateForPostReview(value)
-  const time = formatApiTimeForPostReview(value)
+  if (!value) return undefined
 
-  return date && time ? `${date} ${time}` : undefined
+  return moment(value).format('DD/MM/YYYY HH:mm')
 }
 
 export function isLocalDraftId(postId: string | undefined): boolean {

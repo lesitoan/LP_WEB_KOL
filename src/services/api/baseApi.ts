@@ -133,18 +133,19 @@ const adminBaseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBa
   }
 
   let result = await adminBaseQuery(args, api, extraOptions)
+  const url = typeof args === 'string' ? args : args.url || ''
 
-  if (result.error?.status === 403) {
-    return silentLogout()
-  }
-
-  if (result.error?.status !== 401) {
+  if (
+    (result.error?.status === 401 || result.error?.status === 403) &&
+    (url.includes('/admin/auth/login') || url.includes('/admin/auth/verify-2fa'))
+  ) {
     return result
   }
 
-  const url = typeof args === 'string' ? args : args.url || ''
-
-  if (url.includes('/admin/auth/login') || url.includes('/admin/auth/verify-2fa')) {
+  if (result.error?.status !== 401) {
+    if (result.error?.status === 403) {
+      return silentLogout()
+    }
     return result
   }
 

@@ -12,6 +12,7 @@ export interface AdminDistributionTierConfig {
   commissionRatePct: number
   offsetMinutes: number
   sortOrder: number
+  count?: number | null
 }
 
 export interface AdminDistributionTierAssignment {

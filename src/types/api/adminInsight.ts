@@ -72,6 +72,25 @@ export interface AdminInsightRecallResult {
   telegramRevokeSummary: unknown
 }
 
+export interface AdminInsightStatusCount {
+  status: ContentItemStatus
+  count?: number | string
+  total?: number | string
+  _count?: number | string | Partial<Record<'_all' | 'id' | 'status', number | string>>
+}
+
+export interface AdminInsightStatusStatsGroup {
+  counts?: AdminInsightStatusCount[]
+  byStatus?: AdminInsightStatusCount[]
+  items?: AdminInsightStatusCount[]
+  statuses?: AdminInsightStatusCount[]
+}
+
+export type AdminInsightStatusStats =
+  | Partial<Record<ContentItemStatus, number | string>>
+  | AdminInsightStatusCount[]
+  | AdminInsightStatusStatsGroup
+
 export interface PaginationMeta {
   page: number
   limit: number
