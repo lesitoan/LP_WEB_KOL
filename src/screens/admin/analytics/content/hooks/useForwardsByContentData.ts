@@ -2,9 +2,10 @@ import { useMemo } from 'react'
 import { useGetAdminInsightDashboardForwardByContentTypeQuery } from '@/services/api/admin/insightDashboardApi'
 import type { AdminInsightDashboardForwardByContentTypeQuery } from '@/types/api/adminInsightDashboard'
 import type { ForwardContentItem } from '../constants'
+import { MANUAL_NEWS_TYPES } from '../manualNewsTypes'
 import type { ContentAnalyticsDateRange } from './useContentOverviewMetricsData'
 
-const DEFAULT_FORWARD_CONTENT_LIMIT = 10
+const DEFAULT_FORWARD_CONTENT_LIMIT = MANUAL_NEWS_TYPES.length
 
 function buildForwardByContentTypeQuery(dateRange: ContentAnalyticsDateRange): AdminInsightDashboardForwardByContentTypeQuery {
   if (dateRange.isGetAllTime || !dateRange.from || !dateRange.to) {
@@ -40,9 +41,25 @@ export function useForwardsByContentData(dateRange: ContentAnalyticsDateRange) {
 
   const items = useMemo<ForwardContentItem[]>(() => {
     const apiItems = query.data?.items ?? []
-    const maxForwardCount = Math.max(...apiItems.map((item) => item.forwardCount), 0)
+    const itemByContentType = new Map(apiItems.map((item) => [item.contentType, item]))
+    const normalizedItems = MANUAL_NEWS_TYPES.map((newsType, index) => {
+      const apiItem = itemByContentType.get(newsType.contentType)
 
-    return apiItems.map((item) => ({
+      return {
+        index,
+        label: apiItem?.label ?? newsType.label,
+        forwardCount: apiItem?.forwardCount ?? 0,
+      }
+    }).sort((left, right) => {
+      if (right.forwardCount !== left.forwardCount) {
+        return right.forwardCount - left.forwardCount
+      }
+
+      return left.index - right.index
+    })
+    const maxForwardCount = Math.max(...normalizedItems.map((item) => item.forwardCount), 0)
+
+    return normalizedItems.map((item) => ({
       title: item.label,
       fwdCount: item.forwardCount,
       fwdText: `${formatNumber(item.forwardCount)} fwd`,
@@ -53,6 +70,6 @@ export function useForwardsByContentData(dateRange: ContentAnalyticsDateRange) {
   return {
     query,
     items,
-    showEmpty: !query.isLoading && !query.isFetching && (query.isError || items.length === 0),
+    showEmpty: !query.isLoading && !query.isFetching && query.isError,
   }
 }

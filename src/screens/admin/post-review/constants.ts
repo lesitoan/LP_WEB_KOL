@@ -247,6 +247,14 @@ export interface ReviewPost {
   publishedByUserId?: string | null
   isLocalDraft?: boolean
   imageUrls: string[]
+  contentImages: ReviewPostImage[]
+}
+
+export interface ReviewPostImage {
+  id: string
+  previewUrl: string
+  remoteUrl?: string
+  file?: File
 }
 
 function formatSources(value: unknown): string {
@@ -289,6 +297,14 @@ function getInsightImageUrls(insight: AdminInsight | AdminInsightDetail): string
   return insight.imageUrl ? [insight.imageUrl] : []
 }
 
+function buildRemotePostImages(imageUrls: string[]): ReviewPostImage[] {
+  return imageUrls.map((url) => ({
+    id: url,
+    previewUrl: url,
+    remoteUrl: url,
+  }))
+}
+
 function areApiValuesEqual(left: unknown, right: unknown): boolean {
   return JSON.stringify(left) === JSON.stringify(right)
 }
@@ -316,11 +332,14 @@ export function buildUpdateAdminInsightBody(original: ReviewPost, updated: Revie
   assignIfChanged(body, 'sources', parseSources(original.sources), parseSources(updated.sources))
   assignIfChanged(body, 'authorTask', normalizeNullableText(original.authorTask), normalizeNullableText(updated.authorTask))
   assignIfChanged(body, 'kolToolPosted', normalizeNullableText(original.kolToolPosted), normalizeNullableText(updated.kolToolPosted))
+  assignIfChanged(body, 'imageUrls', original.imageUrls, updated.imageUrls)
 
   return Object.keys(body).length > 0 ? body : null
 }
 
 export function mapInsightToReviewPost(insight: AdminInsight | AdminInsightDetail): ReviewPost {
+  const imageUrls = getInsightImageUrls(insight)
+
   return {
     id: insight.id,
     contentType: insight.contentType,
@@ -340,6 +359,7 @@ export function mapInsightToReviewPost(insight: AdminInsight | AdminInsightDetai
     createdByUserId: insight.createdByUserId,
     reviewedByUserId: insight.reviewedByUserId,
     publishedByUserId: insight.publishedByUserId,
-    imageUrls: getInsightImageUrls(insight),
+    imageUrls,
+    contentImages: buildRemotePostImages(imageUrls),
   }
 }

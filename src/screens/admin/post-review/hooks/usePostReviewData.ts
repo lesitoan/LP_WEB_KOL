@@ -11,8 +11,11 @@ import {
 } from '@/services/api/admin/insightsApi'
 import type { AdminInsightStatusCount, AdminInsightStatusStats, ContentItemStatus } from '@/types/api/adminInsight'
 
+const POST_REVIEW_PAGE_LIMIT = 50
+
 interface UsePostReviewDataParams {
   activeTab: PostReviewTab
+  page: number
   localDraft: ReviewPost | undefined
 }
 
@@ -94,21 +97,22 @@ function normalizeStatusCounts(stats: AdminInsightStatusStats | undefined): Reco
   return counts
 }
 
-export function usePostReviewData({ activeTab, localDraft }: UsePostReviewDataParams) {
+export function usePostReviewData({ activeTab, page, localDraft }: UsePostReviewDataParams) {
   const statusStatsQuery = useGetAdminInsightStatusStatsQuery()
   const activeInsightsQuery = useListAdminInsightsQuery(
     activeTab === 'ALL'
-      ? { page: 1, limit: 100 }
-      : { page: 1, limit: 100, status: activeTab }
+      ? { page, limit: POST_REVIEW_PAGE_LIMIT }
+      : { page, limit: POST_REVIEW_PAGE_LIMIT, status: activeTab }
   )
 
   const activeItems = activeInsightsQuery.data?.items ?? []
   const localDraftVisible = Boolean(localDraft && (activeTab === 'DRAFT' || activeTab === 'ALL'))
+  const showLocalDraftOnPage = localDraftVisible && page === 1
 
   const activePosts = useMemo(() => {
     const apiPosts = activeItems.map(mapInsightToReviewPost)
-    return localDraftVisible && localDraft ? [localDraft, ...apiPosts] : apiPosts
-  }, [activeItems, localDraft, localDraftVisible])
+    return showLocalDraftOnPage && localDraft ? [localDraft, ...apiPosts] : apiPosts
+  }, [activeItems, localDraft, showLocalDraftOnPage])
 
   const statusCounts = useMemo(() => {
     const counts = normalizeStatusCounts(statusStatsQuery.data)
@@ -123,6 +127,14 @@ export function usePostReviewData({ activeTab, localDraft }: UsePostReviewDataPa
 
   const listIsLoading = activeInsightsQuery.isLoading || activeInsightsQuery.isFetching
   const showListEmpty = !listIsLoading && activePosts.length === 0
+  const activePaginationMeta = activeInsightsQuery.data?.pagination
+  const activeTotalItems = (activePaginationMeta?.totalItems ?? 0) + (localDraftVisible ? 1 : 0)
+  const activePagination = {
+    page: activePaginationMeta?.page ?? page,
+    limit: POST_REVIEW_PAGE_LIMIT,
+    totalItems: activeTotalItems,
+    totalPages: Math.max(1, Math.ceil(activeTotalItems / POST_REVIEW_PAGE_LIMIT)),
+  }
 
   return {
     statusStatsQuery,
@@ -131,6 +143,7 @@ export function usePostReviewData({ activeTab, localDraft }: UsePostReviewDataPa
     activePosts,
     statusCounts,
     localDraftVisible,
+    activePagination,
     listIsLoading,
     showListEmpty,
   }

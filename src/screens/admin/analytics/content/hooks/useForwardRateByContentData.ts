@@ -2,9 +2,10 @@ import { useMemo } from 'react'
 import { useGetAdminInsightDashboardReceivedForwardRateByContentTypeQuery } from '@/services/api/admin/insightDashboardApi'
 import type { AdminInsightDashboardForwardByContentTypeQuery } from '@/types/api/adminInsightDashboard'
 import type { ForwardRateItem } from '../constants'
+import { MANUAL_NEWS_TYPES } from '../manualNewsTypes'
 import type { ContentAnalyticsDateRange } from './useContentOverviewMetricsData'
 
-const DEFAULT_FORWARD_RATE_LIMIT = 10
+const DEFAULT_FORWARD_RATE_LIMIT = MANUAL_NEWS_TYPES.length
 
 function buildForwardRateByContentTypeQuery(dateRange: ContentAnalyticsDateRange): AdminInsightDashboardForwardByContentTypeQuery {
   if (dateRange.isGetAllTime || !dateRange.from || !dateRange.to) {
@@ -42,8 +43,24 @@ export function useForwardRateByContentData(dateRange: ContentAnalyticsDateRange
 
   const items = useMemo<ForwardRateItem[]>(() => {
     const apiItems = query.data?.items ?? []
+    const itemByContentType = new Map(apiItems.map((item) => [item.contentType, item]))
+    const normalizedItems = MANUAL_NEWS_TYPES.map((newsType, index) => {
+      const apiItem = itemByContentType.get(newsType.contentType)
 
-    return apiItems.map((item) => ({
+      return {
+        index,
+        label: apiItem?.label ?? newsType.label,
+        forwardRate: apiItem?.forwardRate ?? 0,
+      }
+    }).sort((left, right) => {
+      if (right.forwardRate !== left.forwardRate) {
+        return right.forwardRate - left.forwardRate
+      }
+
+      return left.index - right.index
+    })
+
+    return normalizedItems.map((item) => ({
       title: item.label,
       rate: item.forwardRate,
       rateText: `${formatPercent(item.forwardRate)}%`,
@@ -55,6 +72,6 @@ export function useForwardRateByContentData(dateRange: ContentAnalyticsDateRange
   return {
     query,
     items,
-    showEmpty: !query.isLoading && !query.isFetching && (query.isError || items.length === 0),
+    showEmpty: !query.isLoading && !query.isFetching && query.isError,
   }
 }

@@ -22,8 +22,10 @@ export default function AdminPostReviewScreen() {
 
   const {
     activeTab,
+    page,
     selectedPostIdParam,
     setActiveTab,
+    setPage,
     setSelectedPostIdParam,
     setManyParams,
     clearSelectedPostId,
@@ -31,6 +33,7 @@ export default function AdminPostReviewScreen() {
 
   const data = usePostReviewData({
     activeTab,
+    page,
     localDraft,
   })
 
@@ -155,6 +158,8 @@ export default function AdminPostReviewScreen() {
             selectedPostId={selection.selectedPostId}
             isLoading={data.listIsLoading}
             showEmpty={data.showListEmpty}
+            pagination={data.activePagination}
+            onPageChange={setPage}
             onSelectPost={selection.selectPost}
             onDeletePost={handleDeletePost}
           />

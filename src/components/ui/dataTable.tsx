@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { DataTableSkeleton } from "@/components/skeletons/DataTableSkeleton";
+import { cn } from "@/lib/utils";
 
 export type DataTableColumn<T> = {
   id: string
@@ -21,6 +22,7 @@ export type DataTablePagination = {
   limitOptions?: number[]
   isDisabled?: boolean
   summaryText?: string
+  hideSummary?: boolean
 }
 
 const TABLE_SCROLL_VIEWPORT_CLASS =
@@ -53,12 +55,17 @@ function pageList(current: number, total: number) {
   return [1, 'ellipsis', current - 1, current, current + 1, 'ellipsis', total] as const
 }
 
-export function DataTablePaginationBar({ pagination }: { pagination: DataTablePagination }) {
-  return (
-    <div className="px-6 py-4 text-[12.5px] text-muted-foreground md:flex md:items-center md:justify-between">
-      <span className="block text-center md:text-left">{pagination.summaryText ?? `Tổng ${pagination.totalItems} dòng`}</span>
+export function DataTablePaginationBar({ pagination, className }: { pagination: DataTablePagination; className?: string }) {
+  const justifyClass = pagination.hideSummary ? "justify-center" : "justify-between"
+  const alignClass = pagination.hideSummary ? "" : "md:justify-end"
 
-      <div className="mt-2 flex items-center justify-center gap-3 md:mt-0 md:justify-end">
+  return (
+    <div className={cn(`px-6 py-4 text-[12.5px] text-muted-foreground md:flex md:items-center ${justifyClass}`, className)}>
+      {!pagination.hideSummary && (
+        <span className="block text-center md:text-left">{pagination.summaryText ?? `Tổng ${pagination.totalItems} dòng`}</span>
+      )}
+
+      <div className={`${pagination.hideSummary ? "mt-0" : "mt-2"} flex items-center justify-center gap-3 md:mt-0 ${alignClass}`}>
         <div className="flex gap-1">
           <button
             className="w-7 h-7 grid place-items-center rounded-md text-xs hover:bg-surface-3 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
