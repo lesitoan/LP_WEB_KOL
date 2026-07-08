@@ -27,14 +27,14 @@ export default function TierComparisonTable() {
   }, [data])
 
   const currentTierCode = (
-    currentTierData?.matchedTier?.code ||
     currentTierData?.currentTier?.code ||
+    currentTierData?.matchedTier?.code ||
     ''
   ).toUpperCase()
 
   const currentTierName = (
-    currentTierData?.matchedTier?.name ||
     currentTierData?.currentTier?.name ||
+    currentTierData?.matchedTier?.name ||
     ''
   ).toUpperCase()
 

@@ -41,14 +41,12 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const { showConfirm, Popup } = usePopup()
   const { data: tierData } = useGetKolCurrentTierQuery()
 
-  const currentTierName =
-    tierData?.matchedTier?.name || tierData?.currentTier?.name || 'Starter'
-  const currentTierCode =
-    tierData?.matchedTier?.code || tierData?.currentTier?.code || currentTierName
+  const currentTier = tierData?.currentTier ?? tierData?.matchedTier ?? null
+  const currentTierName = currentTier?.name || 'Starter'
+  const currentTierCode = currentTier?.code || currentTierName
   const currentCommissionRate =
-    tierData?.matchedTier?.commissionRatePct ??
-    tierData?.currentTier?.commissionRatePct ??
     tierData?.kol.currentCommissionRate ??
+    currentTier?.commissionRatePct ??
     null
 
   const handleLogout = async () => {

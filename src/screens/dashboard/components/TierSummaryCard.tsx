@@ -1,7 +1,7 @@
 "use client";
 
 import { TierSummaryCardSkeleton } from "@/components/skeletons/dashboard/TierSummaryCardSkeleton";
-import { useGetKolCurrentTierQuery, useGetKolTiersQuery } from "@/services/api/tierApi";
+import { useGetKolCurrentTierQuery } from "@/services/api/tierApi";
 
 function getTierIconSrc(code?: string | null, name?: string | null) {
   const iconKey = (code || name || "").trim().toUpperCase();
@@ -13,31 +13,18 @@ function getTierIconSrc(code?: string | null, name?: string | null) {
 
 export default function TierSummaryCard() {
   const { data, isLoading } = useGetKolCurrentTierQuery();
-  const { data: tiers = [], isLoading: isTiersLoading } = useGetKolTiersQuery();
 
-  if (isLoading || isTiersLoading) {
+  if (isLoading) {
     return <TierSummaryCardSkeleton />;
   }
 
   const activeMemberCount = data?.activeMemberCount ?? 0;
-  const sortedTiers = [...tiers].sort((a, b) => a.minActiveMembers - b.minActiveMembers);
-  const matchedTierByCount =
-    sortedTiers
-      .filter(
-        (tier) =>
-          activeMemberCount >= tier.minActiveMembers &&
-          (tier.maxActiveMembers === null || activeMemberCount <= tier.maxActiveMembers),
-      )
-      .at(-1) ?? null;
-
-  const matchedTier = matchedTierByCount ?? data?.matchedTier ?? data?.currentTier ?? null;
-  const nextTier = data?.nextTier ?? sortedTiers.find((tier) => tier.minActiveMembers > activeMemberCount) ?? null;
-  const membersNeeded =
-    data?.membersNeededForNextTier ??
-    (nextTier ? Math.max(0, nextTier.minActiveMembers - activeMemberCount) : null);
-  const commissionRate = matchedTier?.commissionRatePct ?? data?.kol.currentCommissionRate ?? "—";
-  const currentTierName = matchedTier?.name ?? "—";
-  const currentTierCode = matchedTier?.code ?? data?.currentTier?.code ?? data?.matchedTier?.code ?? null;
+  const currentTier = data?.currentTier ?? data?.matchedTier ?? null;
+  const nextTier = data?.nextTier ?? null;
+  const membersNeeded = data?.membersNeededForNextTier ?? null;
+  const commissionRate = data?.kol.currentCommissionRate ?? currentTier?.commissionRatePct ?? "—";
+  const currentTierName = currentTier?.name ?? "—";
+  const currentTierCode = currentTier?.code ?? null;
   const nextTierTarget = nextTier?.minActiveMembers ?? activeMemberCount;
   const progressPercent =
     nextTier && nextTierTarget > 0 ? Math.max(0, Math.min(100, (activeMemberCount / nextTierTarget) * 100)) : 100;
