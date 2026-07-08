@@ -3,13 +3,9 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { CalendarClock, Check, CircleCheck, X } from 'lucide-react'
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { usePreviewAdminInsightDistributionMutation } from '@/services/api/admin/insightsApi'
 import { cn } from '@/lib/utils'
 import { formatApiDateTimeForPostReview } from '../utils'
-import type {
-  AdminInsightDistributionPreview,
-  ContentTypeCode,
-} from '@/types/api/adminInsight'
+import type { AdminInsightDistributionPreview } from '@/types/api/adminInsight'
 
 type ApproveMode = 'now' | 'scheduled'
 
@@ -22,7 +18,7 @@ interface ApprovePostModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   postTitle: string
-  contentType: ContentTypeCode
+  distributionPreview: AdminInsightDistributionPreview
   onConfirm: (payload: ApprovePostPayload) => Promise<void> | void
   isLoading?: boolean
 }
@@ -35,34 +31,50 @@ export default function ApprovePostModal({
   open,
   onOpenChange,
   postTitle,
-  contentType,
+  distributionPreview,
   onConfirm,
   isLoading = false,
 }: ApprovePostModalProps) {
   const [mode, setMode] = useState<ApproveMode>('scheduled')
   const [hasReviewedContent, setHasReviewedContent] = useState(true)
-  const [distributionPreview, setDistributionPreview] = useState<AdminInsightDistributionPreview | undefined>()
-  const [previewError, setPreviewError] = useState<string | undefined>()
-  const [previewAdminInsightDistribution, previewAdminInsightDistributionState] = usePreviewAdminInsightDistributionMutation()
+  const [nowTimestamp, setNowTimestamp] = useState(() => Date.now())
   const scheduledAtForApi = getScheduledAtForApi(distributionPreview)
   const scheduleRows = useMemo(() => distributionPreview?.plans ?? [], [distributionPreview])
+  const canSchedule = distributionPreview?.scheduleType === 'FIXED_TIME'
+  const nowBaseScheduledAt = useMemo(() => new Date(nowTimestamp).toISOString(), [nowTimestamp])
+  const nowScheduleRows = useMemo(() => scheduleRows.map((plan) => ({
+    ...plan,
+    scheduledAt: new Date(nowTimestamp + Math.max(0, plan.offsetMinutes) * 60000).toISOString(),
+  })), [nowTimestamp, scheduleRows])
+  const visibleScheduleRows = mode === 'now' ? nowScheduleRows : scheduleRows
+  const visibleBaseScheduledAt = mode === 'now' ? nowBaseScheduledAt : scheduledAtForApi
 
   useEffect(() => {
     if (!open) return
 
-    setMode('scheduled')
+    setMode(distributionPreview.scheduleType === 'FIXED_TIME' ? 'scheduled' : 'now')
     setHasReviewedContent(true)
-    setDistributionPreview(undefined)
-    setPreviewError(undefined)
+    setNowTimestamp(Date.now())
+  }, [distributionPreview.scheduleType, open])
 
-    previewAdminInsightDistribution({ contentType })
-      .unwrap()
-      .then(setDistributionPreview)
-      .catch(() => setPreviewError('Không thể tải lịch đăng theo tier. Vui lòng thử lại.'))
-  }, [contentType, open, previewAdminInsightDistribution])
+  useEffect(() => {
+    if (distributionPreview && !canSchedule) {
+      setMode('now')
+    }
+  }, [canSchedule, distributionPreview])
 
-  const scheduleIsReady = Boolean(scheduledAtForApi) && !previewAdminInsightDistributionState.isLoading && !previewError
-  const canConfirm = hasReviewedContent && (mode === 'now' || scheduleIsReady)
+  useEffect(() => {
+    if (!open || mode !== 'now') return
+
+    setNowTimestamp(Date.now())
+    const intervalId = window.setInterval(() => setNowTimestamp(Date.now()), 30000)
+
+    return () => window.clearInterval(intervalId)
+  }, [mode, open])
+
+  const scheduleIsReady = Boolean(scheduledAtForApi)
+  const nowScheduleIsReady = Boolean(distributionPreview)
+  const canConfirm = hasReviewedContent && (mode === 'now' ? nowScheduleIsReady : canSchedule && scheduleIsReady)
 
   const handleConfirm = async () => {
     if (!canConfirm || isLoading) return
@@ -114,26 +126,31 @@ export default function ApprovePostModal({
             <div className="mt-1 text-base font-semibold leading-6 text-white">{postTitle}</div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => setMode('scheduled')}
-              className={cn(
-                "rounded-lg border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-                mode === 'scheduled'
-                  ? "border-[#F7F0A1] bg-[#F7F0A1]/10"
-                  : "border-[#282828] bg-[#282828]/40 hover:border-[#545454]"
-              )}
-            >
-              <div className="text-sm font-semibold text-white">Đăng theo lịch</div>
-              <div className="mt-1 text-xs font-normal leading-[18px] text-[#A8A8A9]">Dùng lịch đăng mặc định theo từng tier.</div>
-            </button>
+          <div className={cn("grid gap-3", canSchedule && "sm:grid-cols-2")}>
+            {canSchedule ? (
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={() => setMode('scheduled')}
+                className={cn(
+                  "rounded-lg border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                  mode === 'scheduled'
+                    ? "border-[#F7F0A1] bg-[#F7F0A1]/10"
+                    : "border-[#282828] bg-[#282828]/40 hover:border-[#545454]"
+                )}
+              >
+                <div className="text-sm font-semibold text-white">Đăng theo lịch</div>
+                <div className="mt-1 text-xs font-normal leading-[18px] text-[#A8A8A9]">Dùng lịch đăng mặc định theo từng tier.</div>
+              </button>
+            ) : null}
 
             <button
               type="button"
               disabled={isLoading}
-              onClick={() => setMode('now')}
+              onClick={() => {
+                setNowTimestamp(Date.now())
+                setMode('now')
+              }}
               className={cn(
                 "rounded-lg border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                 mode === 'now'
@@ -146,43 +163,44 @@ export default function ApprovePostModal({
             </button>
           </div>
 
-          {mode === 'scheduled' ? (
+          {mode === 'scheduled' || mode === 'now' ? (
             <div className="rounded-lg border border-[#282828] bg-[#121212] p-4">
-              {previewAdminInsightDistributionState.isLoading ? (
-                <div className="text-sm text-[#A8A8A9]">Đang tải lịch đăng...</div>
-              ) : previewError ? (
-                <div className="text-sm text-[#EB4E40]">{previewError}</div>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <div className="text-xs font-normal leading-[18px] text-[#A8A8A9]">Bắt đầu đăng</div>
-                    <div className="mt-1 text-sm font-semibold text-white">{formatApiDateTimeForPostReview(scheduledAtForApi) ?? '—'}</div>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <div className="text-xs font-normal leading-[18px] text-[#A8A8A9]">
+                    {mode === 'now' ? 'Bắt đầu đăng ngay' : 'Bắt đầu đăng'}
                   </div>
+                  <div className="mt-1 text-sm font-semibold text-white">{formatApiDateTimeForPostReview(visibleBaseScheduledAt) ?? '—'}</div>
+                  {mode === 'now' ? (
+                    <div className="mt-1 text-xs font-normal leading-[18px] text-[#A8A8A9]">
+                      Thời gian KOL nhận bài được tính bằng thời điểm hiện tại + offset từng tier.
+                    </div>
+                  ) : null}
+                </div>
 
-                  <div className="flex flex-col gap-2">
-                    {scheduleRows.length > 0 ? scheduleRows.map((plan) => (
-                      <div
-                        key={`${plan.kolTierId}-${plan.scheduledAt}`}
-                        className="grid gap-2 rounded-lg bg-[#282828]/50 p-4 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:gap-4"
-                      >
-                        <div className="min-w-0">
-                          <div className="truncate text-sm font-semibold leading-5 text-[#DDB96E]">
-                            {plan.tierCode} - {plan.tierName}
-                          </div>
-                        </div>
-                        <div className="text-sm font-semibold leading-5 text-white sm:text-right">
-                          {formatApiDateTimeForPostReview(plan.scheduledAt) ?? '—'}
-                        </div>
-                        <div className="text-sm font-normal leading-5 text-[#A8A8A9] sm:text-right">
-                          {plan.recipientCount} KOL
+                <div className="flex flex-col gap-2">
+                  {visibleScheduleRows.length > 0 ? visibleScheduleRows.map((plan) => (
+                    <div
+                      key={`${plan.kolTierId}-${mode}`}
+                      className="grid gap-2 rounded-lg bg-[#282828]/50 p-4 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:gap-4"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold leading-5 text-[#DDB96E]">
+                          {plan.tierCode} - {plan.tierName}
                         </div>
                       </div>
-                    )) : (
-                      <div className="text-sm text-[#A8A8A9]">Chưa có lịch phân phối.</div>
-                    )}
-                  </div>
+                      <div className="text-sm font-semibold leading-5 text-white sm:text-right">
+                        {formatApiDateTimeForPostReview(plan.scheduledAt) ?? '—'}
+                      </div>
+                      <div className="text-sm font-normal leading-5 text-[#A8A8A9] sm:text-right">
+                        {plan.recipientCount} KOL
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="text-sm text-[#A8A8A9]">Chưa có lịch phân phối.</div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           ) : null}
         </div>

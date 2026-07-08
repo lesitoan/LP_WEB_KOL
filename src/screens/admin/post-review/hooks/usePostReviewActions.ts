@@ -3,6 +3,7 @@ import { toast } from '@/hooks/useToast'
 import { extractApiErrorMessage } from '@/services/api/baseApi'
 import {
   useCreateAdminInsightMutation,
+  useDeleteAdminInsightMutation,
   usePreviewAdminInsightDistributionMutation,
   usePublishAdminInsightMutation,
   useRecallAdminInsightMutation,
@@ -46,6 +47,7 @@ export function usePostReviewActions({
   const [createAdminInsight, createAdminInsightState] = useCreateAdminInsightMutation()
   const [updateAdminInsight, updateAdminInsightState] = useUpdateAdminInsightMutation()
   const [updateAdminInsightStatus, updateAdminInsightStatusState] = useUpdateAdminInsightMutation()
+  const [deleteAdminInsight, deleteAdminInsightState] = useDeleteAdminInsightMutation()
   const [previewAdminInsightDistribution, previewAdminInsightDistributionState] = usePreviewAdminInsightDistributionMutation()
   const [publishAdminInsight, publishAdminInsightState] = usePublishAdminInsightMutation()
   const [scheduleAdminInsight, scheduleAdminInsightState] = useScheduleAdminInsightMutation()
@@ -57,6 +59,7 @@ export function usePostReviewActions({
   const isScheduling = scheduleAdminInsightState.isLoading
   const isApproving = updateAdminInsightStatusState.isLoading || createAdminInsightState.isLoading
   const isRecalling = recallAdminInsightState.isLoading
+  const isDeleting = deleteAdminInsightState.isLoading
 
   const buildCreateBody = (post: ReviewPost, status: CreateAdminInsightBody['status']): CreateAdminInsightBody => ({
     sourceType: 'manual',
@@ -414,6 +417,49 @@ export function usePostReviewActions({
     clearSelection()
   }
 
+  const handleDeletePost = async (post: ReviewPost) => {
+    if (post.isLocalDraft) {
+      setLocalDraft((currentDraft) => {
+        if (currentDraft?.id !== post.id) return currentDraft
+        return undefined
+      })
+
+      if (selectedPost?.id === post.id) {
+        clearSelection()
+      }
+
+      return
+    }
+
+    try {
+      await deleteAdminInsight({ insightId: post.id }).unwrap()
+
+      toast({
+        title: 'Xóa bài viết thành công',
+        description: 'Bài viết đã được xóa.',
+      })
+
+      if (selectedPost?.id === post.id) {
+        clearSelection()
+      }
+
+      refetchAll()
+      refetchActive()
+    } catch (error) {
+      toast({
+        title: 'Xóa bài viết thất bại',
+        description: extractApiErrorMessage(error, 'Không thể xóa bài viết. Vui lòng thử lại.'),
+        variant: 'destructive',
+      })
+
+      refetchAll()
+      refetchActive()
+      if (selectedPost?.id === post.id) {
+        refetchDetail()
+      }
+    }
+  }
+
   const handleRevoke = async (postId: string) => {
     if (!selectedPost || selectedPost.isLocalDraft) {
       toast({
@@ -465,12 +511,14 @@ export function usePostReviewActions({
     isScheduling,
     isApproving,
     isRecalling,
+    isDeleting,
     handleCreateNewPost,
     handleSaveDraft,
     handleApprove,
     handleScheduleApprove,
     handlePublish,
     handleDiscard,
+    handleDeletePost,
     handleRevoke,
   }
 }

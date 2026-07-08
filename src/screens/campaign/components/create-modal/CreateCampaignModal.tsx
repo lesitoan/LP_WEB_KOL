@@ -154,7 +154,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: Props) {
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 py-4 overflow-y-auto">
       <div 
-        className="bg-[#1A1A1A] border border-white/5 rounded-2xl w-full max-w-[640px] flex flex-col shadow-2xl overflow-hidden animate-fade-in-up"
+        className="bg-[#1A1A1A] border border-white/5 rounded-2xl w-full max-w-[640px] flex flex-col shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-6">

@@ -27,6 +27,7 @@ type AdminInsightRecallResultEnvelope = ApiResponse<AdminInsightRecallResult>
 type AdminInsightDistributionPreviewEnvelope = ApiResponse<AdminInsightDistributionPreview>
 type AdminContentActionRequestsEnvelope = ApiResponse<PaginatedData<AdminContentActionRequest>>
 type AdminContentActionRequestEnvelope = ApiResponse<AdminContentActionRequest>
+type DeleteAdminInsightEnvelope = ApiResponse<null>
 
 function ensureData<T>(payload: ApiResponse<T>, fallback: string): T {
   if (!payload || payload.status !== 'success' || !payload.data) {
@@ -121,6 +122,19 @@ export const adminInsightsApi = adminApi.injectEndpoints({
       invalidatesTags: (_result, _error, { insightId }) => ['Insights', { type: 'Insights', id: insightId }],
     }),
 
+    deleteAdminInsight: builder.mutation<void, { insightId: string }>({
+      query: ({ insightId }) => ({
+        url: apiV1Path(`/admin/insights/${insightId}`),
+        method: 'DELETE',
+      }),
+      transformResponse: (payload: DeleteAdminInsightEnvelope | undefined) => {
+        if (payload && payload.status !== 'success') {
+          throw new Error(pickApiMessage(payload || {}, 'Không thể xóa insight'))
+        }
+      },
+      invalidatesTags: ['Insights'],
+    }),
+
     publishAdminInsight: builder.mutation<AdminInsightDetail, { insightId: string }>({
       query: ({ insightId }) => ({
         url: apiV1Path(`/admin/insights/${insightId}/publish`),
@@ -210,6 +224,7 @@ export const {
   usePreviewAdminInsightDistributionMutation,
   useCreateAdminInsightMutation,
   useUpdateAdminInsightMutation,
+  useDeleteAdminInsightMutation,
   usePublishAdminInsightMutation,
   useApproveAdminInsightMutation,
   useScheduleAdminInsightMutation,

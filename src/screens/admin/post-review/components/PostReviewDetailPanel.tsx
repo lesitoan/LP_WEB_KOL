@@ -11,6 +11,7 @@ interface PostReviewDetailPanelProps {
   showEmpty: boolean
   onSaveDraft: (post: ReviewPost) => void
   onApprove: (post: ReviewPost) => Promise<void> | void
+  onLoadApprovePreview: (post: ReviewPost) => Promise<AdminInsightDistributionPreview>
   onScheduleApprove: (post: ReviewPost, payload: ApprovePostPayload) => Promise<void> | void
   onPublish: (post: ReviewPost) => Promise<void> | void
   onDiscard: (postId: string) => void
@@ -29,6 +30,7 @@ export default function PostReviewDetailPanel({
   showEmpty,
   onSaveDraft,
   onApprove,
+  onLoadApprovePreview,
   onScheduleApprove,
   onPublish,
   onDiscard,
@@ -55,6 +57,7 @@ export default function PostReviewDetailPanel({
             distributionPreview={distributionPreview}
             onSaveDraft={onSaveDraft}
             onApprove={onApprove}
+            onLoadApprovePreview={onLoadApprovePreview}
             onScheduleApprove={onScheduleApprove}
             onPublish={onPublish}
             onDiscard={onDiscard}

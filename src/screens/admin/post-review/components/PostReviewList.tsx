@@ -11,6 +11,7 @@ interface PostReviewListProps {
   isLoading: boolean
   showEmpty: boolean
   onSelectPost: (post: ReviewPost) => void
+  onDeletePost: (post: ReviewPost) => void
 }
 
 export default function PostReviewList({
@@ -19,6 +20,7 @@ export default function PostReviewList({
   isLoading,
   showEmpty,
   onSelectPost,
+  onDeletePost,
 }: PostReviewListProps) {
   const listScroll = useHorizontalScrollControls([posts.length])
 
@@ -67,6 +69,7 @@ export default function PostReviewList({
                 post={post}
                 isSelected={post.id === selectedPostId}
                 onClick={() => onSelectPost(post)}
+                onDelete={() => onDeletePost(post)}
               />
             </div>
           ))

@@ -13,6 +13,8 @@ import ImagePreviewModal from './ImagePreviewModal'
 import PublishPostModal from './PublishPostModal'
 import RevokePostModal from './RevokePostModal'
 import { cn } from '@/lib/utils'
+import { toast } from '@/hooks/useToast'
+import { extractApiErrorMessage } from '@/services/api/baseApi'
 import type { AdminInsightDistributionPreview } from '@/types/api/adminInsight'
 
 function AutoResizeTextarea({ value, onChange, className, ...props }: React.ComponentProps<'textarea'>) {
@@ -53,6 +55,7 @@ interface PostDetailEditorProps {
   distributionPreview?: AdminInsightDistributionPreview
   onSaveDraft: (updatedPost: ReviewPost) => void
   onApprove: (updatedPost: ReviewPost) => Promise<void> | void
+  onLoadApprovePreview: (updatedPost: ReviewPost) => Promise<AdminInsightDistributionPreview>
   onScheduleApprove: (updatedPost: ReviewPost, payload: ApprovePostPayload) => Promise<void> | void
   onPublish: (updatedPost: ReviewPost) => Promise<void> | void
   onDiscard: (postId: string) => void
@@ -112,6 +115,7 @@ export default function PostDetailEditor({
   distributionPreview,
   onSaveDraft,
   onApprove,
+  onLoadApprovePreview,
   onScheduleApprove,
   onPublish,
   onDiscard,
@@ -127,7 +131,9 @@ export default function PostDetailEditor({
   const [approveDialogOpen, setApproveDialogOpen] = useState(false)
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
   const [pendingApprovePost, setPendingApprovePost] = useState<ReviewPost | null>(null)
+  const [pendingApproveDistributionPreview, setPendingApproveDistributionPreview] = useState<AdminInsightDistributionPreview | null>(null)
   const [pendingPublishPost, setPendingPublishPost] = useState<ReviewPost | null>(null)
+  const [isPreparingApprovePreview, setIsPreparingApprovePreview] = useState(false)
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
   const [activeAddImageSlot, setActiveAddImageSlot] = useState<number | null>(null)
   const [contentImagesOverflow, setContentImagesOverflow] = useState(false)
@@ -317,10 +323,27 @@ export default function PostDetailEditor({
     await onApprove(buildUpdatedPost(values))
   })
 
-  const handleScheduleApproveSubmit = handleSubmit((values) => {
-    if (!canScheduleApprove || isSaving || isScheduling) return
-    setPendingApprovePost(buildUpdatedPost(values))
-    setApproveDialogOpen(true)
+  const handleScheduleApproveSubmit = handleSubmit(async (values) => {
+    if (!canScheduleApprove || isSaving || isScheduling || isPreparingApprovePreview) return
+
+    const postToApprove = buildUpdatedPost(values)
+    setIsPreparingApprovePreview(true)
+
+    try {
+      const approvePreview = await onLoadApprovePreview(postToApprove)
+
+      setPendingApprovePost(postToApprove)
+      setPendingApproveDistributionPreview(approvePreview)
+      setApproveDialogOpen(true)
+    } catch (error) {
+      toast({
+        title: 'Không thể tải lịch phân phối',
+        description: extractApiErrorMessage(error, 'Không thể tải lịch phân phối. Vui lòng thử lại.'),
+        variant: 'destructive',
+      })
+    } finally {
+      setIsPreparingApprovePreview(false)
+    }
   })
 
   const confirmPublish = async () => {
@@ -335,6 +358,7 @@ export default function PostDetailEditor({
     await onScheduleApprove(postToApprove, payload)
     setApproveDialogOpen(false)
     setPendingApprovePost(null)
+    setPendingApproveDistributionPreview(null)
   }
 
   const confirmRevoke = async () => {
@@ -831,14 +855,14 @@ export default function PostDetailEditor({
               <button
                 type="button"
                 onClick={handleScheduleApproveSubmit}
-                disabled={isSaving || isScheduling}
+                disabled={isSaving || isScheduling || isPreparingApprovePreview}
                 className={cn(
                   "h-9 w-full px-6 bg-[#F7F0A1] hover:bg-[#F7F0A1]/90 rounded-lg text-sm font-semibold text-black transition-colors inline-flex items-center justify-center gap-2 lg:w-auto",
-                  (isSaving || isScheduling) && "cursor-not-allowed opacity-60 hover:bg-[#F7F0A1]"
+                  (isSaving || isScheduling || isPreparingApprovePreview) && "cursor-not-allowed opacity-60 hover:bg-[#F7F0A1]"
                 )}
               >
                 <CircleCheck className="h-5 w-5 fill-black text-[#F7F0A1]" />
-                {isScheduling ? 'Đang duyệt...' : 'Duyệt tin'}
+                {isPreparingApprovePreview ? 'Đang tải lịch...' : isScheduling ? 'Đang duyệt...' : 'Duyệt tin'}
               </button>
             )}
 
@@ -868,14 +892,22 @@ export default function PostDetailEditor({
         isLoading={isPublishing}
       />
 
-      <ApprovePostModal
-        open={approveDialogOpen}
-        onOpenChange={setApproveDialogOpen}
-        postTitle={pendingApprovePost?.title ?? editedPost.title}
-        contentType={pendingApprovePost?.contentType ?? editedPost.contentType}
-        onConfirm={confirmScheduleApprove}
-        isLoading={isScheduling}
-      />
+      {pendingApproveDistributionPreview ? (
+        <ApprovePostModal
+          open={approveDialogOpen}
+          onOpenChange={(nextOpen) => {
+            setApproveDialogOpen(nextOpen)
+            if (!nextOpen) {
+              setPendingApprovePost(null)
+              setPendingApproveDistributionPreview(null)
+            }
+          }}
+          postTitle={pendingApprovePost?.title ?? editedPost.title}
+          distributionPreview={pendingApproveDistributionPreview}
+          onConfirm={confirmScheduleApprove}
+          isLoading={isScheduling}
+        />
+      ) : null}
 
       <RevokePostModal
         open={revokeDialogOpen}
