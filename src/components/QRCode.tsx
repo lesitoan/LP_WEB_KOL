@@ -7,7 +7,7 @@ type QRCodeProps = {
   value: string;
   size?: number;
   title?: string;
-  className?: string;
+  className?: string; 
 };
 
 export function QRCode({ value, size = 184, title = "QR code", className }: QRCodeProps) {
