@@ -28,7 +28,7 @@ export const contentTypeLabels: Record<ContentTypeCode, string> = {
   WHALES_ALERT: 'Cảnh báo whales',
   MARKET_STRUCTURE: 'Cấu trúc thị trường',
   SECTOR_DAILY: 'Sector & Narrative',
-  SENTIMENT: 'Tâm lý thị trường',
+  SENTIMENT: 'Sentiment',
   DEEP_DIVE: 'Research Report',
   LEGAL_VN: 'Pháp lý Việt Nam',
 }

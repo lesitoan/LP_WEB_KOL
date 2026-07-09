@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import {
+  CATEGORIES,
   CONTENT_STATUS_VALUES,
   mapInsightToReviewPost,
   type PostReviewTab,
@@ -9,7 +10,7 @@ import {
   useGetAdminInsightStatusStatsQuery,
   useListAdminInsightsQuery,
 } from '@/services/api/admin/insightsApi'
-import type { AdminInsightStatusCount, AdminInsightStatusStats, ContentItemStatus } from '@/types/api/adminInsight'
+import type { AdminInsightStatusCount, AdminInsightStatusStats, ContentItemStatus, ContentTypeCode } from '@/types/api/adminInsight'
 
 const POST_REVIEW_PAGE_LIMIT = 50
 
@@ -17,6 +18,8 @@ interface UsePostReviewDataParams {
   activeTab: PostReviewTab
   page: number
   localDraft: ReviewPost | undefined
+  contentType?: ContentTypeCode
+  search?: string
 }
 
 const CONTENT_STATUS_SET = new Set<string>(CONTENT_STATUS_VALUES)
@@ -97,16 +100,47 @@ function normalizeStatusCounts(stats: AdminInsightStatusStats | undefined): Reco
   return counts
 }
 
-export function usePostReviewData({ activeTab, page, localDraft }: UsePostReviewDataParams) {
+function normalizeSearchValue(value: string | undefined): string {
+  return value?.trim().toLocaleLowerCase('vi-VN') ?? ''
+}
+
+function localDraftMatchesFilters(
+  localDraft: ReviewPost | undefined,
+  activeTab: PostReviewTab,
+  contentType: ContentTypeCode | undefined,
+  search: string | undefined
+): boolean {
+  if (!localDraft) return false
+  if (activeTab !== 'ALL' && localDraft.status !== activeTab) return false
+  if (contentType && localDraft.contentType !== contentType) return false
+
+  const normalizedSearch = normalizeSearchValue(search)
+  if (!normalizedSearch) return true
+
+  const categoryLabel = CATEGORIES[localDraft.contentType]?.label ?? localDraft.contentType
+  return [
+    localDraft.title,
+    localDraft.mainContent,
+    localDraft.historyComparison,
+    localDraft.kolInsight,
+    localDraft.investorInsight,
+    localDraft.traderInsight,
+    categoryLabel,
+  ].some((value) => value.toLocaleLowerCase('vi-VN').includes(normalizedSearch))
+}
+
+export function usePostReviewData({ activeTab, page, localDraft, contentType, search }: UsePostReviewDataParams) {
   const statusStatsQuery = useGetAdminInsightStatusStatsQuery()
-  const activeInsightsQuery = useListAdminInsightsQuery(
-    activeTab === 'ALL'
-      ? { page, limit: POST_REVIEW_PAGE_LIMIT }
-      : { page, limit: POST_REVIEW_PAGE_LIMIT, status: activeTab }
-  )
+  const activeInsightsQuery = useListAdminInsightsQuery({
+    page,
+    limit: POST_REVIEW_PAGE_LIMIT,
+    ...(activeTab === 'ALL' ? {} : { status: activeTab }),
+    ...(contentType ? { contentType } : {}),
+    ...(search?.trim() ? { search: search.trim() } : {}),
+  })
 
   const activeItems = activeInsightsQuery.data?.items ?? []
-  const localDraftVisible = Boolean(localDraft && (activeTab === 'DRAFT' || activeTab === 'ALL'))
+  const localDraftVisible = localDraftMatchesFilters(localDraft, activeTab, contentType, search)
   const showLocalDraftOnPage = localDraftVisible && page === 1
 
   const activePosts = useMemo(() => {

@@ -35,7 +35,7 @@ export function formatApiDateForPostReview(value: string | null | undefined): st
 }
 
 export function formatApiTimeForPostReview(value: string | null | undefined): string | undefined {
-  return moment(value).format('HH:mm')
+  return value ? moment(value).format('HH:mm') : undefined;
 }
 
 export function formatApiDateTimeForPostReview(value: string | null | undefined): string | undefined {

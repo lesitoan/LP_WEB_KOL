@@ -69,6 +69,22 @@ export const POST_REVIEW_TABS: { id: PostReviewTab; label: string }[] = [
   { id: 'REJECTED', label: 'Từ chối' },
 ]
 
+export const CONTENT_TYPE_FILTER_OPTIONS: ContentTypeCode[] = [
+  'BAN_TIN_0630',
+  'BAN_TIN_1300',
+  'BAN_TIN_1900',
+  'ALERT',
+  'PRE_EVENT',
+  'WEEKLY_CALENDAR',
+  'WHALES_DAILY',
+  'WHALES_ALERT',
+  'MARKET_STRUCTURE',
+  'SECTOR_DAILY',
+  'SENTIMENT',
+  'DEEP_DIVE',
+  'LEGAL_VN',
+]
+
 export const CATEGORIES: Record<ContentTypeCode, CategoryConfig> = {
   ALERT: {
     id: 'ALERT',

@@ -23,9 +23,14 @@ export default function AdminPostReviewScreen() {
   const {
     activeTab,
     page,
+    contentType,
+    search,
+    searchDraft,
     selectedPostIdParam,
     setActiveTab,
     setPage,
+    setContentType,
+    setSearch,
     setSelectedPostIdParam,
     setManyParams,
     clearSelectedPostId,
@@ -35,6 +40,8 @@ export default function AdminPostReviewScreen() {
     activeTab,
     page,
     localDraft,
+    contentType,
+    search,
   })
 
   const selection = usePostReviewSelection({
@@ -147,8 +154,12 @@ export default function AdminPostReviewScreen() {
       <div className="flex h-full min-h-0 flex-col gap-6">
         <PostReviewHeader
           activeTab={activeTab}
+          contentType={contentType}
+          searchValue={searchDraft}
           statusCounts={data.statusCounts}
           onTabChange={handleTabChange}
+          onContentTypeChange={setContentType}
+          onSearchChange={setSearch}
           onCreateClick={() => setCreateDialogOpen(true)}
         />
 

@@ -17,7 +17,7 @@ const MANUAL_NEWS_TYPES = [
   { id: 'whale-alert', label: 'Cảnh báo whales', schedule: 'Realtime', contentType: 'WHALES_ALERT' as const },
   { id: 'market-structure', label: 'Cấu trúc thị trường', schedule: '08:00', contentType: 'MARKET_STRUCTURE' as const, time: { hour: 8, minute: 0 } },
   { id: 'sector-narrative', label: 'Sector & Narrative', schedule: '12:00', contentType: 'SECTOR_DAILY' as const, time: { hour: 12, minute: 0 } },
-  { id: 'market-sentiment', label: 'Tâm lý thị trường', schedule: '15:00', contentType: 'SENTIMENT' as const, time: { hour: 15, minute: 0 } },
+  { id: 'market-sentiment', label: 'Sentiment', schedule: '15:00', contentType: 'SENTIMENT' as const, time: { hour: 15, minute: 0 } },
   { id: 'research-report', label: 'Research Report', schedule: 'Khi phát sinh', contentType: 'DEEP_DIVE' as const },
   { id: 'vietnam-legal', label: 'Pháp lý Việt Nam', schedule: 'Khi có văn bản', contentType: 'LEGAL_VN' as const },
 ]
