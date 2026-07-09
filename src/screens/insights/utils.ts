@@ -153,7 +153,7 @@ export function buildInsightListItem(insight: KolInsight): InsightListItem {
   const contentTypeLabel = contentTypeLabels[insight.contentType]
   const publishedAtLabel = formatInsightDate(insight.publishedAt ?? insight.createdAt)
   const title = effectiveContent.title || insight.title
-  const excerpt = effectiveContent.summary || effectiveContent.subtext || effectiveContent.body || insight.summary || insight.body
+  const excerpt = effectiveContent.body || insight.body || effectiveContent.summary || effectiveContent.subtext || insight.summary || fallbackText
 
   return {
     id: insight.id,
