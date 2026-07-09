@@ -15,6 +15,7 @@ import type { CreateAdminInsightBody, ContentTypeCode } from '@/types/api/adminI
 import {
   buildUpdateAdminInsightBody,
   isApprovableInsightStatus,
+  isImageLockedInsightStatus,
   isPublishableInsightStatus,
   isRecallableInsightStatus,
   isSchedulableInsightStatus,
@@ -88,6 +89,14 @@ export function usePostReviewActions({
   })
 
   const preparePostImagesForPersist = async (post: ReviewPost): Promise<ReviewPost> => {
+    if (isImageLockedInsightStatus(post.status)) {
+      return {
+        ...post,
+        contentImages: selectedPost?.id === post.id ? selectedPost.contentImages : post.contentImages.filter((image) => !image.file),
+        imageUrls: selectedPost?.id === post.id ? selectedPost.imageUrls : post.imageUrls,
+      }
+    }
+
     const hasLocalImage = post.contentImages.some((image) => image.file)
 
     if (!hasLocalImage) {

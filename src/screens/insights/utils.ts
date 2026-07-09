@@ -5,6 +5,7 @@ import type { InsightBadge, InsightDetailView, InsightListItem, InsightTabId } f
 import { contentTypeLabels, insightContentTypeOrder } from './constants'
 
 const fallbackText = '-'
+const imageUrlKeys = ['url', 'imageUrl', 'src', 'remoteUrl', 'previewUrl'] as const
 
 export function truncateText(value: string | null | undefined, maxLength: number) {
   const text = value?.trim() || fallbackText
@@ -86,6 +87,44 @@ function buildInsightBadges(insight: KolInsight): InsightBadge[] {
   return badges
 }
 
+function extractImageUrls(value: unknown): string[] {
+  if (!value) return []
+
+  if (typeof value === 'string') {
+    const url = value.trim()
+    return url ? [url] : []
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap(extractImageUrls)
+  }
+
+  if (typeof value === 'object') {
+    const record = value as Partial<Record<(typeof imageUrlKeys)[number], unknown>>
+    return imageUrlKeys.flatMap((key) => extractImageUrls(record[key]))
+  }
+
+  return []
+}
+
+function normalizeInsightImageUrls(insight: KolInsight): string[] {
+  const insightWithFlexibleImages = insight as KolInsight & {
+    image?: unknown
+    images?: unknown
+  }
+
+  return Array.from(
+    new Set(
+      [
+        insight.imageUrls,
+        insight.imageUrl,
+        insightWithFlexibleImages.images,
+        insightWithFlexibleImages.image,
+      ].flatMap(extractImageUrls),
+    ),
+  )
+}
+
 export function normalizeSourcesText(sources: unknown) {
   if (!sources) return fallbackText
 
@@ -135,10 +174,7 @@ export function buildInsightDetailView(insight: KolInsight): InsightDetailView {
   const effectiveContent = insight.effectiveContent
   const sources = effectiveContent.sources ?? insight.sources
 
-
-  let imageUrls = Array.isArray(insight.imageUrls)
-    ? insight.imageUrls.filter((url): url is string => typeof url === 'string' && Boolean(url.trim()))
-    : []
+  const imageUrls = normalizeInsightImageUrls(insight)
 
   return {
     id: insight.id,

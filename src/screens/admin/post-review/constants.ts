@@ -23,6 +23,7 @@ export const CONTENT_STATUS_VALUES: ContentItemStatus[] = [
   'PUBLISHING',
   'PUBLISHED',
   'FLAGGED',
+  'RECALLING',
   'RECALLED',
   'SKIPPED',
   'REJECTED',
@@ -33,6 +34,7 @@ export const APPROVABLE_INSIGHT_STATUSES = ['DRAFT'] as const
 export const SCHEDULABLE_INSIGHT_STATUSES = ['PENDING_REVIEW'] as const
 export const RECALLABLE_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHING', 'PUBLISHED'] as const
 export const DELETABLE_INSIGHT_STATUSES = ['DRAFT', 'PENDING_REVIEW'] as const
+export const IMAGE_LOCKED_INSIGHT_STATUSES = ['SCHEDULED', 'PUBLISHED'] as const
 
 export function isPublishableInsightStatus(status: ContentItemStatus): boolean {
   return PUBLISHABLE_INSIGHT_STATUSES.includes(status)
@@ -54,6 +56,10 @@ export function isDeletableInsightStatus(status: ContentItemStatus): boolean {
   return DELETABLE_INSIGHT_STATUSES.includes(status as (typeof DELETABLE_INSIGHT_STATUSES)[number])
 }
 
+export function isImageLockedInsightStatus(status: ContentItemStatus): boolean {
+  return IMAGE_LOCKED_INSIGHT_STATUSES.includes(status as (typeof IMAGE_LOCKED_INSIGHT_STATUSES)[number])
+}
+
 export type PostReviewTab = 'ALL' | ContentItemStatus
 
 export const POST_REVIEW_TABS: { id: PostReviewTab; label: string }[] = [
@@ -64,6 +70,7 @@ export const POST_REVIEW_TABS: { id: PostReviewTab; label: string }[] = [
   // { id: 'PUBLISHING', label: 'Đang đăng' },
   { id: 'PUBLISHED', label: 'Đã đăng' },
   { id: 'FLAGGED', label: 'Cần xử lý' },
+  // { id: 'RECALLING', label: 'Đang thu hồi' },
   { id: 'RECALLED', label: 'Đã thu hồi' },
   // { id: 'SKIPPED', label: 'Đã bỏ qua' },
   { id: 'REJECTED', label: 'Từ chối' },
@@ -221,6 +228,12 @@ export const STATUS_CONFIGS: Record<ContentItemStatus, {
     textClass: 'text-[#FAB55A]',
     iconColor: '#FAB55A',
   },
+  RECALLING: {
+    label: 'Đang thu hồi',
+    bgClass: 'bg-[#4D2C03]',
+    textClass: 'text-[#FAB55A]',
+    iconColor: '#FAB55A',
+  },
   RECALLED: {
     label: 'Đã thu hồi',
     bgClass: 'bg-[#282828]',
@@ -348,7 +361,9 @@ export function buildUpdateAdminInsightBody(original: ReviewPost, updated: Revie
   assignIfChanged(body, 'sources', parseSources(original.sources), parseSources(updated.sources))
   assignIfChanged(body, 'authorTask', normalizeNullableText(original.authorTask), normalizeNullableText(updated.authorTask))
   assignIfChanged(body, 'kolToolPosted', normalizeNullableText(original.kolToolPosted), normalizeNullableText(updated.kolToolPosted))
-  assignIfChanged(body, 'imageUrls', original.imageUrls, updated.imageUrls)
+  if (!isImageLockedInsightStatus(original.status)) {
+    assignIfChanged(body, 'imageUrls', original.imageUrls, updated.imageUrls)
+  }
 
   return Object.keys(body).length > 0 ? body : null
 }

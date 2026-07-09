@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import useEmblaCarousel from 'embla-carousel-react'
 import { ChevronLeft, ChevronRight, Flame, Loader2, Save, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -104,58 +105,99 @@ function InsightImageGallery({
 }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const hasMultipleImages = imageUrls.length > 1
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: 'center',
+    loop: hasMultipleImages,
+  })
+
+  const handleSelect = useCallback(() => {
+    if (!emblaApi) return
+    setActiveIndex(emblaApi.selectedScrollSnap())
+  }, [emblaApi])
 
   useEffect(() => {
     setActiveIndex(0)
-  }, [imageUrls])
+    emblaApi?.scrollTo(0)
+    emblaApi?.reInit()
+  }, [emblaApi, imageUrls])
+
+  useEffect(() => {
+    if (!emblaApi) return
+
+    handleSelect()
+    emblaApi.on('select', handleSelect)
+    emblaApi.on('reInit', handleSelect)
+
+    return () => {
+      emblaApi.off('select', handleSelect)
+      emblaApi.off('reInit', handleSelect)
+    }
+  }, [emblaApi, handleSelect])
 
   if (!imageUrls.length) return null
 
   const goToPreviousImage = () => {
-    setActiveIndex((current) => (current - 1 + imageUrls.length) % imageUrls.length)
+    emblaApi?.scrollPrev()
   }
 
   const goToNextImage = () => {
-    setActiveIndex((current) => (current + 1) % imageUrls.length)
+    emblaApi?.scrollNext()
+  }
+
+  const goToImage = (index: number) => {
+    emblaApi?.scrollTo(index)
   }
 
   return (
     <section
       className={cn(
-        'mx-auto flex w-full min-w-0 max-w-[630px] flex-col justify-between gap-4 overflow-hidden md:mx-0 md:h-full md:min-h-0 md:max-w-none',
+        'mx-auto flex w-full min-w-0 max-w-[630px] flex-col gap-4 overflow-hidden md:mx-0 md:h-full md:min-h-0 md:max-w-none',
+        hasMultipleImages && 'md:grid md:grid-rows-[minmax(0,1fr)_auto]',
         className,
       )}
     >
-      <div className="flex h-[min(458px,42dvh)] w-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0D0D0D] sm:h-[458px] md:min-h-0 md:flex-1">
-        <img
-          src={imageUrls[activeIndex]}
-          alt={`${title} - ảnh ${activeIndex + 1}`}
-          className="block max-h-full max-w-full object-contain"
-        />
+      <div
+        ref={emblaRef}
+        className="h-[min(458px,42dvh)] w-full min-h-0 min-w-0 overflow-hidden rounded-2xl bg-[#0D0D0D] sm:h-[458px] md:h-auto md:min-h-0 md:flex-1 md:basis-0"
+      >
+        <div className="flex h-full w-full">
+          {imageUrls.map((url, index) => (
+            <div
+              key={`${url}-${index}`}
+              className="flex h-full min-w-0 flex-[0_0_100%] items-center justify-center"
+            >
+              <img
+                src={url}
+                alt={`${title} - ảnh ${index + 1}`}
+                className="block max-h-full max-w-full object-contain"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {hasMultipleImages ? (
-        <div className="flex shrink-0 items-center justify-center gap-4">
+        <div className="flex shrink-0 items-center justify-center gap-3">
           <button
             type="button"
             onClick={goToPreviousImage}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#545454] text-white transition-colors hover:bg-[#282828]"
+            className="grid h-6 w-6 shrink-0 place-items-center rounded-md border border-[#545454] text-white transition-colors hover:bg-[#282828]"
             aria-label="Ảnh trước"
           >
-            <ChevronLeft className="h-5 w-5" strokeWidth={2.4} />
+            <ChevronLeft className="h-3.5 w-3.5" strokeWidth={2.4} />
           </button>
 
-          <div className="flex flex-col items-center justify-center text-base font-normal leading-6 text-white">
+          <div className="flex flex-col items-center justify-center text-xs font-normal leading-4 text-white">
             <span>
               {activeIndex + 1}/{imageUrls.length}
             </span>
-            <div className="mt-1 flex items-center gap-0.5">
+            <div className="mt-0.5 flex items-center gap-0.5">
               {imageUrls.map((url, index) => (
                 <button
                   key={`${url}-${index}`}
                   type="button"
-                  onClick={() => setActiveIndex(index)}
-                  className={`h-2 w-2 rounded-full transition-colors ${
+                  onClick={() => goToImage(index)}
+                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
                     activeIndex === index ? 'bg-[#F7F0A1]' : 'bg-[#828283] hover:bg-[#A8A8A9]'
                   }`}
                   aria-label={`Xem ảnh ${index + 1}`}
@@ -167,10 +209,10 @@ function InsightImageGallery({
           <button
             type="button"
             onClick={goToNextImage}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#545454] text-white transition-colors hover:bg-[#282828]"
+            className="grid h-6 w-6 shrink-0 place-items-center rounded-md border border-[#545454] text-white transition-colors hover:bg-[#282828]"
             aria-label="Ảnh tiếp theo"
           >
-            <ChevronRight className="h-5 w-5" strokeWidth={2.4} />
+            <ChevronRight className="h-3.5 w-3.5" strokeWidth={2.4} />
           </button>
         </div>
       ) : null}
@@ -332,7 +374,8 @@ export default function InsightEditModal({
             <div
               className={cn(
                 'min-w-0',
-                shouldShowGallery && 'grid grid-cols-1 gap-6 md:max-h-[518px] md:min-h-0 md:flex-1 md:grid-cols-2 md:items-stretch',
+                shouldShowGallery &&
+                  'grid grid-cols-1 gap-6 md:h-[min(518px,calc(100dvh-282px))] md:min-h-0 md:flex-1 md:grid-cols-2 md:items-stretch md:overflow-hidden',
               )}
             >
               {shouldShowGallery ? (

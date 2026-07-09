@@ -6,6 +6,7 @@ import { DataTable, type DataTableColumn } from '@/components/ui/dataTable'
 import { cn } from '@/lib/utils'
 import type { PaginationMeta } from '@/types/api/adminInsight'
 import { type PublishedPost } from '../constants'
+import PublishedPostTierBadges from './PublishedPostTierBadges'
 
 interface PublishedPostTableProps {
   posts: PublishedPost[]
@@ -27,6 +28,10 @@ const STATUS_BADGE_CLASSES: Record<string, { badge: string; dot: string }> = {
     badge: 'bg-[#002D67] text-[#549BF8]',
     dot: 'bg-[#549BF8]',
   },
+  PUBLISHING: {
+    badge: 'bg-[#2B255C] text-[#A99BFF]',
+    dot: 'bg-[#A99BFF]',
+  },
   PUBLISHED: {
     badge: 'bg-[#06301C] text-[#41C588]',
     dot: 'bg-[#41C588]',
@@ -38,6 +43,14 @@ const STATUS_BADGE_CLASSES: Record<string, { badge: string; dot: string }> = {
   RECALLED: {
     badge: 'bg-[#282828] text-[#D7D8D9]',
     dot: 'bg-[#D7D8D9]',
+  },
+  RECALLING: {
+    badge: 'bg-[#4D2C03] text-[#FAB55A]',
+    dot: 'bg-[#FAB55A]',
+  },
+  SKIPPED: {
+    badge: 'bg-[#282828] text-[#A8A8A9]',
+    dot: 'bg-[#A8A8A9]',
   },
   REJECTED: {
     badge: 'bg-[#3A1A1A] text-[#EB4E40]',
@@ -89,8 +102,8 @@ export default function PublishedPostTable({
       id: 'tier',
       header: 'Tier nhận',
       headerClassName: '!text-xs !font-normal !text-[#A8A8A9]',
-      cellClassName: '!py-3 text-sm font-normal text-white',
-      cell: (row) => <span>{row.tier}</span>,
+      cellClassName: '!py-3',
+      cell: (row) => <PublishedPostTierBadges tiers={row.tiers} fallbackLabel={row.tier} />,
     },
     {
       id: 'status',

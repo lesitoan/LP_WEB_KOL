@@ -1,3 +1,12 @@
+export interface PublishedPostTier {
+  code: string
+  name: string
+  scheduledAt?: string | null
+  scheduledAtLabel?: string
+  recipientCount?: number | null
+  status?: string | null
+}
+
 export interface PublishedPost {
   id: string
   title: string
@@ -8,6 +17,7 @@ export interface PublishedPost {
   adminAvatarColor: string
   publishTime: string
   tier: string
+  tiers: PublishedPostTier[]
   status: string
   statusCode?: string
   actionType: 'sent' | 'request'
@@ -30,6 +40,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '06:30 - Hôm nay',
     tier: 'Tất cả tier',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'sent',
     actionStatusText: 'Chờ admin duyệt',
@@ -46,6 +57,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '07:30 - Hôm nay',
     tier: 'ELITE - LEGEND',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'sent',
     actionStatusText: 'Chờ admin duyệt',
@@ -62,6 +74,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '08:30 - Hôm nay',
     tier: 'Tất cả tier',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'sent',
     actionStatusText: 'Chờ admin duyệt',
@@ -78,6 +91,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '19:30 - Hôm nay',
     tier: 'ELITE - LEGEND',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'request',
     mainContent: 'Cú sụt giảm mạnh chiều nay đã đẩy BTC phá vỡ mốc hỗ trợ cứng 62,000 USD (thiết lập đáy mới trong 4 tháng qua). Sự sụt giảm kéo theo làn sóng thanh lý khổng lồ trị giá 1.72 tỷ USD của các vị thế Long đòn bẩy trên toàn thị trường.',
@@ -93,6 +107,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '7:30 - Hôm nay',
     tier: 'Tất cả tier',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'request',
     mainContent: 'Cập nhật diễn biến dòng tiền ETF rút ròng gây hoang mang diện rộng. BTC phản ứng tiêu cực khi mất mốc 61,000 USD trong đêm.',
@@ -108,6 +123,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '06:30 - Hôm nay',
     tier: 'ELITE - LEGEND',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'request',
     mainContent: 'Các chỉ số MVRV Z-Score và SOPR đồng loạt rơi vào vùng quá bán ngắn hạn. Biến động cực mạnh sắp xảy ra.',
@@ -123,6 +139,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '20:30 - Hôm nay',
     tier: 'Tất cả tier',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'request',
     mainContent: 'Tổng kết các số liệu thanh lý đòn bẩy khổng lồ của các sàn phái sinh hàng đầu trong phiên giao dịch.',
@@ -138,6 +155,7 @@ export const INITIAL_PUBLISHED_POSTS: PublishedPost[] = [
     adminAvatarColor: '#9B692C',
     publishTime: '06:30 - Hôm nay',
     tier: 'ELITE - LEGEND',
+    tiers: [],
     status: 'Đang hiển thị',
     actionType: 'request',
     mainContent: 'Nhận định về xu hướng tích lũy dài hạn của các địa chỉ ví tích lũy (Accumulation Addresses).',
