@@ -5,6 +5,7 @@ export type ContentItemStatus =
   | 'PUBLISHING'
   | 'PUBLISHED'
   | 'FLAGGED'
+  | 'RECALLING'
   | 'RECALLED'
   | 'SKIPPED'
   | 'REJECTED'
@@ -131,6 +132,8 @@ export interface AdminInsight {
   updatedAt: string
   imageUrl?: string | null
   imageUrls?: string[] | null
+  distribution?: AdminInsightDistributionSummary | null
+  distributionPlans?: AdminInsightDistributionPlan[]
 }
 
 export type ContentActionRequestStatus = 'OPEN' | 'RESOLVED' | 'DISMISSED'
@@ -169,6 +172,17 @@ export interface AdminInsightDistributionPlan {
     name: string
     sortOrder?: number
   }
+}
+
+export interface AdminInsightDistributionTier {
+  kolTierId: string
+  tierCode: string
+  tierName: string
+}
+
+export interface AdminInsightDistributionSummary {
+  totalTiers: number
+  tiers: AdminInsightDistributionTier[]
 }
 
 export interface AdminInsightDetail extends AdminInsight {

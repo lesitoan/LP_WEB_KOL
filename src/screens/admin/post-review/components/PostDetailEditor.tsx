@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, CircleCheck, CircleX, RotateCcw, X } from 'l
 import { Controller, useForm } from 'react-hook-form'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, isSchedulableInsightStatus, type ReviewPost, type ReviewPostImage } from '../constants'
+import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isImageLockedInsightStatus, isPublishableInsightStatus, isRecallableInsightStatus, isSchedulableInsightStatus, type ReviewPost, type ReviewPostImage } from '../constants'
 import { formatApiTimeForPostReview } from '../utils'
 import ApprovePostModal, { type ApprovePostPayload } from './ApprovePostModal'
 import ImagePreviewModal from './ImagePreviewModal'
@@ -180,6 +180,7 @@ export default function PostDetailEditor({
   const catConfig = CATEGORIES[editedPost.contentType]
   const statusConfig = STATUS_CONFIGS[editedPost.status]
   const canEdit = editableStatuses.has(editedPost.status)
+  const canEditImages = canEdit && !isImageLockedInsightStatus(editedPost.status)
   const isLocalDraft = editedPost.isLocalDraft === true
   const canRecall = !isLocalDraft && isRecallableInsightStatus(editedPost.status)
   const canSaveDraft = canEdit && isLocalDraft
@@ -192,9 +193,9 @@ export default function PostDetailEditor({
   const canApprove = canEdit && (isLocalDraft || isApprovableInsightStatus(editedPost.status))
   const canScheduleApprove = !isLocalDraft && isSchedulableInsightStatus(editedPost.status)
   const canPublish = !isLocalDraft && isPublishableInsightStatus(editedPost.status)
-  const canAddContentImage = canEdit && editedPost.contentImages.length < MAX_CONTENT_IMAGES
-  const shouldShowCoverImageSection = canEdit || Boolean(coverImageUrl)
-  const shouldShowContentImagesSection = canEdit || editedPost.contentImages.length > 0
+  const canAddContentImage = canEditImages && editedPost.contentImages.length < MAX_CONTENT_IMAGES
+  const shouldShowCoverImageSection = canEditImages || Boolean(coverImageUrl)
+  const shouldShowContentImagesSection = canEditImages || editedPost.contentImages.length > 0
   const persistedPlans = editedPost.distributionPlans ?? []
   const displayDistributionPreview =
     distributionPreview &&
@@ -227,7 +228,7 @@ export default function PostDetailEditor({
   }
 
   const handleCoverImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!canEdit) return
+    if (!canEditImages) return
     const file = event.target.files?.[0]
     if (!file) return
 
@@ -236,7 +237,7 @@ export default function PostDetailEditor({
   }
 
   const handleContentImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!canEdit) return
+    if (!canEditImages) return
 
     const replaceIndex = replaceImageIndexRef.current
     const files = Array.from(event.target.files ?? [])
@@ -279,7 +280,7 @@ export default function PostDetailEditor({
   }
 
   const openContentImagePicker = (replaceIndex: number | null = null, slotIndex?: number) => {
-    if (!canEdit) return
+    if (!canEditImages) return
     if (slotIndex !== undefined) playAddImageAnimation(slotIndex)
     replaceImageIndexRef.current = replaceIndex
     contentImageInputRef.current?.click()
@@ -429,17 +430,17 @@ export default function PostDetailEditor({
               type="file"
               accept="image/*"
               className="hidden"
-              disabled={!canEdit}
+              disabled={!canEditImages}
               onChange={handleCoverImageChange}
             />
             <div
-              role={canEdit ? 'button' : undefined}
-              tabIndex={canEdit ? 0 : undefined}
+              role={canEditImages ? 'button' : undefined}
+              tabIndex={canEditImages ? 0 : undefined}
               onClick={() => {
-                if (!coverImageUrl) coverInputRef.current?.click()
+                if (canEditImages && !coverImageUrl) coverInputRef.current?.click()
               }}
               onKeyDown={(event) => {
-                if (!canEdit || coverImageUrl) return
+                if (!canEditImages || coverImageUrl) return
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault()
                   coverInputRef.current?.click()
@@ -447,7 +448,7 @@ export default function PostDetailEditor({
               }}
               className={cn(
                 'relative flex min-h-[96px] flex-col items-center justify-center gap-3 overflow-hidden rounded-lg border border-dashed border-[#828283] bg-[#282828] px-6 py-4 transition-[border-color,transform,box-shadow] duration-200',
-                canEdit ? 'cursor-pointer hover:border-[#D4A74A]/60' : 'cursor-default opacity-60'
+                canEditImages ? 'cursor-pointer hover:border-[#D4A74A]/60' : 'cursor-default opacity-60'
               )}
             >
               {coverImageUrl ? (
@@ -465,7 +466,7 @@ export default function PostDetailEditor({
                     }}
                     className="block h-auto w-full max-w-full cursor-zoom-in"
                   />
-                  {canEdit && (
+                  {canEditImages && (
                     <div className="absolute right-2 top-2 flex gap-2">
                       <button
                         type="button"
@@ -524,7 +525,7 @@ export default function PostDetailEditor({
               accept="image/*"
               multiple
               className="hidden"
-              disabled={!canEdit}
+              disabled={!canEditImages}
               onChange={handleContentImageChange}
             />
             <div className="relative">
@@ -571,7 +572,7 @@ export default function PostDetailEditor({
                     }}
                     className="block h-auto max-h-full w-auto max-w-full cursor-zoom-in object-contain"
                   />
-                  {canEdit && (
+                  {canEditImages && (
                     <div className="absolute right-1.5 top-1.5 flex gap-1.5">
                       <button
                         type="button"

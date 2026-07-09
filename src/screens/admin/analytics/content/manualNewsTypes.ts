@@ -11,7 +11,7 @@ export const MANUAL_NEWS_TYPES: { id: string; label: string; contentType: Conten
   { id: 'whale-alert', label: 'Cảnh báo whales', contentType: 'WHALES_ALERT' },
   { id: 'market-structure', label: 'Cấu trúc thị trường', contentType: 'MARKET_STRUCTURE' },
   { id: 'sector-narrative', label: 'Sector & Narrative', contentType: 'SECTOR_DAILY' },
-  { id: 'market-sentiment', label: 'Tâm lý thị trường', contentType: 'SENTIMENT' },
+  { id: 'market-sentiment', label: 'Sentiment', contentType: 'SENTIMENT' },
   { id: 'research-report', label: 'Research Report', contentType: 'DEEP_DIVE' },
   { id: 'vietnam-legal', label: 'Pháp lý Việt Nam', contentType: 'LEGAL_VN' },
 ]

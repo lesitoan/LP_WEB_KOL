@@ -4,7 +4,7 @@ import {
   useListAdminInsightsQuery,
 } from '@/services/api/admin/insightsApi'
 import type { AdminInsight, ContentItemStatus, ContentTypeCode, PaginationMeta } from '@/types/api/adminInsight'
-import type { PublishedPost } from '../constants'
+import type { PublishedPost, PublishedPostTier } from '../constants'
 
 const PUBLISHED_POST_LIMIT = 8
 
@@ -25,13 +25,23 @@ const CONTENT_TYPE_LABELS: Partial<Record<ContentTypeCode, string>> = {
 }
 
 const ALL_TIER_CODES = ['STARTER', 'PARTNER', 'ELITE', 'LEGEND']
+const TIER_SORT_ORDER = new Map(ALL_TIER_CODES.map((tierCode, index) => [tierCode, index]))
+const CURRENT_CONFIG_TIER_STATUSES = new Set<ContentItemStatus>([
+  'DRAFT',
+  'PENDING_REVIEW',
+  'FLAGGED',
+  'REJECTED',
+])
 
 const STATUS_LABELS: Partial<Record<ContentItemStatus, string>> = {
   PENDING_REVIEW: 'Chờ duyệt',
   SCHEDULED: 'Đã lên lịch',
+  PUBLISHING: 'Đang đăng',
   PUBLISHED: 'Đã đăng',
   FLAGGED: 'Cần xử lý',
+  // RECALLING: 'Đang thu hồi',
   RECALLED: 'Đã thu hồi',
+  SKIPPED: 'Đã bỏ qua',
   REJECTED: 'Từ chối',
   DRAFT: 'Bản nháp',
   
@@ -79,39 +89,122 @@ function formatSources(value: unknown) {
   return ''
 }
 
-function resolveTierLabel(distributionSnapshot: unknown) {
-  if (!distributionSnapshot || typeof distributionSnapshot !== 'object') {
-    return '---'
+function readString(source: Record<string, unknown>, key: string) {
+  const value = source[key]
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined
+}
+
+function readNumber(source: Record<string, unknown>, key: string) {
+  const value = source[key]
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))) return Number(value)
+  return undefined
+}
+
+function normalizeTierPlan(plan: unknown): PublishedPostTier | null {
+  if (!plan || typeof plan !== 'object') return null
+
+  const planRecord = plan as Record<string, unknown>
+  const kolTier = planRecord.kolTier && typeof planRecord.kolTier === 'object'
+    ? planRecord.kolTier as Record<string, unknown>
+    : null
+
+  const code = (
+    readString(planRecord, 'tierCode') ||
+    readString(planRecord, 'kolTierCode') ||
+    (kolTier ? readString(kolTier, 'code') : undefined) ||
+    ''
+  ).toUpperCase()
+
+  if (!code) return null
+
+  const name =
+    readString(planRecord, 'tierName') ||
+    (kolTier ? readString(kolTier, 'name') : undefined) ||
+    code
+
+  const scheduledAt = readString(planRecord, 'scheduledAt') ?? null
+  const recipientCount = readNumber(planRecord, 'recipientCount') ?? null
+
+  return {
+    code,
+    name,
+    scheduledAt,
+    scheduledAtLabel: scheduledAt ? formatDateTime(scheduledAt) : undefined,
+    recipientCount,
+    status: readString(planRecord, 'status') ?? null,
+  }
+}
+
+function getDistributionSnapshotPlans(distributionSnapshot: unknown) {
+  if (!distributionSnapshot || typeof distributionSnapshot !== 'object') return []
+
+  const maybePlans = 'plans' in distributionSnapshot
+    ? (distributionSnapshot as { plans?: unknown }).plans
+    : undefined
+
+  return Array.isArray(maybePlans) ? maybePlans : []
+}
+
+function getCurrentConfigTierPlans(insight: AdminInsight) {
+  return insight.distribution?.tiers && insight.distribution.tiers.length > 0
+    ? insight.distribution.tiers
+    : []
+}
+
+function getPersistedDistributionPlans(insight: AdminInsight) {
+  return insight.distributionPlans && insight.distributionPlans.length > 0
+    ? insight.distributionPlans
+    : []
+}
+
+function getTierPlanSources(insight: AdminInsight) {
+  const currentConfigPlans = getCurrentConfigTierPlans(insight)
+  const persistedPlans = getPersistedDistributionPlans(insight)
+  const snapshotPlans = getDistributionSnapshotPlans(insight.distributionSnapshot)
+
+  if (CURRENT_CONFIG_TIER_STATUSES.has(insight.status)) {
+    return [currentConfigPlans, persistedPlans, snapshotPlans]
   }
 
-  const maybePlans = 'plans' in distributionSnapshot ? distributionSnapshot.plans : undefined
-  if (!Array.isArray(maybePlans) || maybePlans.length === 0) {
-    return '---'
+  return [persistedPlans, snapshotPlans, currentConfigPlans]
+}
+
+function resolveTiers(insight: AdminInsight): PublishedPostTier[] {
+  const plans = getTierPlanSources(insight).find((source) => source.length > 0) ?? []
+
+  const tiersByCode = new Map<string, PublishedPostTier>()
+
+  for (const plan of plans) {
+    const tier = normalizeTierPlan(plan)
+    if (tier && !tiersByCode.has(tier.code)) {
+      tiersByCode.set(tier.code, tier)
+    }
   }
 
-  const tierCodes = maybePlans
-    .map((plan) => {
-      if (!plan || typeof plan !== 'object') return ''
-      if ('tierCode' in plan) return String(plan.tierCode)
-      if ('kolTierCode' in plan) return String(plan.kolTierCode)
-      return ''
-    })
-    .filter(Boolean)
+  return Array.from(tiersByCode.values()).sort((left, right) => {
+    return (TIER_SORT_ORDER.get(left.code) ?? 99) - (TIER_SORT_ORDER.get(right.code) ?? 99)
+  })
+}
 
-  const uniqueTierCodes = Array.from(new Set(tierCodes))
-  const hasAllTiers = ALL_TIER_CODES.every((tierCode) => uniqueTierCodes.includes(tierCode))
+function resolveTierLabel(tiers: PublishedPostTier[]) {
+  if (tiers.length === 0) return '---'
+
+  const tierCodes = tiers.map((tier) => tier.code)
+  const hasAllTiers = ALL_TIER_CODES.every((tierCode) => tierCodes.includes(tierCode))
 
   if (hasAllTiers) {
     return 'Tất cả'
   }
 
-  return uniqueTierCodes.length > 0 ? uniqueTierCodes.join(' - ') : '---'
+  return tiers.map((tier) => tier.name || tier.code).join(' - ')
 }
 
 function mapPublishedPost(insight: AdminInsight, openRequestByContentId: Map<string, string>): PublishedPost {
   const requestId = openRequestByContentId.get(insight.id)
   const categoryLabel = CONTENT_TYPE_LABELS[insight.contentType] ?? insight.contentType
   const statusLabel = STATUS_LABELS[insight.status] ?? insight.status
+  const tiers = resolveTiers(insight)
   const imageUrls = insight.imageUrls && insight.imageUrls.length > 0
     ? insight.imageUrls
     : insight.imageUrl
@@ -126,8 +219,9 @@ function mapPublishedPost(insight: AdminInsight, openRequestByContentId: Map<str
     categoryLabel,
     adminName: insight.reviewedByUserId ? 'Admin' : '---',
     adminAvatarColor: '#9B692C',
-    publishTime: formatDateTime(insight.publishedAt),
-    tier: resolveTierLabel(insight.distributionSnapshot),
+    publishTime: formatDateTime(insight.createdAt || insight.publishedAt),
+    tier: resolveTierLabel(tiers),
+    tiers,
     status: statusLabel,
     statusCode: insight.status,
     actionType: requestId ? 'sent' : 'request',

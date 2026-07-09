@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Flag, X } from 'lucide-react'
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import { type PublishedPost } from '../constants'
+import PublishedPostTierBadges from './PublishedPostTierBadges'
 
 interface PublishedPostDetailModalProps {
   post: PublishedPost | null
@@ -107,7 +108,11 @@ export default function PublishedPostDetailModal({
                 <div className="h-10 w-px shrink-0 bg-[#545454]/30" />
                 <div className="flex min-w-0 flex-1 flex-col gap-1 pl-3">
                   <span className="text-xs font-normal uppercase text-[#A8A8A9]">Tier nhận</span>
-                  <span className="truncate text-base font-normal text-white">{post.tier}</span>
+                  <PublishedPostTierBadges
+                    tiers={post.tiers}
+                    fallbackLabel={post.tier}
+                    iconClassName="h-9 w-9"
+                  />
                 </div>
               </div>
 

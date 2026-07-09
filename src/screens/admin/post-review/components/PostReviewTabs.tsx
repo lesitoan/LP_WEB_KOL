@@ -13,7 +13,7 @@ export default function PostReviewTabs({ activeTab, statusCounts, onTabChange }:
   const tabsScroll = useHorizontalScrollControls([activeTab, statusCounts])
 
   return (
-    <div className="flex min-w-0 max-w-full items-center gap-2 mr-auto">
+    <div className="flex min-w-0 max-w-full flex-1 items-center gap-2 mr-auto">
       <button
         type="button"
         disabled={!tabsScroll.arrows.left}
