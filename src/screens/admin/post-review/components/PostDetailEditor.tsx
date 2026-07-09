@@ -10,6 +10,7 @@ import { CATEGORIES, STATUS_CONFIGS, isApprovableInsightStatus, isImageLockedIns
 import { formatApiTimeForPostReview } from '../utils'
 import ApprovePostModal, { type ApprovePostPayload } from './ApprovePostModal'
 import ImagePreviewModal from './ImagePreviewModal'
+import MarkdownContentEditor from './MarkdownContentEditor'
 import PublishPostModal from './PublishPostModal'
 import RevokePostModal from './RevokePostModal'
 import { cn } from '@/lib/utils'
@@ -72,7 +73,6 @@ const MAX_CONTENT_IMAGES = 10
 
 type PostDetailFormValues = Pick<
   ReviewPost,
-  | 'title'
   | 'mainContent'
   | 'historyComparison'
   | 'kolInsight'
@@ -98,7 +98,6 @@ interface ImagePreviewState {
 
 function getPostFormValues(post: ReviewPost): PostDetailFormValues {
   return {
-    title: post.title,
     mainContent: post.mainContent,
     historyComparison: post.historyComparison,
     kolInsight: post.kolInsight,
@@ -134,11 +133,9 @@ export default function PostDetailEditor({
   const [pendingApproveDistributionPreview, setPendingApproveDistributionPreview] = useState<AdminInsightDistributionPreview | null>(null)
   const [pendingPublishPost, setPendingPublishPost] = useState<ReviewPost | null>(null)
   const [isPreparingApprovePreview, setIsPreparingApprovePreview] = useState(false)
-  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
   const [activeAddImageSlot, setActiveAddImageSlot] = useState<number | null>(null)
   const [contentImagesOverflow, setContentImagesOverflow] = useState(false)
   const [imagePreview, setImagePreview] = useState<ImagePreviewState | null>(null)
-  const coverInputRef = useRef<HTMLInputElement>(null)
   const contentImageInputRef = useRef<HTMLInputElement>(null)
   const contentImageScrollRef = useRef<HTMLDivElement>(null)
   const replaceImageIndexRef = useRef<number | null>(null)
@@ -170,7 +167,6 @@ export default function PostDetailEditor({
 
   useEffect(() => {
     revokeObjectUrls()
-    setCoverImageUrl(null)
     setEditedPost({ ...post })
     reset(getPostFormValues(post))
   }, [post, reset])
@@ -194,7 +190,6 @@ export default function PostDetailEditor({
   const canScheduleApprove = !isLocalDraft && isSchedulableInsightStatus(editedPost.status)
   const canPublish = !isLocalDraft && isPublishableInsightStatus(editedPost.status)
   const canAddContentImage = canEditImages && editedPost.contentImages.length < MAX_CONTENT_IMAGES
-  const shouldShowCoverImageSection = canEditImages || Boolean(coverImageUrl)
   const shouldShowContentImagesSection = canEditImages || editedPost.contentImages.length > 0
   const persistedPlans = editedPost.distributionPlans ?? []
   const displayDistributionPreview =
@@ -225,15 +220,6 @@ export default function PostDetailEditor({
     if (key in getValues()) {
       setValue(key as keyof PostDetailFormValues, value, { shouldDirty: true })
     }
-  }
-
-  const handleCoverImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!canEditImages) return
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    setCoverImageUrl(createLocalImageUrl(file))
-    event.target.value = ''
   }
 
   const handleContentImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -421,100 +407,6 @@ export default function PostDetailEditor({
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6 flex flex-col gap-5 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/40 hover:[&::-webkit-scrollbar-thumb]:bg-[#F7F0A1]/80">
-          {/* Ảnh bìa - placeholder UI, chưa có API/data */}
-          {shouldShowCoverImageSection ? (
-          <div className="flex flex-col gap-1 pl-1">
-            <span className="text-sm font-medium text-white">Ảnh bìa</span>
-            <input
-              ref={coverInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              disabled={!canEditImages}
-              onChange={handleCoverImageChange}
-            />
-            <div
-              role={canEditImages ? 'button' : undefined}
-              tabIndex={canEditImages ? 0 : undefined}
-              onClick={() => {
-                if (canEditImages && !coverImageUrl) coverInputRef.current?.click()
-              }}
-              onKeyDown={(event) => {
-                if (!canEditImages || coverImageUrl) return
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault()
-                  coverInputRef.current?.click()
-                }
-              }}
-              className={cn(
-                'relative flex min-h-[96px] flex-col items-center justify-center gap-3 overflow-hidden rounded-lg border border-dashed border-[#828283] bg-[#282828] px-6 py-4 transition-[border-color,transform,box-shadow] duration-200',
-                canEditImages ? 'cursor-pointer hover:border-[#D4A74A]/60' : 'cursor-default opacity-60'
-              )}
-            >
-              {coverImageUrl ? (
-                <>
-                  <img
-                    src={coverImageUrl}
-                    alt="Ảnh bìa"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      setImagePreview({
-                        images: [coverImageUrl],
-                        initialIndex: 0,
-                        title: 'Ảnh bìa',
-                      })
-                    }}
-                    className="block h-auto w-full max-w-full cursor-zoom-in"
-                  />
-                  {canEditImages && (
-                    <div className="absolute right-2 top-2 flex gap-2">
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          coverInputRef.current?.click()
-                        }}
-                        className="grid h-8 w-8 place-items-center rounded-lg bg-[#282828]/90 transition-[background-color,transform] duration-150 hover:bg-[#3a3a3a] active:scale-90"
-                        aria-label="Thay ảnh bìa"
-                      >
-                        <img src="/images/admin/add-imgae-icon.png" alt="" className="h-5 w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          setCoverImageUrl(null)
-                        }}
-                        className="grid h-8 w-8 place-items-center rounded-lg bg-[#282828]/90 text-white transition-colors hover:bg-[#3a3a3a]"
-                        aria-label="Xóa ảnh bìa"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <img
-                    src="/images/admin/add-imgae-icon.png"
-                    alt=""
-                    className="h-10 w-10"
-                  />
-                  <div className="flex flex-col items-center gap-1">
-                    <p className="text-sm">
-                      <span className="font-semibold text-white">Click to upload</span>{' '}
-                      <span className="font-normal text-[#D7D8D9]">or drag and drop</span>
-                    </p>
-                    <p className="text-xs font-normal text-[#D7D8D9]">
-                      SVG, PNG, JPG or GIF (max. 800×400px)
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-          ) : null}
-
           {/* Ảnh nội dung - map từ imageUrls */}
           {shouldShowContentImagesSection ? (
           <div className="flex flex-col gap-1 pl-1">
@@ -631,36 +523,6 @@ export default function PostDetailEditor({
 
           <Field>
             <FieldLabel className="text-sm font-medium text-white">
-              Tiêu đề <span className="text-[#EB4E40]">*</span>
-            </FieldLabel>
-            <Controller
-              control={control}
-              name="title"
-              rules={{
-                validate: (value) => value.trim().length > 0 || 'Vui lòng nhập tiêu đề.',
-              }}
-              render={({ field }) => (
-                <AutoResizeTextarea
-                  value={field.value}
-                  onBlur={field.onBlur}
-                  onChange={(e) => {
-                    field.onChange(e)
-                    updateField('title', e.target.value)
-                  }}
-                  disabled={isFormDisabled}
-                  aria-invalid={Boolean(errors.title)}
-                  className={cn(
-                    "bg-[#121212] border-[#282828] text-white focus-visible:border-[#545454] focus-visible:ring-0 leading-[24px]",
-                    errors.title && "border-[#EB4E40] focus-visible:border-[#EB4E40]"
-                  )}
-                />
-              )}
-            />
-            <FieldError className="text-xs text-[#EB4E40]" errors={[errors.title]} />
-          </Field>
-
-          <Field>
-            <FieldLabel className="text-sm font-medium text-white">
               Nội dung chính <span className="text-[#EB4E40]">*</span>
             </FieldLabel>
             <Controller
@@ -670,19 +532,15 @@ export default function PostDetailEditor({
                 validate: (value) => value.trim().length > 0 || 'Vui lòng nhập nội dung chính.',
               }}
               render={({ field }) => (
-                <AutoResizeTextarea
+                <MarkdownContentEditor
                   value={field.value}
                   onBlur={field.onBlur}
-                  onChange={(e) => {
-                    field.onChange(e)
-                    updateField('mainContent', e.target.value)
+                  onChange={(value) => {
+                    field.onChange(value)
+                    updateField('mainContent', value)
                   }}
-                  disabled={isFormDisabled}
-                  aria-invalid={Boolean(errors.mainContent)}
-                  className={cn(
-                    "bg-[#121212] border-[#282828] text-white focus-visible:border-[#545454] focus-visible:ring-0 leading-[24px]",
-                    errors.mainContent && "border-[#EB4E40] focus-visible:border-[#EB4E40]"
-                  )}
+                  readOnly={isFormDisabled}
+                  hasError={Boolean(errors.mainContent)}
                 />
               )}
             />

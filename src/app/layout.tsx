@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import React from "react";
 import { Google_Sans_Flex } from "next/font/google";
+import '@mdxeditor/editor/style.css';
 import "./globals.css";
 import { Providers } from "./providers";
 import { StoreProvider } from "@/providers/storeProvider";

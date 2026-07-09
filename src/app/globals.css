@@ -412,3 +412,163 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .scrollbar-thin-brand::-webkit-scrollbar-thumb:hover {
   background: rgba(247, 240, 161, 0.55);
 }
+
+/* Post review markdown editor */
+.post-review-markdown-editor-shell,
+.post-review-markdown-editor {
+  --basePageBg: #121212;
+  --baseBase: #121212;
+  --baseBgSubtle: #171717;
+  --baseBg: #282828;
+  --baseBgHover: #333333;
+  --baseBgActive: #3a3a3a;
+  --baseLine: #282828;
+  --baseBorder: #3a3a3a;
+  --baseBorderHover: #545454;
+  --baseSolid: #828283;
+  --baseSolidHover: #a8a8a9;
+  --baseText: #d7d8d9;
+  --baseTextContrast: #ffffff;
+  --accentBase: rgba(247, 240, 161, 0.08);
+  --accentBgSubtle: rgba(247, 240, 161, 0.12);
+  --accentBg: rgba(247, 240, 161, 0.16);
+  --accentBgHover: rgba(247, 240, 161, 0.22);
+  --accentBgActive: rgba(247, 240, 161, 0.28);
+  --accentLine: rgba(247, 240, 161, 0.35);
+  --accentBorder: rgba(247, 240, 161, 0.5);
+  --accentBorderHover: rgba(247, 240, 161, 0.65);
+  --accentSolid: #f7f0a1;
+  --accentSolidHover: #fff6b8;
+  --accentText: #f7f0a1;
+  --accentTextContrast: #000000;
+  --font-body: var(--font-google-sans-flex), system-ui, sans-serif;
+}
+
+.post-review-markdown-editor-shell {
+  position: relative;
+  width: 100%;
+}
+
+.post-review-markdown-editor:not(.mdxeditor-popup-container) {
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid #282828;
+  border-radius: 0.375rem;
+  background: #121212;
+  color: #ffffff;
+  transition: border-color 0.15s ease;
+}
+
+.post-review-markdown-editor:not(.mdxeditor-popup-container):focus-within {
+  border-color: #545454;
+}
+
+.post-review-markdown-editor-error:not(.mdxeditor-popup-container),
+.post-review-markdown-editor-error:not(.mdxeditor-popup-container):focus-within {
+  border-color: #eb4e40;
+}
+
+.post-review-markdown-editor-readonly {
+  cursor: not-allowed;
+}
+
+.post-review-markdown-editor .mdxeditor-toolbar {
+  border-bottom: 1px solid #282828;
+  border-radius: 0;
+  background: #171717;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(247, 240, 161, 0.35) transparent;
+}
+
+.post-review-markdown-editor .mdxeditor-toolbar button,
+.post-review-markdown-editor .mdxeditor-toolbar [role='button'] {
+  cursor: pointer;
+}
+
+.post-review-markdown-editor-readonly .mdxeditor-toolbar button,
+.post-review-markdown-editor-readonly .mdxeditor-toolbar [role='button'] {
+  cursor: not-allowed;
+}
+
+.post-review-markdown-editor-content {
+  min-height: 216px;
+  color: #ffffff;
+  caret-color: #f7f0a1;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.post-review-markdown-editor-content [data-lexical-placeholder='true'] {
+  color: #828283;
+}
+
+.post-review-markdown-editor-content p {
+  margin: 0 0 0.75rem;
+}
+
+.post-review-markdown-editor-content h1,
+.post-review-markdown-editor-content h2,
+.post-review-markdown-editor-content h3 {
+  margin: 0 0 0.75rem;
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.post-review-markdown-editor-content h1 {
+  font-size: 1.5rem;
+}
+
+.post-review-markdown-editor-content h2 {
+  font-size: 1.25rem;
+}
+
+.post-review-markdown-editor-content h3 {
+  font-size: 1.125rem;
+}
+
+.post-review-markdown-editor-content ul,
+.post-review-markdown-editor-content ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.post-review-markdown-editor-content blockquote {
+  margin: 0 0 0.75rem;
+  border-left: 3px solid rgba(247, 240, 161, 0.55);
+  padding-left: 0.75rem;
+  color: #d7d8d9;
+}
+
+.post-review-markdown-editor-content a {
+  color: #f7f0a1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.post-review-markdown-editor-content hr {
+  border-color: #3a3a3a;
+}
+
+.post-review-markdown-editor .cm-editor {
+  min-height: 216px;
+  background: #121212;
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.post-review-markdown-editor .cm-content {
+  caret-color: #f7f0a1;
+}
+
+.post-review-markdown-editor .cm-gutters {
+  border-right: 1px solid #282828;
+  background: #171717;
+  color: #828283;
+}
+
+.post-review-markdown-editor .cm-activeLine,
+.post-review-markdown-editor .cm-activeLineGutter {
+  background: rgba(247, 240, 161, 0.08);
+}
